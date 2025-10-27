@@ -1,10 +1,25 @@
 <x-app-layout>
+    
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Patient Management') }}
         </h2>
     </x-slot>
-
+    
+<form method="GET" action="{{ url()->current() }}" class="mb-4">
+    <div class="relative w-full md:w-80">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Search..."
+            class="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700
+                   bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+        <span class="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300">🔍</span>
+    </div>
+</form>
     <div class="py-6" x-data="{ openAdd:false, openViewId:null, openEditId:null, openDeleteId:null }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg p-6">
