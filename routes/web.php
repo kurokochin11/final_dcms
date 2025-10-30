@@ -24,6 +24,37 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
     
+       // Visitor city lookup (uses IPinfo token from .env)
+    // Returns JSON: { ip, city, region, country, loc }
+    Route::get('/visitor-city', function (Request $request) {
+        $token = env('IPINFO_TOKEN'); // add to .env: IPINFO_TOKEN=pk_xxx
+
+        // optional: allow passing specific IP via ?ip=8.8.8.8
+        $ip = $request->query('ip');
+        $url = $ip ? "https://ipinfo.io/{$ip}/json" : "https://ipinfo.io/json";
+
+        $resp = Http::withHeaders([
+            'Authorization' => "Bearer {$token}",
+        ])->get($url);
+
+        if ($resp->failed()) {
+            return response()->json(['error' => 'lookup failed'], 500);
+        }
+
+        $data = $resp->json();
+
+        return response()->json([
+            'ip' => $data['ip'] ?? null,
+            'city' => $data['city'] ?? null,
+            'region' => $data['region'] ?? null,
+            'country' => $data['country'] ?? null,
+            'loc' => $data['loc'] ?? null,
+        ]);
+    })->name('visitor.city');
+// return patient data as JSON (used by AJAX edit)
+Route::get('patients/{patient}/json', [PatientController::class, 'showJson'])
+    ->name('patients.show.json');
+
     //patient routes
      Route::resource('patients', PatientController::class);
 

@@ -4,12 +4,31 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
+<link rel="icon" type="image/jpg" href="{{ asset('tooth_logo.jpg') }}">
+      <title>@yield('title', config('app.name'))</title>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        
+<!-- Fonts and icons KaiAdmin Bootstrap -->
+<script src="{{ asset('assets/js/plugin/webfont/webfont.min.js') }}"></script>
+<script>
+  WebFont.load({
+    google: { families: ["Public Sans:300,400,500,600,700"] },
+    custom: {
+      families: [
+        "Font Awesome 5 Solid",
+        "Font Awesome 5 Regular",
+        "Font Awesome 5 Brands",
+        "simple-line-icons",
+      ],
+      urls: ["{{ asset('assets/css/fonts.min.css') }}"],
+    },
+    active: function () {
+      sessionStorage.fonts = true;
+    },
+  });
+</script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
