@@ -38,10 +38,7 @@
                                         class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs">
                                         Edit
                                     </button>
-                                    <button onclick="openModal('delete', '{{ $patient->id }}')" 
-                                        class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs">
-                                        Delete
-                                    </button>
+                                   
                                 </td>
                             </tr>
                         @empty
@@ -279,36 +276,7 @@
     </div>
 @endforeach
 
-    <!-- ========== DELETE MODAL ========== -->
-    @foreach ($patients as $patient)
-        <div id="deleteModal-{{ $patient->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6 relative text-center">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
-                    Confirm Deletion
-                </h3>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">
-                    Are you sure you want to delete 
-                    <strong>{{ $patient->first_name }} {{ $patient->last_name }}</strong> 
-                    and all their answers?
-                </p>
-                <form method="POST" action="{{ route('patients.destroy', $patient->id) }}">
-                    @csrf
-                    @method('DELETE')
-                    <div class="flex justify-center space-x-3">
-                        <button type="button" onclick="closeModal('delete', '{{ $patient->id }}')" 
-                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-                            Cancel
-                        </button>
-                        <button type="submit" 
-                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                            Delete
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endforeach
-
+   
     <!-- ========== JS HANDLERS ========== -->
     <script>
         function openModal(type, id) {

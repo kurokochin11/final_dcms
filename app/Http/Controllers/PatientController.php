@@ -28,7 +28,7 @@ class PatientController extends Controller
                 });
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(100)
             ->withQueryString();
 
         // Optional: names for client-side autosuggest (id + full_name)
