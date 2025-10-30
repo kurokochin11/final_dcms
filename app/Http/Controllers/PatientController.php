@@ -19,7 +19,7 @@ class PatientController extends Controller
         $search = $request->query('search');
 
         // Query with search and pagination, preserving query string for pagination links
-        $patients = Patient::with('emergencyContact')
+        $patients = Patient::with('emergencyContact','checkupAnswers', 'medicalAnswers')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('first_name', 'like', "%{$search}%")

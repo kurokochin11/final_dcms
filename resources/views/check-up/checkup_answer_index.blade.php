@@ -1,7 +1,24 @@
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+ <link rel="stylesheet" href="../assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+  <!-- JS -->
+    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+    <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
 @section('title', 'Patient Check-up Records')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="h4">
             {{ __('Patient Check-up Records') }}
         </h2>
     </x-slot>
@@ -14,8 +31,8 @@
                 </div>
             @endif
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                <table class="min-w-full border border-gray-300 dark:border-gray-700">
+            <div class="table-responsive">
+                <table  id="myTable"  class="sub-item">
                     <thead class="bg-gray-100 dark:bg-gray-700">
                         <tr>
                             <th class="py-3 px-4 text-left text-gray-800 dark:text-gray-100">Patient No.</th>

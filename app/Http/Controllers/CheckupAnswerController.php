@@ -59,7 +59,7 @@ class CheckupAnswerController extends Controller
      */
     public function checkup_answersIndex()
     {
-       $patients = Patient::with(['checkupAnswers.question'])->paginate(10);
+       $patients = Patient::with(['checkupAnswers.question'])->paginate(100);
         return view('check-up.checkup_answer_index', compact('patients'));
     }
 }
