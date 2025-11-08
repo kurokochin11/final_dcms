@@ -1,23 +1,26 @@
-<!-- jQuery  -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
-
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
-
-
-<script>
-  $(document).ready(function () {
-      $('#myTable').DataTable();
-  });
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+ <link rel="stylesheet" href="../assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+  <!-- JS -->
+    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+    <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
 </script>
 
+@section('title', 'Patient Management')
 <x-app-layout>
     
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="h4">
             {{ __('Patient Management') }}
         </h2>
     </x-slot>
@@ -35,8 +38,8 @@
                     </div>
                 @endif
 
-                <div class="overflow-x-auto">
-                    <table id="myTable" class="min-w-full text-sm border border-gray-300 dark:border-gray-700 table table-striped">
+                <div class="table-responsive">
+                    <table id="myTable"  class="sub-item">
                         <thead class="bg-gray-100 dark:bg-gray-700">
                             <tr>
                 <th class="px-6 py-3 border border-gray-300">Patient No</th>
@@ -72,12 +75,34 @@
                         -
                     @endif
                 </td>
-                                    <td class="px-4 py-2 border space-x-1">
-                                        <x-button class="text-xs px-2 py-1" @click="openViewId={{ $patient->id }}">View</x-button>
-                                        <x-secondary-button class="text-xs px-2 py-1" @click="openEditId={{ $patient->id }}">Edit</x-secondary-button>
-                                        <x-danger-button class="text-xs px-2 py-1" @click="openDeleteId={{ $patient->id }}">Delete</x-danger-button>
+                                    <td class="px-4 py-2 border" style="text-align:left;">
+                                  <div class="d-flex gap-1 align-items-center">
+                                        <x-button class="btn btn-primary btn-xs" @click="openViewId={{ $patient->id }}">View</x-button>
+                                        <x-secondary-button class="btn btn-warning btn-xs" @click="openEditId={{ $patient->id }}">Edit</x-secondary-button>
+                                        <x-danger-button class="btn btn-danger btn-xs" @click="openDeleteId={{ $patient->id }}">Delete</x-danger-button>
+                                      <div class="dropdown">
+    <button class="btn btn-secondary btn-xs dropdown-toggle" type="button" id="dropdownMenuButton{{ $patient->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+        Interview
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $patient->id }}">
+        <li>
+            <a class="dropdown-item" href="{{ route('medical-history.index', $patient->id) }}">
+                Medical Check Up
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="{{ route('check-up.checkup_index', $patient->id) }}">
+                Dental Check Up
+            </a>
+        </li>
+        
+        </li>
+    </ul>
+</div>
+
                                     </td>
                                 </tr>
+                                </div>
                                 <!-- VIEW MODAL -->
                                 <div x-show="openViewId === {{ $patient->id }}" x-cloak
                                      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -107,13 +132,12 @@
                                         <div class="mt-4 text-right">
                                             <x-secondary-button @click="openViewId = null">Close</x-secondary-button>
 
-                                             <a href="{{ route('medical-history.index', $patient->id) }}"
-       class="inline-block px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">
-        Interview
+                                          
                                           </a>
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <!-- EDIT MODAL -->
                                 <div x-show="openEditId === {{ $patient->id }}" x-cloak
                                      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -216,6 +240,8 @@
                                         </form>
                                     </div>
                                 </div>
+
+            
                                 <!-- DELETE MODAL -->
                                 <div x-show="openDeleteId === {{ $patient->id }}" x-cloak
                                      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -295,7 +321,7 @@
             <textarea name="address" class="w-full border p-2 mb-2" rows="2" placeholder="Enter Complete Address"></textarea>
 
             <label class="block mb-1 font-medium">City</label>
-            <input type="text" name="city" class="w-full border p-2 mb-2" placeholder="Enter City">
+            <input type="text" id="city" name="city" class="w-full border p-2 mb-2" placeholder="Enter City">
 
             <label class="block mb-1 font-medium">Province</label>
             <input type="text" name="province" class="w-full border p-2 mb-2" placeholder="Enter Province">
@@ -334,4 +360,14 @@
         </form>
     </div>
 </div>
+<script>
+    fetch("https://ipinfo.io/json?token=2c9da86f3e02e2")
+        .then(response => response.json())
+        .then(data => {
+            if (data.city) {
+                document.getElementById("city").value = data.city;
+            }
+        })
+        .catch(error => console.log("IP Info Error:", error));
+</script>
 </x-app-layout> 

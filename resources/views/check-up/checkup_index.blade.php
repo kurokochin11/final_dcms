@@ -1,7 +1,8 @@
+@section('title', 'Dental Check-up Form')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Check-up Form
+             Dental Check-up 
             <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-2">
                 <p>Name: {{ $patient->first_name }} {{ $patient->last_name }}</p>
                 <p>Gender: {{ $patient->sex }}</p>
@@ -22,7 +23,7 @@
 
                     <!-- Step 1: Dental Check-up (part 1) -->
                     <div x-show="step === 1" x-cloak x-transition>
-                        <h3 class="text-lg font-semibold mb-4">Dental Check-up (I) — Part 1</h3>
+                        <h3 class="text-lg font-semibold mb-4">Part I</h3>
 
                         <div class="mb-4">
                             <label class="block font-medium">• Reason for Today's Visit / Chief Complaint:</label>
@@ -80,7 +81,7 @@
 
                     <!-- Step 2: Dental Check-up (part 2) -->
                     <div x-show="step === 2" x-cloak x-transition>
-                        <h3 class="text-lg font-semibold mb-4">Dental Check-up (I) — Part 2</h3>
+                        <h3 class="text-lg font-semibold mb-4">Part II</h3>
 
                         <div class="mb-4">
                             <label class="block font-medium">• Do you grind or clench your teeth (bruxism)?</label>
@@ -140,7 +141,7 @@
 
                     <!-- Step 3: Medical Clearance / Physician info -->
                     <div x-show="step === 3" x-cloak x-transition>
-                        <h3 class="text-lg font-semibold mb-4">Medical Clearance</h3>
+                        <h3 class="text-lg font-semibold mb-4">Medical Clearance for Dental Check up</h3>
 
                         <div class="mb-4">
                             <label class="block font-medium">• Physician's Name (for medical clearance, if required)</label>
