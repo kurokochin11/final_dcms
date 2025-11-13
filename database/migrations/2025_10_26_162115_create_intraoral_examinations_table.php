@@ -32,6 +32,9 @@ class CreateIntraoralExaminationsTable extends Migration
             $table->text('hard_tissues_notes')->nullable();
             $table->text('odontogram')->nullable();           // json or encoded chart
 
+            // File uploads for furcation
+            $table->string('furcation_file')->nullable();
+
             // Occlusion
             $table->string('occlusion_class')->nullable();    // Class I / II / III
             $table->text('occlusion_details')->nullable();    // Open bite / deep bite / overjet etc

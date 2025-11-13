@@ -9,10 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('radiographs', function (Blueprint $table) {
             $table->id();
+            $table->string('patient_name');
+            $table->date('date_taken');
+            $table->string('type');
+            $table->string('image_path');
+            $table->text('findings')->nullable();
             $table->timestamps();
         });
     }

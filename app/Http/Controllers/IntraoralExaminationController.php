@@ -17,6 +17,12 @@ class IntraoralExaminationController extends Controller
         return view('oral_examination.index_intraoral', compact('examinations', 'patients'));
     }
 
+    public function create()
+    {
+        $patients = Patient::orderBy('last_name')->get();
+        return view('oral_examination.create_intraoral', compact('patients'));
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -33,57 +39,34 @@ class IntraoralExaminationController extends Controller
             'bleeding_areas'  => 'nullable|string',
             'recession'       => 'nullable|in:1,0',
             'recession_areas' => 'nullable|string',
-
-            // Periodontium / Hard tissues
-            'probing_depths'  => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:8192',
-            'mobility'        => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:8192',
-            'furcation_involvement'=> 'nullable|string',
-            'furcation_file'       => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:8192',
-            'hard_tissues_notes'   => 'nullable|string',
-            'odontogram'           => 'nullable|string',
-
-            // Occlusion
-            'occlusion_class'   => 'nullable|string|max:50',
+            'probing_depths' => 'nullable|string',
+            'mobility' => 'nullable|string',
+            'furcation_involvement' => 'nullable|string',
+            'hard_tissues_notes' => 'nullable|string',
+            'odontogram' => 'nullable|string',
+            'occlusion_class' => 'nullable|string|max:50',
             'occlusion_details' => 'nullable|string',
             'premature_contacts'=> 'nullable|string',
 
             // Oral hygiene
             'oral_hygiene_status' => 'nullable|string|max:50',
-            'plaque_index'        => 'nullable|string|max:50',
-            'calculus'            => 'nullable|string|max:50',
-
-            // MIO / notes
-            'mio'   => 'nullable|integer|min:0|max:100',
+            'plaque_index' => 'nullable|string|max:50',
+            'calculus' => 'nullable|string|max:50',
             'notes' => 'nullable|string',
+
+            // files
+            'probing_depths' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
+            'mobility' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
+            'furcation_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
         ]);
 
         // Normalize booleans
         $data['bleeding_on_probing'] = isset($data['bleeding_on_probing']) && $data['bleeding_on_probing'] == '1';
         $data['recession'] = isset($data['recession']) && $data['recession'] == '1';
 
-        // File uploads
-        if ($request->hasFile('probing_depths')) {
-            $data['probing_depths'] = $request->file('probing_depths')->store('intraoral/probing', 'public');
-        }
-
-        if ($request->hasFile('mobility')) {
-            $data['mobility'] = $request->file('mobility')->store('intraoral/mobility', 'public');
-        }
-
-        if ($request->hasFile('furcation_file')) {
-            $data['furcation_file'] = $request->file('furcation_file')->store('intraoral/furcation', 'public');
-        }
-
         IntraoralExamination::create($data);
 
         return redirect()->back()->with('success', 'Intraoral examination saved.');
-    }
-
-    public function show(IntraoralExamination $intraoral_examination)
-    {
-        $intraoral_examination->load('patient');
-
-        return response()->json($intraoral_examination);
     }
 
     public function update(Request $request, IntraoralExamination $intraoral_examination)
@@ -102,54 +85,34 @@ class IntraoralExaminationController extends Controller
             'bleeding_areas'  => 'nullable|string',
             'recession'       => 'nullable|in:1,0',
             'recession_areas' => 'nullable|string',
-
-            // Periodontium / Hard tissues
-            'probing_depths'  => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:8192',
-            'mobility'        => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:8192',
-            'furcation_involvement'=> 'nullable|string',
-            'furcation_file'       => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:8192',
-            'hard_tissues_notes'   => 'nullable|string',
-            'odontogram'           => 'nullable|string',
-
-            // Occlusion
-            'occlusion_class'   => 'nullable|string|max:50',
+            'probing_depths' => 'nullable|string',
+            'mobility' => 'nullable|string',
+            'furcation_involvement' => 'nullable|string',
+            'hard_tissues_notes' => 'nullable|string',
+            'odontogram' => 'nullable|string',
+            'occlusion_class' => 'nullable|string|max:50',
             'occlusion_details' => 'nullable|string',
             'premature_contacts'=> 'nullable|string',
 
             // Oral hygiene
             'oral_hygiene_status' => 'nullable|string|max:50',
-            'plaque_index'        => 'nullable|string|max:50',
-            'calculus'            => 'nullable|string|max:50',
-
-            // MIO / notes
-            'mio'   => 'nullable|integer|min:0|max:100',
+            'plaque_index' => 'nullable|string|max:50',
+            'calculus' => 'nullable|string|max:50',
             'notes' => 'nullable|string',
+
+            // files
+            'probing_depths' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
+            'mobility_' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
+            'furcation_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
+
+            // remove checkboxes
+            'remove_probing_depths' => 'nullable',
+            'remove_mobility' => 'nullable',
+            'remove_furcation' => 'nullable',
         ]);
 
         $data['bleeding_on_probing'] = isset($data['bleeding_on_probing']) && $data['bleeding_on_probing'] == '1';
         $data['recession'] = isset($data['recession']) && $data['recession'] == '1';
-
-        // Replace files if uploaded; delete old
-        if ($request->hasFile('probing_depths')) {
-            if ($intraoral_examination->probing_depths && Storage::disk('public')->exists($intraoral_examination->probing_depths)) {
-                Storage::disk('public')->delete($intraoral_examination->probing_depths);
-            }
-            $data['probing_depths'] = $request->file('probing_depths')->store('intraoral/probing', 'public');
-        }
-
-        if ($request->hasFile('mobility')) {
-            if ($intraoral_examination->mobility && Storage::disk('public')->exists($intraoral_examination->mobility)) {
-                Storage::disk('public')->delete($intraoral_examination->mobility);
-            }
-            $data['mobility'] = $request->file('mobility')->store('intraoral/mobility', 'public');
-        }
-
-        if ($request->hasFile('furcation_file')) {
-            if ($intraoral_examination->furcation_file && Storage::disk('public')->exists($intraoral_examination->furcation_file)) {
-                Storage::disk('public')->delete($intraoral_examination->furcation_file);
-            }
-            $data['furcation_file'] = $request->file('furcation_file')->store('intraoral/furcation', 'public');
-        }
 
         $intraoral_examination->update($data);
 
@@ -158,12 +121,6 @@ class IntraoralExaminationController extends Controller
 
     public function destroy(IntraoralExamination $intraoral_examination)
     {
-        foreach (['probing_depths', 'mobility', 'furcation_file'] as $col) {
-            if ($intraoral_examination->{$col} && Storage::disk('public')->exists($intraoral_examination->{$col})) {
-                Storage::disk('public')->delete($intraoral_examination->{$col});
-            }
-        }
-
         $intraoral_examination->delete();
 
         return redirect()->back()->with('success', 'Record deleted.');

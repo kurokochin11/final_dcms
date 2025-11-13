@@ -9,7 +9,7 @@ use App\Http\Controllers\CheckupFormController;
 use App\Http\Controllers\CheckupAnswerController;
 use App\Http\Controllers\ExtraoralExaminationController;
 use App\Http\Controllers\IntraoralExaminationController;
-
+use App\Http\Controllers\RadiographController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,7 +54,11 @@ Route::resource('extraoral_examinations', ExtraoralExaminationController::class)
 Route::resource('intraoral_examinations', IntraoralExaminationController::class);
 });
 
- 
+ //radiograph routes
+ Route::get('/radiographs', [RadiographController::class, 'index'])->name('radiographs.index');
+Route::post('/radiographs', [RadiographController::class, 'store'])->name('radiographs.store');
+Route::put('/radiographs/{radiograph}', [RadiographController::class, 'update'])->name('radiographs.update');
+Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destroy'])->name('radiographs.destroy');
 
 
 
