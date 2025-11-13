@@ -1,4 +1,4 @@
-{{-- resources/views/radiographs/index.blade.php --}}
+
 <x-app-layout>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     {{-- Page header like your screenshot --}}
@@ -52,6 +52,19 @@
                   <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">{{ $rg->findings }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <div class="flex gap-2">
+
+                      <!-- View button (opens view modal) -->
+                      <button
+                        data-id="{{ $rg->id }}"
+                        data-patient="{{ e($rg->patient_name) }}"
+                        data-date="{{ \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') }}"
+                        data-type="{{ e($rg->type) }}"
+                        data-findings="{{ e($rg->findings) }}"
+                        data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
+                        class="btn-view inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-xs text-white rounded-md"
+                        title="View"
+                      >View</button>
+
                       <!-- Edit: use data- attributes and JS to populate modal -->
                       <button
                         data-id="{{ $rg->id }}"
@@ -76,14 +89,6 @@
                   <td colspan="6" class="px-6 py-16 text-center text-gray-500">
                     <div class="space-y-3">
                       <div class="text-sm">No records found.</div>
-
-                      <!-- {{-- Example preview --}}
-<div class="mx-auto mt-2">
-    <img src="{{ asset('storage/radiographs/no_image.png') }}" 
-         alt="Default Image" 
-         class="w-24 h-24 object-cover rounded-md border">
-</div> -->
-
                     </div>
                   </td>
                 </tr>
@@ -100,7 +105,7 @@
     </div>
   </div>
 
-  {{-- Simple Tailwind modal (hidden/shown via JS) --}}
+  {{-- Add / Edit Modal  --}}
   <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-40">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
       <div class="p-5 border-b flex items-center justify-between">
@@ -140,7 +145,6 @@
             <div id="currentPreview" class="mt-3 hidden">
               <div class="text-sm text-gray-500">Current image preview</div>
               <img id="previewImg" src="" class="mt-2 w-28 h-28 object-cover rounded-md border">
-              
             </div>
           </div>
         </div>
@@ -152,101 +156,143 @@
       </form>
     </div>
   </div>
+<!-- VIEW Modal (labeled Date / Type rows, findings, image, download) -->
+<div id="viewBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
+    <!-- Header -->
+    <div class="p-5 border-b flex items-start justify-between gap-4">
+      <div>
+        <h3 id="viewPatientName" class="text-lg font-medium text-gray-800">Patient Name</h3>
+        <!-- kept small subtitle if you want; left blank intentionally -->
+        <div id="viewSubtitle" class="text-sm text-gray-500"></div>
+      </div>
+      <button id="viewClose" class="text-gray-500 hover:text-gray-700" aria-label="Close">✕</button>
+    </div>
 
-  {{-- Minimal JS to toggle modal and populate edit values --}}
-  <script>
-    (function () {
-      const backdrop = document.getElementById('modalBackdrop');
-      const openBtn = document.getElementById('btnOpenModal');
-      const closeBtn = document.getElementById('modalClose');
-      const cancelBtn = document.getElementById('btnCancel');
-      const modalTitle = document.getElementById('modalTitle');
-      const modalForm = document.getElementById('modalForm');
-      const methodInput = document.getElementById('form_method');
-      const editId = document.getElementById('edit_id');
-      const previewBlock = document.getElementById('currentPreview');
-      const previewImg = document.getElementById('previewImg');
-      const removeImage = document.getElementById('remove_image');
+    <!-- Body -->
+    <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Large image area -->
+      <div class="md:col-span-2">
+        <div class="bg-gray-50 rounded-md p-4 flex items-center justify-center border">
+          <img id="viewImageLarge" src="" alt="Radiograph" class="max-h-96 object-contain">
+        </div>
+      </div>
 
-      function openModal() {
-        backdrop.classList.remove('hidden');
-        backdrop.classList.add('flex');
-      }
-      function closeModal() {
-        backdrop.classList.remove('flex');
-        backdrop.classList.add('hidden');
-        resetModal();
-      }
+      <!-- Right column: labeled fields -->
+      <div class="md:col-span-1 space-y-4">
+        <!-- Date -->
+        <div>
+          <h4 class="text-sm font-medium text-gray-700">Date</h4>
+          <p id="viewDate" class="mt-1 text-sm text-gray-700">—</p>
+        </div>
 
-      function resetModal() {
-        modalTitle.innerText = "Add Radiograph";
-        modalForm.action = "{{ route('radiographs.store') }}";
-        methodInput.value = '';
-        editId.value = '';
-        modalForm.reset();
-        previewBlock.classList.add('hidden');
-        previewImg.src = '';
-        if (removeImage) removeImage.checked = false;
-      }
+        <!-- Type of Radiograph -->
+        <div>
+          <h4 class="text-sm font-medium text-gray-700">Type of Radiograph</h4>
+          <p id="viewType" class="mt-1 text-sm text-gray-700">—</p>
+        </div>
 
-      openBtn && openBtn.addEventListener('click', function (ev) {
-        // open add modal
-        resetModal();
-        openModal();
-      });
+        <!-- Findings -->
+        <div>
+          <h4 class="text-sm font-medium text-gray-700">Findings</h4>
+          <p id="viewFindings" class="mt-1 text-sm text-gray-700 whitespace-pre-wrap">—</p>
+        </div>
 
-      closeBtn && closeBtn.addEventListener('click', closeModal);
-      cancelBtn && cancelBtn.addEventListener('click', closeModal);
+        <!-- Open / Download -->
+        <div class="mt-4">
+          <a id="downloadLink" href="#" target="_blank" class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-500 text-white text-xs rounded-md">Open / Download</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-      // delegate edit buttons
-      document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-edit');
-        if (!btn) return;
-        const id = btn.dataset.id;
-        const patient = btn.dataset.patient || '';
-        const date = btn.dataset.date || '';
-        const type = btn.dataset.type || '';
-        const findings = btn.dataset.findings || '';
-        const imagepath = btn.dataset.imagepath || '';
+<!-- JS: populate labeled fields when .btn-view clicked -->
+<script>
+  (function () {
+    const viewBackdrop = document.getElementById('viewBackdrop');
+    const viewClose = document.getElementById('viewClose');
+    const viewPatientName = document.getElementById('viewPatientName');
+    const viewSubtitle = document.getElementById('viewSubtitle'); // optional
+    const viewDate = document.getElementById('viewDate');
+    const viewType = document.getElementById('viewType');
+    const viewImageLarge = document.getElementById('viewImageLarge');
+    const viewFindings = document.getElementById('viewFindings');
+    const downloadLink = document.getElementById('downloadLink');
 
-        modalTitle.innerText = "Edit Radiograph";
-        modalForm.action = "/radiographs/" + id;
-        methodInput.value = 'PUT';
-        editId.value = id;
-        document.getElementById('patient_name').value = patient;
-        document.getElementById('date_taken').value = date;
-        document.getElementById('type').value = type;
-        document.getElementById('findings').value = findings;
+    function openViewModal() {
+      viewBackdrop.classList.remove('hidden');
+      viewBackdrop.classList.add('flex');
+    }
+    function closeViewModal() {
+      viewBackdrop.classList.remove('flex');
+      viewBackdrop.classList.add('hidden');
+      // clear content
+      viewImageLarge.src = '';
+      viewPatientName.innerText = '';
+      viewSubtitle.innerText = '';
+      viewDate.innerText = '';
+      viewType.innerText = '';
+      viewFindings.innerText = '';
+      downloadLink.href = '#';
+    }
+    viewClose && viewClose.addEventListener('click', closeViewModal);
 
-        if (imagepath) {
-          previewImg.src = imagepath;
-          previewBlock.classList.remove('hidden');
+    // Delegate: listen for view button clicks
+    document.addEventListener('click', function (e) {
+      const viewBtn = e.target.closest('.btn-view');
+      if (!viewBtn) return;
+
+      const patient = viewBtn.dataset.patient || '';
+      const date = viewBtn.dataset.date || '';
+      const type = viewBtn.dataset.type || '';
+      const findings = viewBtn.dataset.findings || '';
+      const imagepath = viewBtn.dataset.imagepath || '';
+
+      // Populate header / subtitle if you want
+      viewPatientName.innerText = patient || '—';
+      viewSubtitle.innerText = ''; // not used; keep empty or set extra info
+
+      // Date: show formatted date (fallback to raw string if parsing fails)
+      if (date) {
+        const d = new Date(date);
+        // if valid date
+        if (!isNaN(d.getTime())) {
+          // localized human readable format (browser locale)
+          viewDate.innerText = d.toLocaleDateString();
         } else {
-          previewBlock.classList.add('hidden');
-          previewImg.src = '';
+          viewDate.innerText = date;
         }
+      } else {
+        viewDate.innerText = '—';
+      }
 
-        openModal();
-      });
+      // Type of radiograph
+      viewType.innerText = type || '—';
 
-      // preview file selected
-      const fileInput = document.getElementById('image');
-      fileInput && fileInput.addEventListener('change', function (ev) {
-        const file = ev.target.files[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          previewImg.src = e.target.result;
-          previewBlock.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-      });
+      // Findings
+      viewFindings.innerText = findings || 'No findings recorded.';
 
-      // close modal on ESC
-      window.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !backdrop.classList.contains('hidden')) closeModal();
-      });
-    })();
-  </script>
+      // Image & download
+      if (imagepath) {
+        viewImageLarge.src = imagepath;
+        downloadLink.href = imagepath;
+        downloadLink.classList.remove('pointer-events-none', 'opacity-50');
+      } else {
+        viewImageLarge.src = '';
+        downloadLink.href = '#';
+        downloadLink.classList.add('pointer-events-none', 'opacity-50');
+      }
+
+      openViewModal();
+    });
+
+    // Close on ESC
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !viewBackdrop.classList.contains('hidden')) closeViewModal();
+    });
+  })();
+</script>
+
+ 
 </x-app-layout>
