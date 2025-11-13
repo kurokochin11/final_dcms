@@ -52,6 +52,7 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
 Route::resource('extraoral_examinations', ExtraoralExaminationController::class);
 //intraoral examination routes "B"
 Route::resource('intraoral_examinations', IntraoralExaminationController::class);
+Route::resource('intraoral_examinations', IntraoralExaminationController::class);
 });
 
  //radiograph routes
