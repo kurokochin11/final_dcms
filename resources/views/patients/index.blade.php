@@ -15,19 +15,23 @@ $(document).ready(function () {
     });
 });
 </script>
+
 @section('title', 'Patient Management')
+
 <x-app-layout>
+   
     <x-slot name="header">
         <h2 class="h4">
             {{ __('Patient Management') }}
         </h2>
     </x-slot>
+    
     <div class="py-6" x-data="{ openAdd:false, openViewId:null, openEditId:null, openDeleteId:null }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg p-6">
                 <!-- Add Patient Button -->
                 <div class="flex justify-end mb-4">
-                    <x-button @click="openAdd = true" class="flex items-center gap-2"> <i class="fas fa-user-plus"></i> New Patient</x-button>
+                    <x-button @click="openAdd = true" class="btn btn-primary"> <i class="fas fa-user-plus"></i> New Patient</x-button>
                 </div>
 
                 @if(session('success'))
@@ -72,12 +76,12 @@ $(document).ready(function () {
 </td>
                     
                 
-                                    <td class="px-4 py-2 border" style="text-align:left;">
-                                  <div class="d-flex gap-1 align-items-center">
-                                        <x-button class="btn btn-primary btn-xs" @click="openViewId={{ $patient->id }}">View</x-button>
-                                        <x-secondary-button class="btn btn-warning btn-xs" @click="openEditId={{ $patient->id }}">Edit</x-secondary-button>
-                                        <x-danger-button class="btn btn-danger btn-xs" @click="openDeleteId={{ $patient->id }}">Delete</x-danger-button>
-                                      <div class="dropdown">
+ <td class="px-4 py-2 border" style="text-align:left;">
+         <div class="d-flex gap-1 align-items-center">
+            <x-button class="btn btn-primary btn-xs" @click="openViewId={{ $patient->id }}">View</x-button>
+            <x-button class="btn btn-warning btn-xs" @click="openEditId={{ $patient->id }}">Edit</x-button>
+            <x-danger-button class="btn btn-danger btn-xs" @click="openDeleteId={{ $patient->id }}">Delete</x-danger-button>
+             <div class="dropdown">
     <button class="btn btn-secondary btn-xs dropdown-toggle" type="button" id="dropdownMenuButton{{ $patient->id }}" data-bs-toggle="dropdown" aria-expanded="false">
         Interview
     </button>
@@ -102,7 +106,6 @@ $(document).ready(function () {
                    <!-- VIEW MODAL -->
 <div x-show="openViewId === {{ $patient->id }}" x-cloak
      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    
     <div class="bg-white rounded w-1/2 max-h-[90vh] overflow-hidden shadow-lg relative">
 
         <!-- Sticky Header with Close -->
@@ -110,7 +113,7 @@ $(document).ready(function () {
             <h2 class="text-lg font-bold">
                 {{ $patient->nickname ?? $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}
             </h2>
-            <button @click="openViewId = null"
+            <button class="text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none"@click="openViewId = null"
                     class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
         </div>
 
@@ -150,19 +153,28 @@ $(document).ready(function () {
         </div>
 
         <!-- Footer -->
-        <div class="bg-gray-100 px-6 py-3 text-right border-t">
-            <x-secondary-button @click="openViewId = null">Close</x-secondary-button>
+        <div class="bg-light px-4 py-3 text-end border-top">
+          <button type="button" class="btn btn-dark" @click="openViewId = null">Close</button>
         </div>
 
     </div>
 </div>
                                 
-                                <!-- EDIT MODAL -->
+                            <!-- EDIT MODAL -->
                                 <div x-show="openEditId === {{ $patient->id }}" x-cloak
                                      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                    <div class="bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto">
+                                    <div class="bg-white rounded w-1/2 max-h-[90vh] flex flex-col relative overflow-hidden">
+                                         <div class="flex justify-between items-center p-4 border-b">
                                         <h2 class="text-lg font-bold mb-2">Edit Patient</h2>
-                                        <form method="POST" action="{{ route('patients.update', $patient->id) }}">
+                                         <button 
+                @click="openEditId = null" 
+                class="absolute top-3 right-4 text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none">
+                &times;
+            </button>
+        </div>
+        
+          <div class="overflow-y-auto p-4 space-y-3">
+         <form method="POST" action="{{ route('patients.update', $patient->id) }}">
                                             @csrf
                                             @method('PUT')
                                            <label class="block text-sm font-medium mb-1">Last Name</label>
@@ -252,10 +264,12 @@ $(document).ready(function () {
     <label class="block text-sm font-medium mb-1">Landline</label>
     <input type="text" name="emergency_landline" value="{{ old('emergency_landline', $patient->emergencyContact->landline_number ?? '') }}" class="w-full border p-2 mb-3" placeholder="Emergency Landline">
 
-                                    <div class="mt-4 flex justify-end space-x-2">
-                    <x-secondary-button type="button" @click="openEditId = null">Cancel</x-secondary-button>
-                  <x-button type="submit">Update</x-button>
-                                            </div>
+    <!-- Footer (Sticky Buttons) -->
+        <div class="p-4 border-t flex justify-end space-x-2 bg-white sticky bottom-0">
+            <x-secondary-button type="button" @click="openEditId = null">Cancel</x-secondary-button>
+            <x-button type="submit">Update</x-button>
+        </div>
+</div>
                                         </form>
                                     </div>
                                 </div>
@@ -282,10 +296,18 @@ $(document).ready(function () {
                 <div class="mt-4">
                     {{ $patients->links() }}
                 </div>
+
                <!-- ADD MODAL -->
 <div x-show="openAdd" x-cloak
      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto">
+    <div class="relative bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto">
+
+        <!-- X Button (Always Visible) -->
+        <button type="button"
+            class="absolute top-3 right-4 text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none"
+            @click="openAdd = false">
+            &times;
+        </button>
         <h2 class="text-lg font-bold mb-2">Add Patient</h2>
         <form method="POST" action="{{ route('patients.store') }}">
             @csrf
@@ -373,8 +395,8 @@ $(document).ready(function () {
             <input type="text" name="emergency_landline" class="w-full border p-2 mb-2" placeholder="Enter Emergency Landline Number">
 
             <div class="mt-4 flex justify-end space-x-2">
-                <x-secondary-button type="button" @click="openAdd = false">Cancel</x-secondary-button>
-                <x-button type="submit">Save</x-button>
+                <x-button type="button" class="btn btn-danger" @click="openAdd = false">Cancel</x-button>
+                <x-button type="submit" class="btn btn-success">Save</x-button>
             </div>
         </form>
     </div>
