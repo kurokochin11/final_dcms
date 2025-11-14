@@ -10,6 +10,7 @@ use App\Http\Controllers\CheckupAnswerController;
 use App\Http\Controllers\ExtraoralExaminationController;
 use App\Http\Controllers\IntraoralExaminationController;
 use App\Http\Controllers\RadiographController;
+use App\Http\Controllers\TreatmentPlanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,7 +52,8 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
     //extraoral examination routes "A"
 Route::resource('extraoral_examinations', ExtraoralExaminationController::class);
 //intraoral examination routes "B"
-Route::resource('intraoral_examinations', IntraoralExaminationController::class);
+Route::get('oral-examination/intraoral', [IntraoralExaminationController::class, 'index'])
+    ->name('oral_examination.index_intraoral');
 Route::resource('intraoral_examinations', IntraoralExaminationController::class);
 });
 
@@ -61,5 +63,12 @@ Route::post('/radiographs', [RadiographController::class, 'store'])->name('radio
 Route::put('/radiographs/{radiograph}', [RadiographController::class, 'update'])->name('radiographs.update');
 Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destroy'])->name('radiographs.destroy');
 
-
+// Treatment Plan routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/treatment-plans', [TreatmentPlanController::class, 'index'])->name('treatment-plans.index');
+    Route::post('/treatment-plans', [TreatmentPlanController::class, 'store'])->name('treatment-plans.store');
+    Route::get('/treatment-plans/{treatmentPlan}/edit', [TreatmentPlanController::class, 'edit'])->name('treatment-plans.edit');
+    Route::put('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'update'])->name('treatment-plans.update');
+    Route::delete('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'destroy'])->name('treatment-plans.destroy');
+});
 

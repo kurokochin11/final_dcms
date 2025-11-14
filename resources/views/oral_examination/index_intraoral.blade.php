@@ -5,18 +5,21 @@
   <x-slot name="header">
     <div class="flex items-center justify-between">
       <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        Intraoral Examination — View
+        Intraoral Examination 
       </h2>
 
       <div class="flex items-center gap-2">
-        <a href="{{ route('intraoral_examinations.index') }}" class="px-3 py-1 rounded border text-sm">Back</a>
-        <a href="{{ route('intraoral_examinations.edit', $exam) }}" class="px-3 py-1 rounded bg-yellow-500 text-white text-sm">Edit</a>
+        {{-- Back to index (make sure this route name exists; see note below) --}}
+        <a href="{{ route('oral_examination.index_intraoral') }}" class="px-3 py-1 rounded border text-sm">Back</a>
+  <a href="{{ route('oral_examination.show', $exam) }}" class="px-3 py-1 rounded bg-blue-600 text-white text-sm">View</a>
 
-        <form action="{{ route('intraoral_examinations.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');">
-          @csrf
-          @method('DELETE')
-          <button type="submit" class="px-3 py-1 rounded bg-red-600 text-white text-sm">Delete</button>
-        </form>
+        {{-- Delete form: pass model or id; using $exam->id is explicit and safe --}}
+      <form action="{{ route('oral_examination.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="px-3 py-1 rounded bg-red-600 text-white text-sm">Delete</button>
+</form>
+
       </div>
     </div>
   </x-slot>
@@ -56,7 +59,10 @@
           <div class="space-y-2">
             <h3 class="font-semibold">Periodontium / Hard tissues</h3>
             <div><strong>Hard tissues notes:</strong> {{ $exam->hard_tissues_notes ?: '—' }}</div>
-            <div><strong>Odontogram:</strong> <pre class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-200">{{ $exam->odontogram ?: '—' }}</pre></div>
+            <div>
+              <strong>Odontogram:</strong>
+              <pre class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-200">{{ $exam->odontogram ?: '—' }}</pre>
+            </div>
           </div>
 
           {{-- Occlusion --}}

@@ -207,6 +207,6 @@ class IntraoralExaminationController extends Controller
 
         $intraoral_examination->delete();
 
-        return redirect()->back()->with('success', 'Record deleted.');
+          return redirect()->route('oral_examination.index')->with('success', 'Record deleted.');
     }
 }
