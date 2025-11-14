@@ -177,7 +177,8 @@ $(document).ready(function () {
          <form method="POST" action="{{ route('patients.update', $patient->id) }}">
                                             @csrf
                                             @method('PUT')
-                                           <label class="block text-sm font-medium mb-1">Last Name</label>
+
+     <label class="block text-sm font-medium mb-1">Last Name</label>
     <input type="text" name="last_name" value="{{ old('last_name', $patient->last_name) }}" class="w-full border p-2 mb-3" placeholder="Last Name" required>
 
     <label class="block text-sm font-medium mb-1">First Name</label>
@@ -298,7 +299,7 @@ $(document).ready(function () {
                 </div>
 
                <!-- ADD MODAL -->
-<div x-show="openAdd" x-cloak
+<div x-show="openAdd" x-cloak 
      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="relative bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto">
 
@@ -308,97 +309,114 @@ $(document).ready(function () {
             @click="openAdd = false">
             &times;
         </button>
+
         <h2 class="text-lg font-bold mb-2">Add Patient</h2>
-        <form method="POST" action="{{ route('patients.store') }}">
-            @csrf
-              <label class="block mb-1 font-medium">Last Name</label>
-            <input type="text" name="last_name" class="w-full border p-2 mb-2" placeholder="Enter Last Name" required>
+        
+<form method="POST" action="{{ route('patients.store') }}" x-data="{ step: 1 }">
+    @csrf
 
-            <label class="block mb-1 font-medium">First Name</label>
-            <input type="text" name="first_name" class="w-full border p-2 mb-2" placeholder="Enter First Name" required>
+         <!-- Step 1: Basic Info -->
+    <div x-show="step === 1" class="space-y-2">
+        <label class="block mb-1 font-medium">Last Name</label>
+        <input type="text" name="last_name" class="w-full border p-2" placeholder="Enter Last Name" required>
 
-            <label class="block mb-1 font-medium">Middle Name</label>
-            <input type="text" name="middle_name" class="w-full border p-2 mb-2" placeholder="Enter Middle Name">
+        <label class="block mb-1 font-medium">First Name</label>
+        <input type="text" name="first_name" class="w-full border p-2" placeholder="Enter First Name" required>
 
-            <label class="block mb-1 font-medium">Date of Birth</label>
-            <input type="date" name="date_of_birth" class="w-full border p-2 mb-2" required>
+        <label class="block mb-1 font-medium">Middle Name</label>
+        <input type="text" name="middle_name" class="w-full border p-2" placeholder="Enter Middle Name">
 
-            <label class="block mb-1 font-medium">Age</label>
-            <input type="text" name="age" class="w-full border p-2 mb-2" placeholder="Enter Age" required>
+        <label class="block mb-1 font-medium">Date of Birth</label>
+        <input type="date" name="date_of_birth" class="w-full border p-2" required>
 
-            <label class="block mb-1 font-medium">Date Registered</label>
-            <input type="date" name="date_registered" class="w-full border p-2 mb-2">
+        <label class="block mb-1 font-medium">Age</label>
+        <input type="text" name="age" class="w-full border p-2" placeholder="Enter Age" required>
 
-            <label class="block mb-1 font-medium">Sex</label>
-            <select name="sex" class="w-full border p-2 mb-2" required>
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Prefer not to say">Prefer not to say</option>
-            </select>
+        <label class="block mb-1 font-medium">Date Registered</label>
+        <input type="date" name="date_registered" class="w-full border p-2">
 
-            <label class="block mb-1 font-medium">Civil Status</label>
-            <select name="civil_status" class="w-full border p-2 mb-2" required>
-                <option value="">Select Civil Status</option>
-                <option value="Single">Single</option>
-                <option value="Married">Married</option>
-                <option value="Widowed">Widowed</option>
-                <option value="Separated">Separated</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Annulled">Annulled</option>
-                <option value="Commonlaw">Common-Law / Live-in</option>
-            </select>
+        <label class="block mb-1 font-medium">Sex</label>
+        <select name="sex" class="w-full border p-2" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+        </select>
 
-            <label class="block mb-1 font-medium">Nationality</label>
-            <input type="text" name="nationality" class="w-full border p-2 mb-2" placeholder="Enter Nationality">
+        <label class="block mb-1 font-medium">Civil Status</label>
+        <select name="civil_status" class="w-full border p-2">
+            <option value="">Select Civil Status</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Widowed">Widowed</option>
+            <option value="Separated">Separated</option>
+            <option value="Divorced">Divorced</option>
+            <option value="Annulled">Annulled</option>
+            <option value="Commonlaw">Common-Law / Live-in</option>
+        </select>
+    </div>
 
-            <label class="block mb-1 font-medium">Religion</label>
-            <input type="text" name="religion" class="w-full border p-2 mb-2" placeholder="Enter Religion">
+    <!-- Step 2: Contact Info -->
+    <div x-show="step === 2" class="space-y-2">
+        <label class="block mb-1 font-medium">Nationality</label>
+        <input type="text" name="nationality" class="w-full border p-2" placeholder="Enter Nationality">
 
-            <label class="block mb-1 font-medium">Occupation</label>
-            <input type="text" name="occupation" class="w-full border p-2 mb-2" placeholder="Enter Occupation">
+        <label class="block mb-1 font-medium">Religion</label>
+        <input type="text" name="religion" class="w-full border p-2" placeholder="Enter Religion">
 
-            <label class="block mb-1 font-medium">Address</label>
-            <textarea name="address" class="w-full border p-2 mb-2" rows="2" placeholder="Enter Complete Address"></textarea>
+        <label class="block mb-1 font-medium">Occupation</label>
+        <input type="text" name="occupation" class="w-full border p-2" placeholder="Enter Occupation">
 
-            <label class="block mb-1 font-medium">City</label>
-            <input type="text" id="city" name="city" class="w-full border p-2 mb-2" placeholder="Enter City">
+        <label class="block mb-1 font-medium">Address</label>
+        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"></textarea>
 
-            <label class="block mb-1 font-medium">Province</label>
-            <input type="text" name="province" class="w-full border p-2 mb-2" placeholder="Enter Province">
+        <label class="block mb-1 font-medium">City</label>
+        <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
 
-            <label class="block mb-1 font-medium">Zip Code</label>
-            <input type="text" name="zip_code" class="w-full border p-2 mb-2" placeholder="Enter Zip Code">
+        <label class="block mb-1 font-medium">Province</label>
+        <input type="text" name="province" class="w-full border p-2" placeholder="Enter Province">
 
-            <label class="block mb-1 font-medium">Mobile Number</label>
-            <input type="text" name="mobile_number" class="w-full border p-2 mb-2" placeholder="Enter Mobile Number">
+        <label class="block mb-1 font-medium">Zip Code</label>
+        <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
 
-            <label class="block mb-1 font-medium">Landline Number</label>
-            <input type="text" name="landline_number" class="w-full border p-2 mb-2" placeholder="Enter Landline Number">
+        <label class="block mb-1 font-medium">Mobile Number</label>
+        <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number">
 
-            <label class="block mb-1 font-medium">Email</label>
-            <input type="email" name="email" class="w-full border p-2 mb-2" placeholder="Enter Email Address">
+        <label class="block mb-1 font-medium">Landline Number</label>
+        <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
 
-            <label class="block mb-1 font-medium">Referred By</label>
-            <input type="text" name="referred_by" class="w-full border p-2 mb-2" placeholder="Enter Referrer Name">
+        <label class="block mb-1 font-medium">Email</label>
+        <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address">
+    </div>
 
-            <label class="block mb-1 font-medium">Emergency Contact Name</label>
-            <input type="text" name="emergency_full_name" class="w-full border p-2 mb-2" placeholder="Enter Emergency Contact Name" required>
+    <!-- Step 3: Emergency & Referral -->
+    <div x-show="step === 3" class="space-y-2">
+        <label class="block mb-1 font-medium">Referred By</label>
+        <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
 
-            <label class="block mb-1 font-medium">Relationship</label>
-            <input type="text" name="emergency_relationship" class="w-full border p-2 mb-2" placeholder="Enter Relationship">
+        <label class="block mb-1 font-medium">Emergency Contact Name</label>
+        <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
 
-            <label class="block mb-1 font-medium">Emergency Mobile</label>
-            <input type="text" name="emergency_mobile" class="w-full border p-2 mb-2" placeholder="Enter Emergency Mobile Number">
+        <label class="block mb-1 font-medium">Relationship to the patient</label>
+        <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship">
 
-            <label class="block mb-1 font-medium">Emergency Landline</label>
-            <input type="text" name="emergency_landline" class="w-full border p-2 mb-2" placeholder="Enter Emergency Landline Number">
+        <label class="block mb-1 font-medium">Emergency Mobile</label>
+        <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number">
 
-            <div class="mt-4 flex justify-end space-x-2">
-                <x-button type="button" class="btn btn-danger" @click="openAdd = false">Cancel</x-button>
-                <x-button type="submit" class="btn btn-success">Save</x-button>
-            </div>
-        </form>
+        <label class="block mb-1 font-medium">Emergency Landline</label>
+        <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex justify-between mt-4">
+        <button type="button" x-show="step > 1" @click="step--" class="px-4 py-2 border rounded">Previous</button>
+
+        <div class="flex space-x-2">
+            <button type="button" x-show="step < 3" @click="step++" class="px-4 py-2 border rounded">Next</button>
+            <button type="submit" x-show="step === 3" class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
+        </div>
+    </div>
+</form>
     </div>
 </div>
 
