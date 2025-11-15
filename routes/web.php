@@ -64,11 +64,11 @@ Route::put('/radiographs/{radiograph}', [RadiographController::class, 'update'])
 Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destroy'])->name('radiographs.destroy');
 
 // Treatment Plan routes
-Route::middleware(['auth'])->group(function () {
+
     Route::get('/treatment-plans', [TreatmentPlanController::class, 'index'])->name('treatment-plans.index');
     Route::post('/treatment-plans', [TreatmentPlanController::class, 'store'])->name('treatment-plans.store');
     Route::get('/treatment-plans/{treatmentPlan}/edit', [TreatmentPlanController::class, 'edit'])->name('treatment-plans.edit');
     Route::put('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'update'])->name('treatment-plans.update');
     Route::delete('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'destroy'])->name('treatment-plans.destroy');
-});
+
 
