@@ -50,7 +50,9 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
         ->name('check-up.checkup_answer_index');
 
     //extraoral examination routes "A"
-Route::resource('extraoral_examinations', ExtraoralExaminationController::class);
+Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'index'])
+    ->name('oral_examination.index_extraoral');
+
 //intraoral examination routes "B"
 Route::get('oral-examination/intraoral', [IntraoralExaminationController::class, 'index'])
     ->name('oral_examination.index_intraoral');
