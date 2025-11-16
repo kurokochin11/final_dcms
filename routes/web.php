@@ -54,10 +54,7 @@ Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'i
     ->name('oral_examination.index_extraoral');
 
 //intraoral examination routes "B"
-Route::get('oral-examination/intraoral', [IntraoralExaminationController::class, 'index'])
-    ->name('oral_examination.index_intraoral');
-Route::resource('intraoral_examinations', IntraoralExaminationController::class);
-});
+ Route::resource('oral_examination', IntraoralExaminationController::class);
 
  //radiograph routes
  Route::get('/radiographs', [RadiographController::class, 'index'])->name('radiographs.index');
@@ -73,4 +70,4 @@ Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destro
     Route::put('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'update'])->name('treatment-plans.update');
     Route::delete('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'destroy'])->name('treatment-plans.destroy');
 
-
+});
