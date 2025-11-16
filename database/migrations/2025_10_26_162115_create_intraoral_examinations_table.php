@@ -19,7 +19,7 @@ return new class extends Migration
 
             // Soft Tissues
             $table->text('soft_tissues')->nullable();
-
+            $table->string('soft_tissues_status')->nullable();
             // Gingiva
             $table->string('gingiva_color')->nullable();
             $table->string('gingiva_texture')->nullable();

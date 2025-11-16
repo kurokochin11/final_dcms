@@ -12,6 +12,7 @@ class IntraoralExamination extends Model
     protected $fillable = [
         'patient_id',
         'soft_tissues',
+        'soft_tissues_status',
         'gingiva_color',
         'gingiva_texture',
         'bleeding',
@@ -31,16 +32,15 @@ class IntraoralExamination extends Model
         'calculus',
     ];
 
-    // Relation to Patient
     public function patient()
     {
         return $this->belongsTo(Patient::class);
     }
+
     public function getFullNameAttribute()
-{
-    // if you have first_name/last_name use them, otherwise use a single name field
-    $first = $this->first_name ?? $this->name ?? '';
-    $last  = $this->last_name ?? '';
-    return trim($first . ' ' . $last);
-}
+    {
+        $first = $this->first_name ?? $this->name ?? '';
+        $last  = $this->last_name ?? '';
+        return trim($first . ' ' . $last);
+    }
 }

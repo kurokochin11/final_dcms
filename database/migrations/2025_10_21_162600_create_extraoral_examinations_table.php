@@ -31,6 +31,62 @@ return new class extends Migration
             $table->timestamps();
         });
     }
+  public function store(Request $request)
+    {
+        $data = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'facial_symmetry' => 'nullable|string',
+            'facial_symmetry_notes' => 'nullable|string',
+            'lymph_nodes' => 'nullable|string',
+            'lymph_nodes_location' => 'nullable|string',
+            'tmj_pain' => 'nullable|boolean',
+            'tmj_clicking' => 'nullable|boolean',
+            'tmj_limited_opening' => 'nullable|boolean',
+            'mio' => 'nullable|integer',
+            'notes' => 'nullable|string',
+        ]);
+
+        ExtraoralExamination::create($data);
+
+        return redirect()->route('extraoral-examinations.index')
+                         ->with('success', 'Extraoral examination added successfully.');
+    }
+
+    // Show edit form
+    public function edit(ExtraoralExamination $extraoral_examination)
+    {
+        return view('extraoral_examinations.edit', compact('extraoral_examination'));
+    }
+
+    // Update record
+    public function update(Request $request, ExtraoralExamination $extraoral_examination)
+    {
+        $data = $request->validate([
+            'facial_symmetry' => 'nullable|string',
+            'facial_symmetry_notes' => 'nullable|string',
+            'lymph_nodes' => 'nullable|string',
+            'lymph_nodes_location' => 'nullable|string',
+            'tmj_pain' => 'nullable|boolean',
+            'tmj_clicking' => 'nullable|boolean',
+            'tmj_limited_opening' => 'nullable|boolean',
+            'mio' => 'nullable|integer',
+            'notes' => 'nullable|string',
+        ]);
+
+        $extraoral_examination->update($data);
+
+        return redirect()->route('extraoral-examinations.index')
+                         ->with('success', 'Extraoral examination updated successfully.');
+    }
+
+    // Delete record
+    public function destroy(ExtraoralExamination $extraoral_examination)
+    {
+        $extraoral_examination->delete();
+
+        return redirect()->route('extraoral-examinations.index')
+                         ->with('success', 'Extraoral examination deleted successfully.');
+    }
 
     public function down(): void
     {

@@ -52,28 +52,23 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
     //extraoral examination routes "A"
 Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'index'])
     ->name('oral_examination.index_extraoral');
+Route::post('/extraoral-examinations', [ExtraoralExaminationController::class, 'store'])
+    ->name('extraoral_examinations.store');
+    Route::delete('/extraoral-examinations/{id}', [ExtraoralExaminationController::class, 'destroy'])
+    ->name('extraoral_examinations.destroy');
+Route::put('/extraoral-examinations/{id}', [ExtraoralExaminationController::class, 'update'])
+    ->name('extraoral_examinations.update');
 
 //intraoral examination routes "B"
- 
-    Route::get('/index_intraoral', [IntraoralExaminationController::class, 'index'])
-        ->name('oral_examination.index_intraoral');
+ Route::prefix('oral_examination')->name('oral_examination.')->group(function () {
+    Route::get('/index_intraoral', [IntraoralExaminationController::class, 'index'])->name('index_intraoral');
+    Route::post('/store', [IntraoralExaminationController::class, 'store'])->name('store');
+    Route::get('/{intraoral}/edit', [IntraoralExaminationController::class, 'edit'])->name('edit');
+    Route::put('/{intraoral}', [IntraoralExaminationController::class, 'update'])->name('update');
+    Route::delete('/{intraoral}', [IntraoralExaminationController::class, 'destroy'])->name('destroy');
+Route::get('/oral_examination/{intraoral}/view', [IntraoralExaminationController::class, 'view'])->name('intraoral.view');
 
-    
-    Route::post('/store', [IntraoralExaminationController::class, 'store'])
-        ->name('oral_examination.store');
-
-    
-    Route::get('/{intraoral}/edit', [IntraoralExaminationController::class, 'edit'])
-        ->name('oral_examination.edit');
-
-    
-    Route::put('/{intraoral}', [IntraoralExaminationController::class, 'update'])
-        ->name('oral_examination.update');
-
-    
-    Route::delete('/{intraoral}', [IntraoralExaminationController::class, 'destroy'])
-        ->name('oral_examination.destroy');
-
+});
  //radiograph routes
  Route::get('/radiographs', [RadiographController::class, 'index'])->name('radiographs.index');
 Route::post('/radiographs', [RadiographController::class, 'store'])->name('radiographs.store');
