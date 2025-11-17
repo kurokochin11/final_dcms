@@ -159,123 +159,153 @@ $(document).ready(function () {
 
     </div>
 </div>
-                                
-                            <!-- EDIT MODAL -->
-                                <div x-show="openEditId === {{ $patient->id }}" x-cloak
-                                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                    <div class="bg-white rounded w-1/2 max-h-[90vh] flex flex-col relative overflow-hidden">
-                                         <div class="flex justify-between items-center p-4 border-b">
-                                        <h2 class="text-lg font-bold mb-2">Edit Patient</h2>
-                                         <button 
-                @click="openEditId = null" 
-                class="absolute top-3 right-4 text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none">
-                &times;
-            </button>
-        </div>
-        
-          <div class="overflow-y-auto p-4 space-y-3">
-         <form method="POST" action="{{ route('patients.update', $patient->id) }}">
-                                            @csrf
-                                            @method('PUT')
 
-     <label class="block text-sm font-medium mb-1">Last Name</label>
-    <input type="text" name="last_name" value="{{ old('last_name', $patient->last_name) }}" class="w-full border p-2 mb-3" placeholder="Last Name" required>
+               <!-- EDIT MODAL -->
+<div x-show="openEditId" x-cloak 
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="relative bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto">
 
-    <label class="block text-sm font-medium mb-1">First Name</label>
-    <input type="text" name="first_name" value="{{ old('first_name', $patient->first_name) }}" class="w-full border p-2 mb-3" placeholder="First Name" required>
+        <!-- X Button (Always Visible) -->
+        <button type="button"
+            class="absolute top-3 right-4 text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none"
+            @click="openEditId = false">
+            &times;
+        </button>
 
-    <label class="block text-sm font-medium mb-1">Middle Name</label>
-    <input type="text" name="middle_name" value="{{ old('middle_name', $patient->middle_name) }}" class="w-full border p-2 mb-3" placeholder="Middle Name">
+        <h2 class="text-lg font-bold mb-2">Edit  Patient</h2>
+          
+ <form method="POST" action="{{ route('patients.update', $patient->id) }}">
 
-    <label class="block text-sm font-medium mb-1">Date of Birth</label>
-    <input type="date" name="date_of_birth" value="{{ old('date_of_birth', $patient->date_of_birth->format('Y-m-d')) }}" class="w-full border p-2 mb-3" required>
+    <!-- TAB HEADERS -->
+<div class="flex border-b mb-4">
+    <button type="button" @click="tab = 1"
+        :class="tab === 1 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Basic Info
+    </button>
 
-    <label class="block text-sm font-medium mb-1">Age</label>
-    <input type="text" name="age" value="{{ old('age', $patient->age) }}" class="w-full border p-2 mb-3" placeholder="Age">
+    <button type="button" @click="tab = 2"
+        :class="tab === 2 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Address
+    </button>
 
-    <label class="block text-sm font-medium mb-1">Date Registered</label>
-    <input type="date" name="date_registered" value="{{ old('date_registered', $patient->date_registered->format('Y-m-d')) }}" class="w-full border p-2 mb-3">
+    <button type="button" @click="tab = 3"
+        :class="tab === 3 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Contact
+    </button>
 
-    <label class="block text-sm font-medium mb-1">Sex</label>
-    <select name="sex" class="w-full border p-2 mb-3" required>
-        <option value="">Select Sex</option>
-        <option value="Male" {{ old('sex', $patient->sex) == 'Male' ? 'selected' : '' }}>Male</option>
+    <button type="button" @click="tab = 4"
+        :class="tab === 4 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Emergency
+    </button>
+</div>
+
+ <div class="relative border rounded bg-white p-4 mb-4"
+       style="min-height:520px">
+
+         <!-- Step 1: Basic Info -->
+    <div x-show="tab === 1" class="space-y-2">
+        <label class="block mb-1 font-medium">Last Name</label>
+        <input type="text" name="last_name"  value="{{ old('last_name', $patient->last_name) }}" class="w-full border p-2" placeholder="Enter Last Name" required>
+
+        <label class="block mb-1 font-medium">First Name</label>
+        <input type="text" name="first_name" value="{{ old('first_name', $patient->first_name) }}"  class="w-full border p-2" placeholder="Enter First Name" required>
+
+        <label class="block mb-1 font-medium">Middle Name</label>
+        <input type="text" name="middle_name" value="{{ old('middle_name', $patient->middle_name) }}"  class="w-full border p-2" placeholder="Enter Middle Name">
+
+        <label class="block mb-1 font-medium">Date of Birth</label>
+        <input type="date" name="date_of_birth" value="{{ old('date_of_birth', $patient->date_of_birth->format('Y-m-d')) }}"  class="w-full border p-2" required>
+
+        <label class="block mb-1 font-medium">Age</label>
+        <input type="text" name="age" value="{{ old('age', $patient->age) }}"class="w-full border p-2" placeholder="Enter Age" required>
+   <label class="block mb-1 font-medium">Nationality</label>
+        <input type="text" name="nationality" value="{{ old('nationality', $patient->nationality) }}" class="w-full border p-2" placeholder="Enter Nationality">
+
+        <label class="block mb-1 font-medium">Religion</label>
+        <input type="text" name="religion" value="{{ old('religion', $patient->religion) }}"class="w-full border p-2" placeholder="Enter Religion">
+
+        <label class="block mb-1 font-medium">Occupation</label>
+        <input type="text" name="occupation" value="{{ old('occupation', $patient->occupation) }}" class="w-full border p-2" placeholder="Enter Occupation">
+
+        <label class="block mb-1 font-medium">Sex</label>
+        <select name="sex" class="w-full border p-2" required>
+            <option value="">Select Gender</option>
+             <option value="Male" {{ old('sex', $patient->sex) == 'Male' ? 'selected' : '' }}>Male</option>
         <option value="Female" {{ old('sex', $patient->sex) == 'Female' ? 'selected' : '' }}>Female</option>
         <option value="Prefer not to say" {{ old('sex', $patient->sex) == 'Prefer not to say' ? 'selected' : '' }}>Prefer not to say</option>
-    </select>
+        </select>
 
-    <label class="block text-sm font-medium mb-1">Civil Status</label>
-    <select name="civil_status" class="w-full border p-2 mb-3" required>
-        <option value="">Select Civil Status</option>
-        <option value="Single" {{ old('civil_status', $patient->civil_status ?? '') == 'Single' ? 'selected' : '' }}>Single</option>
+        <label class="block mb-1 font-medium">Civil Status</label>
+        <select name="civil_status" class="w-full border p-2">
+            <option value="">Select Civil Status</option>
+            <option value="Single" {{ old('civil_status', $patient->civil_status ?? '') == 'Single' ? 'selected' : '' }}>Single</option>
         <option value="Married" {{ old('civil_status', $patient->civil_status ?? '') == 'Married' ? 'selected' : '' }}>Married</option>
         <option value="Widowed" {{ old('civil_status', $patient->civil_status ?? '') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
         <option value="Separated" {{ old('civil_status', $patient->civil_status ?? '') == 'Separated' ? 'selected' : '' }}>Separated</option>
         <option value="Divorced" {{ old('civil_status', $patient->civil_status ?? '') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
         <option value="Annulled" {{ old('civil_status', $patient->civil_status ?? '') == 'Annulled' ? 'selected' : '' }}>Annulled</option>
         <option value="Common-Law" {{ old('civil_status', $patient->civil_status ?? '') == 'Common-Law' ? 'selected' : '' }}>Common-Law</option>
-    </select>
+        </select>
 
-    <label class="block text-sm font-medium mb-1">Nationality</label>
-    <input type="text" name="nationality" value="{{ old('nationality', $patient->nationality) }}" class="w-full border p-2 mb-3" placeholder="Nationality">
+        <label class="block mb-1 font-medium">Date Registered</label>
+        <input type="date" name="date_registered" value="{{ old('date_registered', $patient->date_registered->format('Y-m-d')) }}" class="w-full border p-2">
+    </div>
 
-    <label class="block text-sm font-medium mb-1">Religion</label>
-    <input type="text" name="religion" value="{{ old('religion', $patient->religion) }}" class="w-full border p-2 mb-3" placeholder="Religion">
+ <!-- Step 2: Personal Address -->
+<div x-show="tab === 2" class="space-y-2">
 
-    <label class="block text-sm font-medium mb-1">Occupation</label>
-    <input type="text" name="occupation" value="{{ old('occupation', $patient->occupation) }}" class="w-full border p-2 mb-3" placeholder="Occupation">
+   <label class="block mb-1 font-medium">Address</label>
+        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"></textarea>
 
-    <label class="block text-sm font-medium mb-1">Address</label>
-    <textarea name="address" class="w-full border p-2 mb-3" placeholder="Address">{{ old('address', $patient->address) }}</textarea>
+        <label class="block mb-1 font-medium">City</label>
+        <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
 
-    <label class="block text-sm font-medium mb-1">City</label>
-    <input type="text" name="city" value="{{ old('city', $patient->city) }}" class="w-full border p-2 mb-3" placeholder="City">
+        <label class="block mb-1 font-medium">Province</label>
+        <input type="text" name="province" class="w-full border p-2" placeholder="Enter Province">
 
-    <label class="block text-sm font-medium mb-1">Province</label>
-    <input type="text" name="province" value="{{ old('province', $patient->province) }}" class="w-full border p-2 mb-3" placeholder="Province">
-
-    <label class="block text-sm font-medium mb-1">Zip Code</label>
-    <input type="text" name="zip_code" value="{{ old('zip_code', $patient->zip_code) }}" class="w-full border p-2 mb-3" placeholder="Zip Code">
-
-    <label class="block text-sm font-medium mb-1">Mobile Number</label>
-    <input type="text" name="mobile_number" value="{{ old('mobile_number', $patient->mobile_number) }}" class="w-full border p-2 mb-3" placeholder="Mobile Number">
-
-    <label class="block text-sm font-medium mb-1">Landline Number</label>
-    <input type="text" name="landline_number" value="{{ old('landline_number', $patient->landline_number) }}" class="w-full border p-2 mb-3" placeholder="Landline Number">
-
-    <label class="block text-sm font-medium mb-1">Email</label>
-    <input type="email" name="email" value="{{ old('email', $patient->email) }}" class="w-full border p-2 mb-3" placeholder="Email">
-
-    <label class="block text-sm font-medium mb-1">Referred By</label>
-    <input type="text" name="referred_by" value="{{ old('referred_by', $patient->referred_by) }}" class="w-full border p-2 mb-3" placeholder="Referred By">
-
-    <hr class="my-4">
-
-    <h3 class="font-semibold mb-2">Emergency Contact</h3>
-
-    <label class="block text-sm font-medium mb-1">Full Name</label>
-    <input type="text" name="emergency_full_name" value="{{ old('emergency_full_name', $patient->emergencyContact->full_name ?? '') }}" class="w-full border p-2 mb-3" placeholder="Emergency Contact Name" required>
-
-    <label class="block text-sm font-medium mb-1">Relationship</label>
-    <input type="text" name="emergency_relationship" value="{{ old('emergency_relationship', $patient->emergencyContact->relationship ?? '') }}" class="w-full border p-2 mb-3" placeholder="Relationship">
-
-    <label class="block text-sm font-medium mb-1">Mobile</label>
-    <input type="text" name="emergency_mobile" value="{{ old('emergency_mobile', $patient->emergencyContact->mobile_number ?? '') }}" class="w-full border p-2 mb-3" placeholder="Emergency Mobile">
-
-    <label class="block text-sm font-medium mb-1">Landline</label>
-    <input type="text" name="emergency_landline" value="{{ old('emergency_landline', $patient->emergencyContact->landline_number ?? '') }}" class="w-full border p-2 mb-3" placeholder="Emergency Landline">
-
-    <!-- Footer (Sticky Buttons) -->
-        <div class="p-4 border-t flex justify-end space-x-2 bg-white sticky bottom-0">
-            <x-secondary-button type="button" @click="openEditId = null">Cancel</x-secondary-button>
-            <x-button type="submit">Update</x-button>
-        </div>
+        <label class="block mb-1 font-medium">Zip Code</label>
+        <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
 </div>
-                                        </form>
-                                    </div>
-                                </div>
 
-            
+    <!-- Step 3: Contact Info -->
+    <div x-show="tab === 3" class="space-y-2">
+        <label class="block mb-1 font-medium">Mobile Number</label>
+        <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number">
+
+        <label class="block mb-1 font-medium">Landline Number</label>
+        <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
+
+        <label class="block mb-1 font-medium">Email</label>
+        <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address">
+    </div>
+
+    <!-- Step 4: Emergency & Referral -->
+    <div x-show="tab === 4" class="space-y-2">
+        <label class="block mb-1 font-medium">Referred By</label>
+        <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
+
+        <label class="block mb-1 font-medium">Emergency Contact Name</label>
+        <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
+
+        <label class="block mb-1 font-medium">Relationship to the patient</label>
+        <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship">
+
+        <label class="block mb-1 font-medium">Emergency Mobile</label>
+        <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number">
+
+        <label class="block mb-1 font-medium">Emergency Landline</label>
+        <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+
+        <!-- SUBMIT BUTTON -->
+    <div class="mt-4 flex justify-end">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+            Submit
+        </button>
+         </div>
                                 <!-- DELETE MODAL -->
                                 <div x-show="openDeleteId === {{ $patient->id }}" x-cloak
                                      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -311,12 +341,42 @@ $(document).ready(function () {
         </button>
 
         <h2 class="text-lg font-bold mb-2">Add Patient</h2>
-        
-<form method="POST" action="{{ route('patients.store') }}" x-data="{ step: 1 }">
+          
+<form method="POST" action="{{ route('patients.store') }}" x-data="{ tab: 1 }">
     @csrf
 
+    <!-- TAB HEADERS -->
+<div class="flex border-b mb-4">
+    <button type="button" @click="tab = 1"
+        :class="tab === 1 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Basic Info
+    </button>
+
+    <button type="button" @click="tab = 2"
+        :class="tab === 2 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Address
+    </button>
+
+    <button type="button" @click="tab = 3"
+        :class="tab === 3 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Contact
+    </button>
+
+    <button type="button" @click="tab = 4"
+        :class="tab === 4 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
+        Emergency
+    </button>
+</div>
+
+ <div class="relative border rounded bg-white p-4 mb-4"
+       style="min-height:520px">
+
          <!-- Step 1: Basic Info -->
-    <div x-show="step === 1" class="space-y-2">
+    <div x-show="tab === 1" class="space-y-2">
         <label class="block mb-1 font-medium">Last Name</label>
         <input type="text" name="last_name" class="w-full border p-2" placeholder="Enter Last Name" required>
 
@@ -331,9 +391,14 @@ $(document).ready(function () {
 
         <label class="block mb-1 font-medium">Age</label>
         <input type="text" name="age" class="w-full border p-2" placeholder="Enter Age" required>
+   <label class="block mb-1 font-medium">Nationality</label>
+        <input type="text" name="nationality" class="w-full border p-2" placeholder="Enter Nationality">
 
-        <label class="block mb-1 font-medium">Date Registered</label>
-        <input type="date" name="date_registered" class="w-full border p-2">
+        <label class="block mb-1 font-medium">Religion</label>
+        <input type="text" name="religion" class="w-full border p-2" placeholder="Enter Religion">
+
+        <label class="block mb-1 font-medium">Occupation</label>
+        <input type="text" name="occupation" class="w-full border p-2" placeholder="Enter Occupation">
 
         <label class="block mb-1 font-medium">Sex</label>
         <select name="sex" class="w-full border p-2" required>
@@ -354,20 +419,15 @@ $(document).ready(function () {
             <option value="Annulled">Annulled</option>
             <option value="Commonlaw">Common-Law / Live-in</option>
         </select>
+
+        <label class="block mb-1 font-medium">Date Registered</label>
+        <input type="date" name="date_registered" class="w-full border p-2">
     </div>
 
-    <!-- Step 2: Contact Info -->
-    <div x-show="step === 2" class="space-y-2">
-        <label class="block mb-1 font-medium">Nationality</label>
-        <input type="text" name="nationality" class="w-full border p-2" placeholder="Enter Nationality">
+ <!-- Step 2: Personal Address -->
+<div x-show="tab === 2" class="space-y-2">
 
-        <label class="block mb-1 font-medium">Religion</label>
-        <input type="text" name="religion" class="w-full border p-2" placeholder="Enter Religion">
-
-        <label class="block mb-1 font-medium">Occupation</label>
-        <input type="text" name="occupation" class="w-full border p-2" placeholder="Enter Occupation">
-
-        <label class="block mb-1 font-medium">Address</label>
+   <label class="block mb-1 font-medium">Address</label>
         <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"></textarea>
 
         <label class="block mb-1 font-medium">City</label>
@@ -378,7 +438,10 @@ $(document).ready(function () {
 
         <label class="block mb-1 font-medium">Zip Code</label>
         <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
+</div>
 
+    <!-- Step 3: Contact Info -->
+    <div x-show="tab === 3" class="space-y-2">
         <label class="block mb-1 font-medium">Mobile Number</label>
         <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number">
 
@@ -389,8 +452,8 @@ $(document).ready(function () {
         <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address">
     </div>
 
-    <!-- Step 3: Emergency & Referral -->
-    <div x-show="step === 3" class="space-y-2">
+    <!-- Step 4: Emergency & Referral -->
+    <div x-show="tab === 4" class="space-y-2">
         <label class="block mb-1 font-medium">Referred By</label>
         <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
 
@@ -405,19 +468,16 @@ $(document).ready(function () {
 
         <label class="block mb-1 font-medium">Emergency Landline</label>
         <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
-    </div>
 
-    <!-- Navigation Buttons -->
-    <div class="flex justify-between mt-4">
-        <button type="button" x-show="step > 1" @click="step--" class="px-4 py-2 border rounded">Previous</button>
-
-        <div class="flex space-x-2">
-            <button type="button" x-show="step < 3" @click="step++" class="px-4 py-2 border rounded">Next</button>
-            <button type="submit" x-show="step === 3" class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
-        </div>
+        <!-- SUBMIT BUTTON -->
+    <div class="mt-4 flex justify-end">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+            Submit
+        </button>
+         </div>
     </div>
 </form>
-    </div>
+   
 </div>
-
+</div>
 </x-app-layout> 
