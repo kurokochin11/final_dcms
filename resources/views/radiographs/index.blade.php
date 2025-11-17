@@ -23,7 +23,6 @@
         <form method="GET" class="flex flex-wrap items-center gap-2">
           <label class="text-sm font-medium text-gray-700">Filter by Type:</label>
        <select id="type_id" name="type" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
-  <option value="">— select type —</option>
   @foreach($types as $type)
     <option value="{{ $type }}">{{ $type }}</option>
   @endforeach

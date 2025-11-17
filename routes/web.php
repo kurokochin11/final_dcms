@@ -52,13 +52,16 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
     //extraoral examination routes "A"
 Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'index'])
     ->name('oral_examination.index_extraoral');
+
 Route::post('/extraoral-examinations', [ExtraoralExaminationController::class, 'store'])
     ->name('extraoral_examinations.store');
-    Route::delete('/extraoral-examinations/{id}', [ExtraoralExaminationController::class, 'destroy'])
-    ->name('extraoral_examinations.destroy');
-Route::put('/extraoral-examinations/{id}', [ExtraoralExaminationController::class, 'update'])
+
+Route::put('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminationController::class, 'update'])
     ->name('extraoral_examinations.update');
 
+Route::delete('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminationController::class, 'destroy'])
+    ->name('extraoral_examinations.destroy');
+    
 //intraoral examination routes "B"
  Route::prefix('oral_examination')->name('oral_examination.')->group(function () {
     Route::get('/index_intraoral', [IntraoralExaminationController::class, 'index'])->name('index_intraoral');

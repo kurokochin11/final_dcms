@@ -13,7 +13,6 @@ class ExtraoralExaminationController extends Controller
         $examinations = ExtraoralExamination::with('patient')->latest()->paginate(12);
         $patients = Patient::orderBy('last_name')->get();
 
-        // If you are viewing per-patient, you might pass a $patient variable too
         return view('oral_examination.index_extraoral', compact('examinations', 'patients'));
     }
 
@@ -32,10 +31,10 @@ class ExtraoralExaminationController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        // Ensure boolean fields are proper booleans:
-        $validated['tmj_pain'] = isset($validated['tmj_pain']) ? (bool)$validated['tmj_pain'] : false;
-        $validated['tmj_clicking'] = isset($validated['tmj_clicking']) ? (bool)$validated['tmj_clicking'] : false;
-        $validated['tmj_limited_opening'] = isset($validated['tmj_limited_opening']) ? (bool)$validated['tmj_limited_opening'] : false;
+        // normalize checkbox-style inputs: if absent, ensure false
+        $validated['tmj_pain'] = $request->has('tmj_pain') ? (bool)$request->input('tmj_pain') : false;
+        $validated['tmj_clicking'] = $request->has('tmj_clicking') ? (bool)$request->input('tmj_clicking') : false;
+        $validated['tmj_limited_opening'] = $request->has('tmj_limited_opening') ? (bool)$request->input('tmj_limited_opening') : false;
 
         ExtraoralExamination::create($validated);
 
@@ -57,9 +56,9 @@ class ExtraoralExaminationController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $validated['tmj_pain'] = isset($validated['tmj_pain']) ? (bool)$validated['tmj_pain'] : false;
-        $validated['tmj_clicking'] = isset($validated['tmj_clicking']) ? (bool)$validated['tmj_clicking'] : false;
-        $validated['tmj_limited_opening'] = isset($validated['tmj_limited_opening']) ? (bool)$validated['tmj_limited_opening'] : false;
+        $validated['tmj_pain'] = $request->has('tmj_pain') ? (bool)$request->input('tmj_pain') : false;
+        $validated['tmj_clicking'] = $request->has('tmj_clicking') ? (bool)$request->input('tmj_clicking') : false;
+        $validated['tmj_limited_opening'] = $request->has('tmj_limited_opening') ? (bool)$request->input('tmj_limited_opening') : false;
 
         $extraoral_examination->update($validated);
 
@@ -71,6 +70,4 @@ class ExtraoralExaminationController extends Controller
         $extraoral_examination->delete();
         return redirect()->back()->with('success', 'Record deleted.');
     }
-
-    // Optional: show, create methods if you need them
 }
