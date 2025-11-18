@@ -175,6 +175,8 @@ $(document).ready(function () {
         <h2 class="text-lg font-bold mb-2">Edit  Patient</h2>
           
  <form method="POST" action="{{ route('patients.update', $patient->id) }}">
+           @csrf
+         @method('PUT')
 
     <!-- TAB HEADERS -->
 <div class="flex border-b mb-4">
@@ -250,7 +252,6 @@ $(document).ready(function () {
         <option value="Annulled" {{ old('civil_status', $patient->civil_status ?? '') == 'Annulled' ? 'selected' : '' }}>Annulled</option>
         <option value="Common-Law" {{ old('civil_status', $patient->civil_status ?? '') == 'Common-Law' ? 'selected' : '' }}>Common-Law</option>
         </select>
-
         <label class="block mb-1 font-medium">Date Registered</label>
         <input type="date" name="date_registered" value="{{ old('date_registered', $patient->date_registered->format('Y-m-d')) }}" class="w-full border p-2">
     </div>
@@ -259,53 +260,60 @@ $(document).ready(function () {
 <div x-show="tab === 2" class="space-y-2">
 
    <label class="block mb-1 font-medium">Address</label>
-        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"></textarea>
+        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address">{{ old('address', $patient->address) }}</textarea>
 
         <label class="block mb-1 font-medium">City</label>
-        <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
+        <input type="text" name="city"value="{{ old('city', $patient->city) }}" class="w-full border p-2" placeholder="Enter City">
 
         <label class="block mb-1 font-medium">Province</label>
-        <input type="text" name="province" class="w-full border p-2" placeholder="Enter Province">
+        <input type="text" name="province"  value="{{ old('province', $patient->province) }}"class="w-full border p-2" placeholder="Enter Province">
 
         <label class="block mb-1 font-medium">Zip Code</label>
-        <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
+        <input type="text" name="zip_code" value="{{ old('zip_code', $patient->zip_code) }}" class="w-full border p-2" placeholder="Enter Zip Code">
 </div>
 
     <!-- Step 3: Contact Info -->
     <div x-show="tab === 3" class="space-y-2">
         <label class="block mb-1 font-medium">Mobile Number</label>
-        <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number">
+        <input type="text" name="mobile_number" value="{{ old('mobile_number', $patient->mobile_number) }}" class="w-full border p-2" placeholder="Enter Mobile Number">
 
         <label class="block mb-1 font-medium">Landline Number</label>
-        <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
+        <input type="text" name="landline_number" value="{{ old('landline_number', $patient->landline_number) }}" class="w-full border p-2" placeholder="Enter Landline Number">
 
         <label class="block mb-1 font-medium">Email</label>
-        <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address">
+        <input type="email" name="email" value="{{ old('email', $patient->email) }}"class="w-full border p-2" placeholder="Enter Email Address">
     </div>
 
     <!-- Step 4: Emergency & Referral -->
     <div x-show="tab === 4" class="space-y-2">
         <label class="block mb-1 font-medium">Referred By</label>
-        <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
+        <input type="text" name="referred_by"  value="{{ old('referred_by', $patient->referred_by) }}" class="w-full border p-2" placeholder="Enter Referrer Name">
 
         <label class="block mb-1 font-medium">Emergency Contact Name</label>
-        <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
+        <input type="text" name="emergency_full_name"value="{{ old('emergency_full_name', $patient->emergencyContact->full_name ?? '') }}" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
 
         <label class="block mb-1 font-medium">Relationship to the patient</label>
-        <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship">
+        <input type="text" name="emergency_relationship" value="{{ old('emergency_relationship', $patient->emergencyContact->relationship ?? '') }}"class="w-full border p-2" placeholder="Enter Relationship">
 
         <label class="block mb-1 font-medium">Emergency Mobile</label>
-        <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number">
+        <input type="text" name="emergency_mobile" value="{{ old('emergency_mobile', $patient->emergencyContact->mobile_number ?? '') }}" class="w-full border p-2" placeholder="Enter Emergency Mobile Number">
 
         <label class="block mb-1 font-medium">Emergency Landline</label>
-        <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+        <input type="text" name="emergency_landline" value="{{ old('emergency_landline', $patient->emergencyContact->landline_number ?? '') }}" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+</div>
+        <!-- ACTION BUTTONS -->
+<div class="mt-4 flex justify-end space-x-2">
+    <button type="button" @click="openEditId = null"
+            class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
+        Cancel
+    </button>
 
-        <!-- SUBMIT BUTTON -->
-    <div class="mt-4 flex justify-end">
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
-            Submit
-        </button>
-         </div>
+    <button type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Update
+    </button>
+</div>
+
                                 <!-- DELETE MODAL -->
                                 <div x-show="openDeleteId === {{ $patient->id }}" x-cloak
                                      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
