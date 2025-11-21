@@ -30,6 +30,7 @@ class IntraoralExamination extends Model
         'oral_hygiene_status',
         'plaque_index',
         'calculus',
+        'mio', 
         'notes',
     ];
 

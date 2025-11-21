@@ -39,6 +39,7 @@ class IntraoralExaminationController extends Controller
             'oral_hygiene_status' => 'nullable|string|max:50',
             'plaque_index' => 'nullable|string|max:50',
             'calculus' => 'nullable|string|max:50',
+            'mio' => 'nullable|integer|min:0|max:100',
             'notes' => 'nullable|string',
         ]);
 
@@ -74,6 +75,7 @@ class IntraoralExaminationController extends Controller
             'oral_hygiene_status' => 'nullable|string|max:50',
             'plaque_index' => 'nullable|string|max:50',
             'calculus' => 'nullable|string|max:50',
+            'mio' => 'nullable|integer|min:0|max:100',
             'notes' => 'nullable|string',
         ]);
 

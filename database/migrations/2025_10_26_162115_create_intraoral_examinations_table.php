@@ -40,7 +40,8 @@ class CreateIntraoralExaminationsTable extends Migration
             $table->string('oral_hygiene_status')->nullable(); // Good / Fair / Poor
             $table->string('plaque_index')->nullable();
             $table->string('calculus')->nullable();            // Light / Moderate / Heavy
-
+            // MIO
+            $table->integer('mio')->nullable();
             $table->text('notes')->nullable();
 
             $table->timestamps();
