@@ -25,9 +25,10 @@ class CreateIntraoralExaminationsTable extends Migration
             $table->text('recession_areas')->nullable();
 
             // Periodontium / Hard tissues
-            $table->text('probing_depths')->nullable();       // could store JSON or textual chart
-            $table->text('mobility')->nullable();
+            $table->string('probing_depths')->nullable();       // could store JSON or textual chart
+            $table->string('mobility')->nullable();
             $table->text('furcation_involvement')->nullable();
+              $table->string('furcation_file')->nullable(); 
             $table->text('hard_tissues_notes')->nullable();
             $table->text('odontogram')->nullable();           // json or encoded chart
 
