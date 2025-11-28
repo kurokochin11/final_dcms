@@ -1,7 +1,6 @@
-
 <x-app-layout>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    {{-- Page header like your screenshot --}}
+    {{-- Page header --}}
     <header class="mb-6">
       <h1 class="text-2xl font-semibold text-gray-900">Radiograph Records</h1>
     </header>
@@ -11,14 +10,31 @@
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-800">Records</h2>
         <button
+          type="button"
           id="btnOpenModal"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-md"
         >
           + New Radiograph
         </button>
       </div>
 
-      {{-- Table container --}}
+      {{-- Filter bar --}}
+      <div class="mb-4 flex flex-wrap items-center gap-3">
+        <form method="GET" class="flex flex-wrap items-center gap-2">
+          <label class="text-sm font-medium text-gray-700">Filter by Type:</label>
+       <select id="type_id" name="type" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
+  <option value="">— select type —</option>
+  @foreach($types as $type)
+    <option value="{{ $type }}">{{ $type }}</option>
+  @endforeach
+
+</select>
+          <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-500">Filter</button>
+          <a href="{{ route('radiographs.index') }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">Reset</a>
+        </form>
+      </div>
+
+      {{-- Table --}}
       <div class="bg-white rounded-md shadow border border-gray-100">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -46,18 +62,30 @@
                     @endif
                   </td>
 
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $rg->patient_name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::parse($rg->date_taken)->format('M d, Y') }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $rg->type }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">{{ $rg->findings }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    <div class="flex gap-2">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    @if($rg->patient)
+                      {{ $rg->patient->first_name }} {{ $rg->patient->last_name }}
+                    @else
+                      — 
+                    @endif
+                  </td>
 
-                      <!-- View button (opens view modal) -->
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {{ optional($rg->date_taken) ? \Carbon\Carbon::parse($rg->date_taken)->format('M d, Y') : '—' }}
+                  </td>
+
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ $rg->type ?? '—' }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">{{ $rg->findings ?? '—' }}</td>
+
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="flex gap-2 items-center">
+                      <!-- View button -->
                       <button
+                        type="button"
                         data-id="{{ $rg->id }}"
-                        data-patient="{{ e($rg->patient_name) }}"
-                        data-date="{{ \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') }}"
+                        data-patient-id="{{ $rg->patient_id ?? '' }}"
+                        data-patient="{{ e(optional($rg->patient)->first_name . ' ' . optional($rg->patient)->last_name) }}"
+                        data-date="{{ optional($rg->date_taken) ? \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') : '' }}"
                         data-type="{{ e($rg->type) }}"
                         data-findings="{{ e($rg->findings) }}"
                         data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
@@ -65,18 +93,19 @@
                         title="View"
                       >View</button>
 
-                      <!-- Edit: use data- attributes and JS to populate modal -->
+                      <!-- Edit button -->
                       <button
+                        type="button"
                         data-id="{{ $rg->id }}"
-                        data-patient="{{ e($rg->patient_name) }}"
-                        data-date="{{ \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') }}"
+                        data-patient-id="{{ $rg->patient_id ?? '' }}"
+                        data-date="{{ optional($rg->date_taken) ? \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') : '' }}"
                         data-type="{{ e($rg->type) }}"
                         data-findings="{{ e($rg->findings) }}"
                         data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
                         class="btn-edit inline-flex items-center px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-xs text-gray-800 rounded-md"
                       >Edit</button>
 
-                      <form action="{{ route('radiographs.destroy', $rg->id) }}" method="POST" onsubmit="return confirm('Delete this record?');">
+                      <form action="{{ route('radiographs.destroy', $rg->id) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-500 text-xs text-white rounded-md">Delete</button>
@@ -98,19 +127,19 @@
         </div>
       </div>
 
-      {{-- Pagination (if used) --}}
+      {{-- Pagination --}}
       <div class="mt-4">
-        {{ $radiographs->links() ?? '' }}
+        {{ $radiographs->links() }}
       </div>
     </div>
   </div>
 
-  {{-- Add / Edit Modal  --}}
+  {{-- Add/Edit Modal --}}
   <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-40">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
       <div class="p-5 border-b flex items-center justify-between">
         <h3 id="modalTitle" class="text-lg font-medium text-gray-800">Add Radiograph</h3>
-        <button id="modalClose" class="text-gray-500 hover:text-gray-700" aria-label="Close">✕</button>
+        <button type="button" id="modalClose" class="text-gray-500 hover:text-gray-700" aria-label="Close">✕</button>
       </div>
 
       <form id="modalForm" class="p-5" method="POST" action="{{ route('radiographs.store') }}" enctype="multipart/form-data">
@@ -120,8 +149,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Patient Name</label>
-            <input id="patient_name" name="patient_name" type="text" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm" required>
+            <label class="block text-sm font-medium text-gray-700">Patient</label>
+            <select id="patient_id" name="patient_id" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
+              <option value="">— select patient —</option>
+              @foreach($patients as $patient)
+                <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
+              @endforeach
+            </select>
           </div>
 
           <div>
@@ -131,7 +165,15 @@
 
           <div class="sm:col-span-2">
             <label class="block text-sm font-medium text-gray-700">Type of Radiograph</label>
-            <input id="type" name="type" type="text" placeholder="Periapical, Bitewing etc" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
+    <input 
+        type="text" 
+        id="type_input" 
+        name="type" 
+        required 
+        class="mt-1 block w-full rounded-md border-gray-200 shadow-sm" 
+        placeholder="Enter radiograph type"
+        list="typesList"
+    >
           </div>
 
           <div class="sm:col-span-2">
@@ -156,143 +198,168 @@
       </form>
     </div>
   </div>
-<!-- VIEW Modal (labeled Date / Type rows, findings, image, download) -->
-<div id="viewBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
-    <!-- Header -->
-    <div class="p-5 border-b flex items-start justify-between gap-4">
-      <div>
-        <h3 id="viewPatientName" class="text-lg font-medium text-gray-800">Patient Name</h3>
-        <!-- kept small subtitle if you want; left blank intentionally -->
-        <div id="viewSubtitle" class="text-sm text-gray-500"></div>
-      </div>
-      <button id="viewClose" class="text-gray-500 hover:text-gray-700" aria-label="Close">✕</button>
-    </div>
 
-    <!-- Body -->
-    <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Large image area -->
-      <div class="md:col-span-2">
-        <div class="bg-gray-50 rounded-md p-4 flex items-center justify-center border">
-          <img id="viewImageLarge" src="" alt="Radiograph" class="max-h-96 object-contain">
+  {{-- View Modal --}}
+  <div id="viewBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
+      <div class="p-5 border-b flex items-start justify-between gap-4">
+        <div>
+          <h3 id="viewPatientName" class="text-lg font-medium text-gray-800">Patient Name</h3>
+          <div id="viewSubtitle" class="text-sm text-gray-500"></div>
         </div>
+        <button type="button" id="viewClose" class="text-gray-500 hover:text-gray-700" aria-label="Close">✕</button>
       </div>
 
-      <!-- Right column: labeled fields -->
-      <div class="md:col-span-1 space-y-4">
-        <!-- Date -->
-        <div>
-          <h4 class="text-sm font-medium text-gray-700">Date</h4>
-          <p id="viewDate" class="mt-1 text-sm text-gray-700">—</p>
+      <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2">
+          <div class="bg-gray-50 rounded-md p-4 flex items-center justify-center border">
+            <img id="viewImageLarge" src="" alt="Radiograph" class="max-h-96 object-contain">
+          </div>
         </div>
 
-        <!-- Type of Radiograph -->
-        <div>
-          <h4 class="text-sm font-medium text-gray-700">Type of Radiograph</h4>
-          <p id="viewType" class="mt-1 text-sm text-gray-700">—</p>
-        </div>
-
-        <!-- Findings -->
-        <div>
-          <h4 class="text-sm font-medium text-gray-700">Findings</h4>
-          <p id="viewFindings" class="mt-1 text-sm text-gray-700 whitespace-pre-wrap">—</p>
-        </div>
-
-        <!-- Open / Download -->
-        <div class="mt-4">
-          <a id="downloadLink" href="#" target="_blank" class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-500 text-white text-xs rounded-md">Open / Download</a>
+        <div class="md:col-span-1 space-y-4">
+          <div>
+            <h4 class="text-sm font-medium text-gray-700">Date</h4>
+            <p id="viewDate" class="mt-1 text-sm text-gray-700">—</p>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-700">Type of Radiograph</h4>
+            <p id="viewType" class="mt-1 text-sm text-gray-700">—</p>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-700">Findings</h4>
+            <p id="viewFindings" class="mt-1 text-sm text-gray-700 whitespace-pre-wrap">—</p>
+          </div>
+          <div class="mt-4">
+            <a id="downloadLink" href="#" target="_blank" class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-500 text-white text-xs rounded-md pointer-events-none opacity-50">Open / Download</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- JS: populate labeled fields when .btn-view clicked -->
-<script>
+  {{-- JS --}}
+  <script>
   (function () {
+    const backdrop = document.getElementById('modalBackdrop');
+    const openBtn = document.getElementById('btnOpenModal');
+    const closeBtn = document.getElementById('modalClose');
+    const cancelBtn = document.getElementById('btnCancel');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalForm = document.getElementById('modalForm');
+    const methodInput = document.getElementById('form_method');
+    const editId = document.getElementById('edit_id');
+    const previewBlock = document.getElementById('currentPreview');
+    const previewImg = document.getElementById('previewImg');
+
     const viewBackdrop = document.getElementById('viewBackdrop');
     const viewClose = document.getElementById('viewClose');
     const viewPatientName = document.getElementById('viewPatientName');
-    const viewSubtitle = document.getElementById('viewSubtitle'); // optional
     const viewDate = document.getElementById('viewDate');
     const viewType = document.getElementById('viewType');
     const viewImageLarge = document.getElementById('viewImageLarge');
     const viewFindings = document.getElementById('viewFindings');
     const downloadLink = document.getElementById('downloadLink');
 
-    function openViewModal() {
-      viewBackdrop.classList.remove('hidden');
-      viewBackdrop.classList.add('flex');
+    function openModal() { backdrop.classList.remove('hidden'); backdrop.classList.add('flex'); }
+    function closeModal() { backdrop.classList.remove('flex'); backdrop.classList.add('hidden'); resetModal(); }
+    function resetModal() {
+      modalTitle.innerText = "Add Radiograph";
+      modalForm.action = "{{ route('radiographs.store') }}";
+      methodInput.value = '';
+      editId.value = '';
+      modalForm.reset();
+      previewBlock.classList.add('hidden');
+      previewImg.src = '';
     }
+    openBtn && openBtn.addEventListener('click', function(){ resetModal(); openModal(); });
+    closeBtn && closeBtn.addEventListener('click', closeModal);
+    cancelBtn && cancelBtn.addEventListener('click', closeModal);
+
+    function openViewModal() { viewBackdrop.classList.remove('hidden'); viewBackdrop.classList.add('flex'); }
     function closeViewModal() {
-      viewBackdrop.classList.remove('flex');
-      viewBackdrop.classList.add('hidden');
-      // clear content
+      viewBackdrop.classList.remove('flex'); viewBackdrop.classList.add('hidden');
       viewImageLarge.src = '';
       viewPatientName.innerText = '';
-      viewSubtitle.innerText = '';
       viewDate.innerText = '';
       viewType.innerText = '';
       viewFindings.innerText = '';
       downloadLink.href = '#';
+      downloadLink.classList.add('pointer-events-none','opacity-50');
     }
     viewClose && viewClose.addEventListener('click', closeViewModal);
 
-    // Delegate: listen for view button clicks
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e){
+      const editBtn = e.target.closest('.btn-edit');
       const viewBtn = e.target.closest('.btn-view');
-      if (!viewBtn) return;
 
-      const patient = viewBtn.dataset.patient || '';
-      const date = viewBtn.dataset.date || '';
-      const type = viewBtn.dataset.type || '';
-      const findings = viewBtn.dataset.findings || '';
-      const imagepath = viewBtn.dataset.imagepath || '';
+      if(editBtn){
+        const id = editBtn.dataset.id;
+        const patientId = editBtn.dataset.patientId || '';
+        const date = editBtn.dataset.date || '';
+        const type = editBtn.dataset.type || '';
+        const findings = editBtn.dataset.findings || '';
+        const imagepath = editBtn.dataset.imagepath || '';
 
-      // Populate header / subtitle if you want
-      viewPatientName.innerText = patient || '—';
-      viewSubtitle.innerText = ''; // not used; keep empty or set extra info
+        modalTitle.innerText = "Edit Radiograph";
+        modalForm.action = "/radiographs/" + id;
+        methodInput.value = 'PUT';
+        editId.value = id;
 
-      // Date: show formatted date (fallback to raw string if parsing fails)
-      if (date) {
-        const d = new Date(date);
-        // if valid date
-        if (!isNaN(d.getTime())) {
-          // localized human readable format (browser locale)
-          viewDate.innerText = d.toLocaleDateString();
+        document.getElementById('patient_id').value = patientId;
+        document.getElementById('date_taken').value = date;
+        document.getElementById('type_id').value = type;
+        document.getElementById('findings').value = findings;
+
+        if(imagepath && !imagepath.toLowerCase().endsWith('.pdf')){
+          previewImg.src = imagepath;
+          previewBlock.classList.remove('hidden');
+        } else { previewBlock.classList.add('hidden'); previewImg.src=''; }
+
+        openModal();
+        return;
+      }
+
+      if(viewBtn){
+        const patient = viewBtn.dataset.patient || '';
+        const date = viewBtn.dataset.date || '';
+        const type = viewBtn.dataset.type || '';
+        const findings = viewBtn.dataset.findings || '';
+        const imagepath = viewBtn.dataset.imagepath || '';
+
+        viewPatientName.innerText = patient || '—';
+        viewDate.innerText = date ? new Date(date).toLocaleDateString() : '—';
+        viewType.innerText = type || '—';
+        viewFindings.innerText = findings || 'No findings recorded.';
+
+        if(imagepath){
+          viewImageLarge.src = imagepath.toLowerCase().endsWith('.pdf') ? '' : imagepath;
+          downloadLink.href = imagepath;
+          downloadLink.classList.remove('pointer-events-none','opacity-50');
         } else {
-          viewDate.innerText = date;
+          viewImageLarge.src='';
+          downloadLink.href='#';
+          downloadLink.classList.add('pointer-events-none','opacity-50');
         }
-      } else {
-        viewDate.innerText = '—';
+
+        openViewModal();
+        return;
       }
-
-      // Type of radiograph
-      viewType.innerText = type || '—';
-
-      // Findings
-      viewFindings.innerText = findings || 'No findings recorded.';
-
-      // Image & download
-      if (imagepath) {
-        viewImageLarge.src = imagepath;
-        downloadLink.href = imagepath;
-        downloadLink.classList.remove('pointer-events-none', 'opacity-50');
-      } else {
-        viewImageLarge.src = '';
-        downloadLink.href = '#';
-        downloadLink.classList.add('pointer-events-none', 'opacity-50');
-      }
-
-      openViewModal();
     });
 
-    // Close on ESC
-    window.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !viewBackdrop.classList.contains('hidden')) closeViewModal();
+    const fileInput = document.getElementById('image');
+    fileInput && fileInput.addEventListener('change', function (ev) {
+      const file = ev.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        previewBlock.classList.add('hidden');
+        previewImg.src = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e){ previewImg.src = e.target.result; previewBlock.classList.remove('hidden'); }
+      reader.readAsDataURL(file);
     });
   })();
-</script>
-
- 
+  </script>
 </x-app-layout>

@@ -51,4 +51,15 @@ class Patient extends Model
     return $this->hasMany(CheckupResult::class,'patient_id', 'id');
 
 }
+ // radiographs relation
+    public function radiographs(): HasMany
+    {
+        return $this->hasMany(Radiograph::class, 'patient_id', 'id');
+    }
+
+    
+    public function fullName(): string
+    {
+        return trim($this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . $this->last_name);
+    }
 }

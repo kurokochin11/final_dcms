@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('radiographs', function (Blueprint $table) {
             $table->id();
-            $table->string('patient_name');
+           $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->date('date_taken');
             $table->string('type');
             $table->string('image_path');

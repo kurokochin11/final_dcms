@@ -1,4 +1,4 @@
-{{-- resources/views/intraoral_examinations/index.blade.php --}}
+{{-- resources/views/intraoral_examinations/index.blade.php (tabbed modal version) --}}
 @section('title', 'Intraoral Examinations')
 <x-app-layout>
   <x-slot name="header">
@@ -50,11 +50,10 @@
                     'bleeding_areas' => $exam->bleeding_areas ?? '',
                     'recession' => $exam->recession ? '1' : '0',
                     'recession_areas' => $exam->recession_areas ?? '',
-                    // these three must match your DB column names (stored path like "intraoral/probing/xxx.png")
-                    'probing_depths' => $exam->probing_depths ?? '',
-                    'mobility' => $exam->mobility ?? '',
+                    // file paths
+                    'probing_depths_file' => $exam->probing_depths_file ?? '',
+                    'mobility_file' => $exam->mobility_file ?? '',
                     'furcation_file' => $exam->furcation_file ?? '',
-                    'furcation_involvement' => $exam->furcation_involvement ?? '',
                     'hard_tissues_notes' => $exam->hard_tissues_notes ?? '',
                     'odontogram' => $exam->odontogram ?? '',
                     'occlusion_class' => $exam->occlusion_class ?? '',
@@ -116,12 +115,14 @@
     </div>
   </div>
 
-  {{-- Alpine factory: used by the Create/Edit modal --}}
+  {{-- Alpine factory: used by the Create/Edit modal (tabbed variant) --}}
   <script>
     function intraoralModal() {
       return {
         open: false,
         mode: 'create',
+        activeTab: 'soft', // tab state: 'soft','gingiva','periodontium','occlusion','hygiene','mio'
+        // store existing file paths separately so we can preview
         form: {
           id: null,
           patient_id: '{{ old("patient_id", isset($patient) && $patient ? $patient->id : "") }}',
@@ -133,10 +134,9 @@
           bleeding_areas: '',
           recession: '0',
           recession_areas: '',
-          probing_depths: '', // stores path string for existing record
-          mobility: '',
+          probing_depths_file: '',
+          mobility_file: '',
           furcation_file: '',
-          furcation_involvement: '',
           hard_tissues_notes: '',
           odontogram: '',
           occlusion_class: '',
@@ -150,7 +150,6 @@
         },
         errors: {},
 
-        // form action depends on mode and id
         get formAction() {
           if (this.mode === 'create') {
             return '{{ route("intraoral_examinations.store") }}';
@@ -176,6 +175,7 @@
             }
             this.form.bleeding_on_probing = '0';
             this.form.recession = '0';
+            this.activeTab = 'soft';
           } else {
             const r = d.record || {};
             this.form.id = r.id ?? null;
@@ -188,11 +188,9 @@
             this.form.bleeding_areas = r.bleeding_areas ?? '';
             this.form.recession = (typeof r.recession !== 'undefined') ? String(r.recession) : '0';
             this.form.recession_areas = r.recession_areas ?? '';
-            // existing stored paths (we keep them so backend can retain if not replaced)
-            this.form.probing_depths = r.probing_depths ?? '';
-            this.form.mobility = r.mobility ?? '';
+            this.form.probing_depths_file = r.probing_depths_file ?? '';
+            this.form.mobility_file = r.mobility_file ?? '';
             this.form.furcation_file = r.furcation_file ?? '';
-            this.form.furcation_involvement = r.furcation_involvement ?? '';
             this.form.hard_tissues_notes = r.hard_tissues_notes ?? '';
             this.form.odontogram = r.odontogram ?? '';
             this.form.occlusion_class = r.occlusion_class ?? '';
@@ -203,6 +201,7 @@
             this.form.calculus = r.calculus ?? '';
             this.form.mio = r.mio ?? '';
             this.form.notes = r.notes ?? '';
+            this.activeTab = 'soft';
           }
 
           this.open = true;
@@ -217,26 +216,52 @@
           this.errors = {};
         },
 
-        // scroll functions
-        scrollBy(pixels) {
+        // switch tab helper
+        switchTab(t) {
+          this.activeTab = t;
           this.$nextTick(() => {
-            const c = this.$refs.modalContent;
-            if (!c) return;
-            c.scrollBy({ top: pixels, left: 0, behavior: 'smooth' });
-          });
-        },
-        scrollTo(name) {
-          this.$nextTick(() => {
-            const el = this.$refs[name];
-            if (!el) return;
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const el = this.$refs[t + 'Tab'];
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           });
         }
       };
     }
   </script>
 
-  {{-- CREATE / EDIT MODAL --}}
+  {{-- VIEW modal (simple preview) --}}
+  <script>
+    window.addEventListener('open-intraoral-view', function(e) {
+      const r = e.detail.record || {};
+      const view = document.getElementById('intraoral-view-modal');
+      if (!view) return;
+
+      // populate preview elements
+      const setImg = (id, path) => {
+        const el = view.querySelector('#' + id);
+        if (!el) return;
+        if (path) {
+          el.src = '/storage/' + path;
+          el.closest('.preview-wrap').classList.remove('hidden');
+        } else {
+          el.src = '';
+          el.closest('.preview-wrap').classList.add('hidden');
+        }
+      }
+
+      setImg('preview_probing', r.probing_depths_file);
+      setImg('preview_mobility', r.mobility_file);
+      setImg('preview_furcation', r.furcation_file);
+
+      // show modal
+      view.classList.remove('hidden');
+    });
+
+    function closeIntraoralView() {
+      document.getElementById('intraoral-view-modal').classList.add('hidden');
+    }
+  </script>
+
+  {{-- CREATE / EDIT MODAL (TAB-BY-TAB) --}}
   <div
     x-data="intraoralModal()"
     x-on:open-intraoral-modal.window="setForm($event.detail)"
@@ -250,7 +275,7 @@
   >
     <div class="fixed inset-0 bg-black bg-opacity-40" @click="close"></div>
 
-    <!-- modal content (scrollable) -->
+    <!-- modal content -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl z-10 mx-4 overflow-auto max-h-[90vh] relative"
          x-ref="modalContent">
 
@@ -260,25 +285,20 @@
         <button @click="close" class="text-gray-600 hover:text-gray-800 dark:text-gray-300">&times;</button>
       </div>
 
-      <!-- sticky section nav -->
+      <!-- tabs -->
       <div class="px-6 py-3 border-b dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-20">
         <div class="flex items-center gap-2 overflow-x-auto">
-          <button type="button" @click="scrollTo('soft')" class="px-3 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700">Soft Tissues</button>
-          <button type="button" @click="scrollTo('gingiva')" class="px-3 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700">Gingiva</button>
-          <button type="button" @click="scrollTo('periodontium')" class="px-3 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700">Periodontium</button>
-          <button type="button" @click="scrollTo('occlusion')" class="px-3 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700">Occlusion</button>
-          <button type="button" @click="scrollTo('hygiene')" class="px-3 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700">Oral Hygiene</button>
-          <button type="button" @click="scrollTo('mio')" class="px-3 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700">MIO / Notes</button>
-
-          <div class="ml-4 flex items-center gap-1">
-            <button type="button" @click="scrollBy(-300)" title="Scroll up" class="px-2 py-1 text-xs rounded bg-gray-50 dark:bg-gray-700">▲</button>
-            <button type="button" @click="scrollBy(300)" title="Scroll down" class="px-2 py-1 text-xs rounded bg-gray-50 dark:bg-gray-700">▼</button>
-          </div>
+          <button :class="{'bg-indigo-600 text-white': activeTab==='soft', 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100': activeTab!=='soft'}" @click="switchTab('soft')" class="px-3 py-1 text-sm rounded">Soft Tissues</button>
+          <button :class="{'bg-indigo-600 text-white': activeTab==='gingiva', 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100': activeTab!=='gingiva'}" @click="switchTab('gingiva')" class="px-3 py-1 text-sm rounded">Gingiva</button>
+          <button :class="{'bg-indigo-600 text-white': activeTab==='periodontium', 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100': activeTab!=='periodontium'}" @click="switchTab('periodontium')" class="px-3 py-1 text-sm rounded">Periodontium</button>
+          <button :class="{'bg-indigo-600 text-white': activeTab==='occlusion', 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100': activeTab!=='occlusion'}" @click="switchTab('occlusion')" class="px-3 py-1 text-sm rounded">Occlusion</button>
+          <button :class="{'bg-indigo-600 text-white': activeTab==='hygiene', 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100': activeTab!=='hygiene'}" @click="switchTab('hygiene')" class="px-3 py-1 text-sm rounded">Oral Hygiene</button>
+          <button :class="{'bg-indigo-600 text-white': activeTab==='mio', 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100': activeTab!=='mio'}" @click="switchTab('mio')" class="px-3 py-1 text-sm rounded">MIO / Notes</button>
         </div>
       </div>
 
       <!-- form -->
-      <form :action="formAction" method="POST" class="px-6 py-4 space-y-6">
+      <form :action="formAction" method="POST" enctype="multipart/form-data" class="px-6 py-4 space-y-6">
         @csrf
         <template x-if="mode === 'edit'"><input type="hidden" name="_method" value="PATCH"></template>
 
@@ -298,8 +318,10 @@
           </div>
         @endif
 
+        <!-- Tab panels (each uses x-show and x-cloak) -->
+
         <!-- Soft tissues -->
-        <div x-ref="soft">
+        <div x-ref="softTab" x-show="activeTab==='soft'" x-cloak>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Soft Tissues (Lips, Cheeks, Tongue...)</label>
           <div class="mt-2 flex items-center gap-4">
             <label class="inline-flex items-center">
@@ -315,7 +337,7 @@
         </div>
 
         <!-- Gingiva -->
-        <div x-ref="gingiva">
+        <div x-ref="gingivaTab" x-show="activeTab==='gingiva'" x-cloak>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gingiva (Gums)</label>
           <div class="mt-2 grid grid-cols-3 gap-4">
             <div>
@@ -358,21 +380,44 @@
         </div>
 
         <!-- Periodontium / Hard tissues -->
-        <div x-ref="periodontium">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Periodontium / Hard Tissues</label>
-          <textarea name="probing_depths" x-model="form.probing_depths" rows="2" placeholder="Probing depths (e.g., sextant chart or JSON)" class="mt-2 block w-full rounded-md px-3 py-2"></textarea>
+        <div x-ref="periodontiumTab" x-show="activeTab==='periodontium'" x-cloak>
+         <!-- Probing Depths Upload -->
+<div class="mt-3">
+  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Probing Depths (Upload Periodontal Chart)
+  </label>
+  <input type="file" name="probing_depths_file" accept="image/*,.pdf"
+         class="mt-2 block w-full rounded-md px-3 py-2">
+  <!-- keep existing path so backend can retain if not replaced -->
+  <input type="hidden" name="existing_probing_depths_file" x-model="form.probing_depths_file">
+</div>
 
-          <div class="mt-2 grid grid-cols-2 gap-4">
-            <input name="mobility" x-model="form.mobility" placeholder="Mobility (odontogram reference)" class="block w-full rounded-md px-3 py-2">
-            <input name="furcation_involvement" x-model="form.furcation_involvement" placeholder="Furcation involvement" class="block w-full rounded-md px-3 py-2">
-          </div>
+<!-- Mobility Upload -->
+<div class="mt-3">
+  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Mobility (Upload Odontogram)
+  </label>
+  <input type="file" name="mobility_file" accept="image/*,.pdf"
+         class="mt-2 block w-full rounded-md px-3 py-2">
+  <input type="hidden" name="existing_mobility_file" x-model="form.mobility_file">
+</div>
+
+<!-- Furcation Involvement Upload -->
+<div class="mt-3">
+  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Furcation Involvement (Upload Odontogram)
+  </label>
+  <input type="file" name="furcation_file" accept="image/*,.pdf"
+         class="mt-2 block w-full rounded-md px-3 py-2">
+  <input type="hidden" name="existing_furcation_file" x-model="form.furcation_file">
+</div>
 
           <textarea name="hard_tissues_notes" x-model="form.hard_tissues_notes" rows="2" placeholder="Missing teeth, caries, restorations, RCTs etc." class="mt-2 block w-full rounded-md px-3 py-2"></textarea>
           <input name="odontogram" x-model="form.odontogram" placeholder="Odontogram (json or shorthand)" class="mt-2 block w-full rounded-md px-3 py-2">
         </div>
 
         <!-- Occlusion -->
-        <div x-ref="occlusion">
+        <div x-ref="occlusionTab" x-show="activeTab==='occlusion'" x-cloak>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Occlusion</label>
           <div class="mt-2 grid grid-cols-3 gap-4">
             <select name="occlusion_class" x-model="form.occlusion_class" class="rounded-md px-3 py-2">
@@ -387,7 +432,7 @@
         </div>
 
         <!-- Oral hygiene -->
-        <div x-ref="hygiene">
+        <div x-ref="hygieneTab" x-show="activeTab==='hygiene'" x-cloak>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Oral Hygiene Status</label>
           <div class="mt-2 flex items-center gap-4">
             <label class="inline-flex items-center"><input type="radio" name="oral_hygiene_status" value="Good" x-model="form.oral_hygiene_status" class="text-indigo-600"><span class="ml-2">Good</span></label>
@@ -407,7 +452,7 @@
         </div>
 
         <!-- MIO / Notes -->
-        <div x-ref="mio" class="grid grid-cols-2 gap-4">
+        <div x-ref="mioTab" x-show="activeTab==='mio'" x-cloak class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm">Maximum Interincisal Opening (MIO) - mm</label>
             <input type="number" name="mio" x-model="form.mio" min="0" max="100" class="mt-1 rounded-md px-3 py-2 w-40">
@@ -418,16 +463,44 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-end gap-3 pt-3">
+        <!-- footer buttons -->
+        <div class="flex items-center justify-end gap-3">
           <button type="button" @click="close" class="px-4 py-2 rounded-md border text-gray-700 dark:text-gray-200">Cancel</button>
           <button type="submit" class="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-500" x-text="mode === 'create' ? 'Save' : 'Update'"></button>
         </div>
       </form>
 
-      <!-- floating scroll controls -->
-      <div class="absolute right-4 bottom-4 flex flex-col gap-2 z-40">
-        <button type="button" @click="scrollBy(-300)" class="w-10 h-10 rounded-full shadow flex items-center justify-center bg-white dark:bg-gray-700 border">▲</button>
-        <button type="button" @click="scrollBy(300)" class="w-10 h-10 rounded-full shadow flex items-center justify-center bg-white dark:bg-gray-700 border">▼</button>
+    </div>
+  </div>
+
+  {{-- View modal markup (hidden by default) --}}
+  <div id="intraoral-view-modal" class="hidden fixed inset-0 z-60 flex items-center justify-center">
+    <div class="fixed inset-0 bg-black bg-opacity-40" onclick="closeIntraoralView()"></div>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl z-70 mx-4 overflow-auto max-h-[90vh] p-6">
+      <div class="flex items-start justify-between mb-4">
+        <h3 class="text-lg font-medium">Intraoral Exam - Preview</h3>
+        <button onclick="closeIntraoralView()" class="text-gray-600">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="preview-wrap hidden">
+          <div class="text-xs text-gray-500 mb-1">Probing Depths (chart)</div>
+          <img id="preview_probing" class="w-full h-48 object-contain border rounded" src="" alt="Probing Depths">
+        </div>
+
+        <div class="preview-wrap hidden">
+          <div class="text-xs text-gray-500 mb-1">Mobility (odontogram)</div>
+          <img id="preview_mobility" class="w-full h-48 object-contain border rounded" src="" alt="Mobility">
+        </div>
+
+        <div class="preview-wrap hidden">
+          <div class="text-xs text-gray-500 mb-1">Furcation (odontogram)</div>
+          <img id="preview_furcation" class="w-full h-48 object-contain border rounded" src="" alt="Furcation">
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button onclick="closeIntraoralView()" class="px-4 py-2 rounded-md border">Close</button>
       </div>
     </div>
   </div>
