@@ -62,4 +62,10 @@ class Patient extends Model
     {
         return trim($this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . $this->last_name);
     }
+    // Patient.php
+public function getFullNameAttribute()
+{
+    return $this->fullName(); 
+}
+
 }

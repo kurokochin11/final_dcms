@@ -9,125 +9,103 @@ use Illuminate\Support\Facades\Storage;
 
 class IntraoralExaminationController extends Controller
 {
+    /**
+     * Display a paginated list of examinations.
+     */
     public function index()
     {
         $examinations = IntraoralExamination::with('patient')->latest()->paginate(10);
-        $patients = Patient::orderBy('last_name')->get();
+        $patients = Patient::all();
 
         return view('oral_examination.index_intraoral', compact('examinations', 'patients'));
     }
 
+    /**
+     * Store a newly created or updated examination.
+     */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
-            'soft_tissues_status' => 'nullable|string|max:255',
-            'soft_tissues_notes' => 'nullable|string',
-            'gingiva_color' => 'nullable|string|max:100',
-            'gingiva_texture' => 'nullable|string|max:100',
-            'bleeding_on_probing' => 'nullable|boolean',
-            'recession' => 'nullable|boolean',
-            'bleeding_areas' => 'nullable|string',
-            'recession_areas' => 'nullable|string',
-            'hard_tissues_notes' => 'nullable|string',
-            'odontogram' => 'nullable|string',
-            'occlusion_class' => 'nullable|string|max:50',
-            'occlusion_details' => 'nullable|string',
+            'soft_tissues' => 'nullable|string',
+            'gingiva_color' => 'nullable|string',
+            'gingiva_texture' => 'nullable|string',
+            'bleeding' => 'nullable|string',
+            'bleeding_area' => 'nullable|string',
+            'recession' => 'nullable|string',
+            'recession_area' => 'nullable|string',
+            'probing_depths' => 'nullable|image|max:2048',
+            'mobility' => 'nullable|image|max:2048',
+            'furcation' => 'nullable|image|max:2048',
+            'odontogram' => 'nullable|image|max:2048',
+            'teeth_condition' => 'nullable|string',
+            'occlusion_class' => 'nullable|string',
+            'occlusion_other' => 'nullable|string',
             'premature_contacts' => 'nullable|string',
-            'mio' => 'nullable|integer|min:0|max:100',
-            'oral_hygiene_status' => 'nullable|string|max:50',
+            'hygiene_status' => 'nullable|string',
             'plaque_index' => 'nullable|string',
             'calculus' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'probing_depths_file' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
-            'mobility_file' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
-            'furcation_file' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
         ]);
 
-        // Normalize checkbox booleans (checkboxes often send "1")
-        $data['bleeding_on_probing'] = isset($data['bleeding_on_probing']) && (bool) $data['bleeding_on_probing'];
-        $data['recession'] = isset($data['recession']) && (bool) $data['recession'];
-
-        // Store files
-        foreach (['probing_depths_file', 'mobility_file', 'furcation_file'] as $file) {
-            if ($request->hasFile($file)) {
-                $data[$file] = $request->file($file)->store('intraoral', 'public');
+        // Handle file uploads
+        foreach (['probing_depths','mobility','furcation','odontogram'] as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $validated[$fileField] = $request->file($fileField)->store('intraoral_files', 'public');
             }
         }
 
-        IntraoralExamination::create($data);
+        if ($request->exam_id) {
+            $exam = IntraoralExamination::findOrFail($request->exam_id);
+            $exam->update($validated);
+        } else {
+            IntraoralExamination::create($validated);
+        }
 
-        return redirect()->route('oral_examination.index_intraoral')->with('success', 'Intraoral examination added successfully!');
+        return redirect()->route('oral_examination.index_intraoral')->with('success', 'Examination saved successfully.');
     }
 
-    public function show(IntraoralExamination $intraoral_examination)
+    /**
+     * Return JSON data for editing a single examination.
+     */
+    public function edit(IntraoralExamination $intraoral)
     {
-        $intraoral_examination->load('patient');
-
-        // Blade expects $exam variable in your show view — pass it that way
-        return view('intraoral_examinations.show', ['exam' => $intraoral_examination]);
-    }
-
-    public function update(Request $request, IntraoralExamination $intraoral_examination)
-    {
-        $data = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'soft_tissues_status' => 'nullable|string|max:255',
-            'soft_tissues_notes' => 'nullable|string',
-            'gingiva_color' => 'nullable|string|max:100',
-            'gingiva_texture' => 'nullable|string|max:100',
-            'bleeding_on_probing' => 'nullable|boolean',
-            'recession' => 'nullable|boolean',
-            'bleeding_areas' => 'nullable|string',
-            'recession_areas' => 'nullable|string',
-            'hard_tissues_notes' => 'nullable|string',
-            'odontogram' => 'nullable|string',
-            'occlusion_class' => 'nullable|string|max:50',
-            'occlusion_details' => 'nullable|string',
-            'premature_contacts' => 'nullable|string',
-            'mio' => 'nullable|integer|min:0|max:100',
-            'oral_hygiene_status' => 'nullable|string|max:50',
-            'plaque_index' => 'nullable|string',
-            'calculus' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'probing_depths_file' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
-            'mobility_file' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
-            'furcation_file' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
+        return response()->json([
+            'id' => $intraoral->id,
+            'patient_id' => $intraoral->patient_id,
+            'soft_tissues' => $intraoral->soft_tissues,
+            'gingiva_color' => $intraoral->gingiva_color,
+            'gingiva_texture' => $intraoral->gingiva_texture,
+            'bleeding' => $intraoral->bleeding,
+            'bleeding_area' => $intraoral->bleeding_area,
+            'recession' => $intraoral->recession,
+            'recession_area' => $intraoral->recession_area,
+            'teeth_condition' => $intraoral->teeth_condition,
+            'occlusion_class' => $intraoral->occlusion_class,
+            'occlusion_other' => $intraoral->occlusion_other,
+            'premature_contacts' => $intraoral->premature_contacts,
+            'hygiene_status' => $intraoral->hygiene_status,
+            'plaque_index' => $intraoral->plaque_index,
+            'calculus' => $intraoral->calculus,
+            'probing_depths' => $intraoral->probing_depths ? asset('storage/'.$intraoral->probing_depths) : null,
+            'mobility' => $intraoral->mobility ? asset('storage/'.$intraoral->mobility) : null,
+            'furcation' => $intraoral->furcation ? asset('storage/'.$intraoral->furcation) : null,
+            'odontogram' => $intraoral->odontogram ? asset('storage/'.$intraoral->odontogram) : null,
         ]);
-
-        $data['bleeding_on_probing'] = isset($data['bleeding_on_probing']) && (bool) $data['bleeding_on_probing'];
-        $data['recession'] = isset($data['recession']) && (bool) $data['recession'];
-
-        foreach (['probing_depths_file', 'mobility_file', 'furcation_file'] as $file) {
-            if ($request->hasFile($file)) {
-                if ($intraoral_examination->$file) {
-                    Storage::disk('public')->delete($intraoral_examination->$file);
-                }
-                $data[$file] = $request->file($file)->store('intraoral', 'public');
-            } elseif ($request->filled('remove_' . $file)) {
-                // optional: allow checkboxes named remove_probing_depths etc. to delete existing file
-                if ($intraoral_examination->$file) {
-                    Storage::disk('public')->delete($intraoral_examination->$file);
-                }
-                $data[$file] = null;
-            }
-        }
-
-        $intraoral_examination->update($data);
-
-        return redirect()->route('oral_examination.index_intraoral')->with('success', 'Intraoral examination updated successfully!');
     }
 
-    public function destroy(IntraoralExamination $intraoral_examination)
+    /**
+     * Delete an examination.
+     */
+    public function destroy(IntraoralExamination $intraoral)
     {
-        foreach (['probing_depths_file', 'mobility_file', 'furcation_file'] as $file) {
-            if ($intraoral_examination->$file) {
-                Storage::disk('public')->delete($intraoral_examination->$file);
+        foreach (['probing_depths','mobility','furcation','odontogram'] as $fileField) {
+            if ($intraoral->$fileField) {
+                Storage::disk('public')->delete($intraoral->$fileField);
             }
         }
 
-        $intraoral_examination->delete();
+        $intraoral->delete();
 
-        return redirect()->route('oral_examination.index_intraoral')->with('success', 'Intraoral examination deleted successfully!');
+        return redirect()->route('oral_examination.index_intraoral')->with('success', 'Examination deleted successfully.');
     }
 }

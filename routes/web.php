@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-//use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\MedicalFormController;
@@ -54,7 +54,25 @@ Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'i
     ->name('oral_examination.index_extraoral');
 
 //intraoral examination routes "B"
- Route::resource('oral_examination', IntraoralExaminationController::class);
+ 
+    Route::get('/index_intraoral', [IntraoralExaminationController::class, 'index'])
+        ->name('oral_examination.index_intraoral');
+
+    
+    Route::post('/store', [IntraoralExaminationController::class, 'store'])
+        ->name('oral_examination.store');
+
+    
+    Route::get('/{intraoral}/edit', [IntraoralExaminationController::class, 'edit'])
+        ->name('oral_examination.edit');
+
+    
+    Route::put('/{intraoral}', [IntraoralExaminationController::class, 'update'])
+        ->name('oral_examination.update');
+
+    
+    Route::delete('/{intraoral}', [IntraoralExaminationController::class, 'destroy'])
+        ->name('oral_examination.destroy');
 
  //radiograph routes
  Route::get('/radiographs', [RadiographController::class, 'index'])->name('radiographs.index');
@@ -70,4 +88,10 @@ Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destro
     Route::put('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'update'])->name('treatment-plans.update');
     Route::delete('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'destroy'])->name('treatment-plans.destroy');
 
+    //Appointment route
+      Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 });
+

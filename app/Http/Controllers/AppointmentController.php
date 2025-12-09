@@ -11,8 +11,11 @@ class AppointmentController extends Controller
 {
     public function index()
     {
+        // paginate appointments and also pass patients for the modal select
         $appointments = Appointment::with('patient')->latest()->paginate(10);
-        return view('appointments.index', compact('appointments'));
+        $patients = Patient::orderBy('name')->get();
+
+        return view('appointments.index', compact('appointments', 'patients'));
     }
 
     public function store(Request $request)
@@ -28,6 +31,20 @@ class AppointmentController extends Controller
         ]));
 
         return redirect()->route('appointments.index')->with('success', 'Appointment scheduled successfully.');
+    }
+
+    /**
+     * Return JSON for editing (used by modal).
+     */
+    public function edit(Appointment $appointment)
+    {
+        return response()->json([
+            'id' => $appointment->id,
+            'patient_id' => $appointment->patient_id,
+            'appointment_date' => $appointment->appointment_date->format('Y-m-d\TH:i'), // for datetime-local input
+            'status' => $appointment->status,
+            'notes' => $appointment->notes,
+        ]);
     }
 
     public function update(Request $request, Appointment $appointment)

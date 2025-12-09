@@ -4,53 +4,58 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateIntraoralExaminationsTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('intraoral_examinations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+            
+            // Foreign key to patients table
+            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
 
             // Soft Tissues
-            $table->string('soft_tissues_status')->nullable(); // Normal / Abnormal
-            $table->text('soft_tissues_notes')->nullable();
+            $table->text('soft_tissues')->nullable();
 
             // Gingiva
-            $table->string('gingiva_color')->nullable();       // Pink / Red / Cyanotic
-            $table->string('gingiva_texture')->nullable();     // Stippled / Edematous
-            $table->boolean('bleeding_on_probing')->default(false);
-            $table->text('bleeding_areas')->nullable();
-            $table->boolean('recession')->default(false);
-            $table->text('recession_areas')->nullable();
+            $table->string('gingiva_color')->nullable();
+            $table->string('gingiva_texture')->nullable();
+            $table->string('bleeding')->nullable();
+            $table->string('bleeding_area')->nullable();
+            $table->string('recession')->nullable();
+            $table->string('recession_area')->nullable();
 
-            // Periodontium / Hard tissues
-          $table->string('probing_depths_file')->nullable();
-          $table->string('mobility_file')->nullable();
-           $table->string('furcation_file')->nullable(); // already existing as example
-            $table->text('hard_tissues_notes')->nullable();
-            $table->text('odontogram')->nullable();           // json or encoded chart
+            // Periodontium (files)
+            $table->string('probing_depths')->nullable();
+            $table->string('mobility')->nullable();
+            $table->string('furcation')->nullable();
+            $table->string('odontogram')->nullable();
 
-            
+            // Hard Tissues
+            $table->string('teeth_condition')->nullable();
+
             // Occlusion
-            $table->string('occlusion_class')->nullable();    // Class I / II / III
-            $table->text('occlusion_details')->nullable();    // Open bite / deep bite / overjet etc
-            $table->text('premature_contacts')->nullable();
+            $table->string('occlusion_class')->nullable();
+            $table->string('occlusion_other')->nullable();
+            $table->string('premature_contacts')->nullable();
 
-            // Oral hygiene
-            $table->string('oral_hygiene_status')->nullable(); // Good / Fair / Poor
+            // Oral Hygiene
+            $table->string('hygiene_status')->nullable();
             $table->string('plaque_index')->nullable();
-            $table->string('calculus')->nullable();            // Light / Moderate / Heavy
-            // MIO
-            $table->integer('mio')->nullable();
-            $table->text('notes')->nullable();
+            $table->string('calculus')->nullable();
 
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('intraoral_examinations');
     }
-}
+};

@@ -11,36 +11,36 @@ class IntraoralExamination extends Model
 
     protected $fillable = [
         'patient_id',
-        'soft_tissues_status',
-        'soft_tissues_notes',
+        'soft_tissues',
         'gingiva_color',
         'gingiva_texture',
-        'bleeding_on_probing',
-        'bleeding_areas',
+        'bleeding',
+        'bleeding_area',
         'recession',
-        'recession_areas',
-        'probing_depths_file',
-        'mobility_file',
-        'furcation_file',
-        'hard_tissues_notes',
+        'recession_area',
+        'probing_depths',
+        'mobility',
+        'furcation',
         'odontogram',
+        'teeth_condition',
         'occlusion_class',
-        'occlusion_details',
+        'occlusion_other',
         'premature_contacts',
-        'oral_hygiene_status',
+        'hygiene_status',
         'plaque_index',
         'calculus',
-        'mio', 
-        'notes',
     ];
 
-    protected $casts = [
-        'bleeding_on_probing' => 'boolean',
-        'recession' => 'boolean',
-    ];
-
+    // Relation to Patient
     public function patient()
     {
         return $this->belongsTo(Patient::class);
     }
+    public function getFullNameAttribute()
+{
+    // if you have first_name/last_name use them, otherwise use a single name field
+    $first = $this->first_name ?? $this->name ?? '';
+    $last  = $this->last_name ?? '';
+    return trim($first . ' ' . $last);
+}
 }
