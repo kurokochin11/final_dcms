@@ -317,17 +317,17 @@
             </div>
         </div>
 
-        {{-- VIEW modal unchanged (read-only) --}}
+        {{-- VIEW modal --}}
         <div x-show="openViewModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
             <div class="fixed inset-0 bg-black bg-opacity-40" @click="openViewModal=false"></div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl z-50 overflow-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl z-50 overflow-hidden">
                 <div class="p-4 border-b flex justify-between items-center">
                     <h3 class="text-lg font-semibold">Treatment Plan Details</h3>
                     <button @click="openViewModal=false" class="text-gray-500">✕</button>
                 </div>
 
-                <div class="p-4 space-y-3">
+                <div class="p-4 space-y-3 max-h-[70vh] overflow-y-auto">
                     <div class="text-sm text-gray-600">
                         <strong>Patient:</strong> <span x-text="view.patient"></span>
                     </div>
