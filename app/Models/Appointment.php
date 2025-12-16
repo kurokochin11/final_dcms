@@ -11,7 +11,13 @@ class Appointment extends Model
         'created_by',
         'appointment_date',
         'status',
-        'notes'
+        'notes',
+        'rescheduled_at', 
+    ];
+
+    protected $casts = [
+        'appointment_date' => 'datetime',
+        'rescheduled_at'   => 'datetime',
     ];
 
     public function patient()

@@ -35,7 +35,7 @@
                             @forelse($appointments as $appointment)
                                 <tr class="text-gray-800 dark:text-gray-200">
                                     <td class="border px-4 py-2">{{ $loop->iteration + ($appointments->currentPage()-1) * $appointments->perPage() }}</td>
-                                    <td class="border px-4 py-2">{{ $appointment->patient->name ?? '-' }}</td>
+                                    <td class="border px-4 py-2"> {{ $appointment->patient?->name ?? '-' }}</td>
                                     <td class="border px-4 py-2">{{ $appointment->appointment_date->format('M d, Y h:i A') }}</td>
                                     <td class="border px-4 py-2">{{ $appointment->status }}</td>
                                     <td class="border px-4 py-2">{{ Str::limit($appointment->notes, 50) }}</td>
@@ -79,9 +79,11 @@
                     <label class="block mb-1">Patient</label>
                     <select name="patient_id" id="patient_id" class="w-full border rounded px-2 py-1" required>
                         <option value="">Select Patient</option>
-                        @foreach($patients as $patient)
-                            <option value="{{ $patient->id }}">{{ $patient->name }}</option>
-                        @endforeach
+                      @foreach($patients as $patient)
+    <option value="{{ $patient->id }}">
+        {{ $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}
+    </option>
+@endforeach
                     </select>
                 </div>
 

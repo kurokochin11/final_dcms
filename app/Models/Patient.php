@@ -67,5 +67,8 @@ public function getFullNameAttribute()
 {
     return $this->fullName(); 
 }
-
+  public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }
