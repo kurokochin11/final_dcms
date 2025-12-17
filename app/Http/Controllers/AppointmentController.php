@@ -19,7 +19,8 @@ class AppointmentController extends Controller
             ->latest()
             ->paginate(10);
 
-       $patients = Patient::orderByRaw("CONCAT(first_name, ' ', last_name) ASC")->get();
+        $patients = Patient::orderByRaw("CONCAT(first_name, ' ', last_name) ASC")->get();
+
         return view('appointments.index', compact('appointments', 'patients'));
     }
 
@@ -67,20 +68,18 @@ class AppointmentController extends Controller
     public function update(Request $request, Appointment $appointment)
     {
         $validated = $request->validate([
+            'patient_id'       => 'required|exists:patients,id',
             'appointment_date' => 'required|date',
             'status'           => 'required|in:Scheduled,Completed,Cancelled',
             'notes'            => 'nullable|string',
         ]);
 
         // Detect reschedule
-        if (
-            $appointment->appointment_date->ne(
-                Carbon::parse($validated['appointment_date'])
-            )
-        ) {
+        if ($appointment->appointment_date->ne(Carbon::parse($validated['appointment_date']))) {
             $validated['rescheduled_at'] = now();
         }
 
+        // Update the appointment
         $appointment->update($validated);
 
         return redirect()
@@ -111,7 +110,7 @@ class AppointmentController extends Controller
             $appointments->map(function ($appointment) {
                 return [
                     'id'    => $appointment->id,
-                    'title' => $appointment->patient->name,
+                    'title' => $appointment->patient?->first_name . ' ' . $appointment->patient?->last_name,
                     'start' => $appointment->appointment_date->toIso8601String(),
 
                     // color logic
