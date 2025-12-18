@@ -87,8 +87,10 @@ class IntraoralExaminationController extends Controller
 
   public function view(IntraoralExamination $intraoral)
 {
+ 
     return response()->json([
-        'patient_name' => $intraoral->patient->name ?? 'N/A',
+         'id' => $intraoral->id,
+       'patient_id' => $intraoral->patient_id,
         'soft_tissues_status' => $intraoral->soft_tissues_status,
         'soft_tissues' => $intraoral->soft_tissues,
         'gingiva_color' => $intraoral->gingiva_color,

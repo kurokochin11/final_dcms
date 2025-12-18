@@ -622,9 +622,11 @@ function openViewModal(id) {
     })
     .then(res => res.json())
     .then(data => {
+
+      
         const content = document.getElementById('viewIntraoralContent');
         content.innerHTML = `
-            <p><strong>Patient:</strong> ${data.patient_name}</p>
+            <p><strong>Patient:</strong> ${data.patient_id}</p>
             <p><strong>Soft Tissues Status:</strong> ${data.soft_tissues_status}</p>
             <p><strong>Soft Tissues:</strong> ${data.soft_tissues}</p>
             <p><strong>Gingiva:</strong> ${data.gingiva_color} / ${data.gingiva_texture}</p>

@@ -1,6 +1,3 @@
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js"></script>
-
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
@@ -17,7 +14,7 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- ✅ CALENDAR --}}
+           {{-- CALENDAR --}}
     <div class="bg-white dark:bg-gray-800 shadow rounded p-4 mb-6">
         <div id="appointmentCalendar"></div>
     </div>
