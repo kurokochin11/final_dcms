@@ -1,42 +1,119 @@
+
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+ <link rel="stylesheet" href="../assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+  <!-- JS -->
+    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+     <script src="assets/js/kaiadmin.min.js"></script>
+      <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
+  @section('title', 'Radiograph Records')
+<x-sidebar/>   
 <x-app-layout>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    {{-- Page header --}}
+  <div class="container-fluid py-4">
+
+ <!-- Header -->
     <header class="mb-6">
       <h1 class="text-2xl font-semibold text-gray-900">Radiograph Records</h1>
     </header>
 
-    {{-- Card --}}
+    ,<!-- Main Content -->
     <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-800">Records</h2>
         <button
           type="button"
           id="btnOpenModal"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-md"
-        >
-          + New Radiograph
+          class="btn btn-primary"
+        > <i class="fa fa-plus me-1"></i> New Radiograph
         </button>
       </div>
 
-      {{-- Filter bar --}}
-      <div class="mb-4 flex flex-wrap items-center gap-3">
-        <form method="GET" class="flex flex-wrap items-center gap-2">
-          <label class="text-sm font-medium text-gray-700">Filter by Type:</label>
-       <select id="type_id" name="type" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
-  @foreach($types as $type)
-    <option value="{{ $type }}">{{ $type }}</option>
-  @endforeach
+  <!-- Filters for Radiographs-->
 
-</select>
-          <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-500">Filter</button>
-          <a href="{{ route('radiographs.index') }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">Reset</a>
-        </form>
-      </div>
+<div class="mb-4">
+  <form method="GET" class="flex flex-wrap items-center gap-2 text-sm">
 
-      {{-- Table --}}
-      <div class="bg-white rounded-md shadow border border-gray-100">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
+    <!-- Patient -->
+    <select
+      name="patient_id"
+      class="w-48 rounded-md border-gray-200 shadow-sm focus:border-indigo-400 focus:ring-indigo-400"
+    >
+      <option value="">All Patients</option>
+      @foreach($patients as $patient)
+        <option
+          value="{{ $patient->id }}"
+          {{ request('patient_id') == $patient->id ? 'selected' : '' }}
+        >
+          {{ $patient->first_name }} {{ $patient->last_name }}
+        </option>
+      @endforeach
+    </select>
+
+    <!-- Type -->
+    <select
+      name="type"
+      class="w-40 rounded-md border-gray-200 shadow-sm focus:border-indigo-400 focus:ring-indigo-400"
+    >
+      <option value="">All Types</option>
+      @foreach($types as $type)
+        <option value="{{ $type }}" {{ request('type') === $type ? 'selected' : '' }}>
+          {{ $type }}
+        </option>
+      @endforeach
+    </select>
+
+   <!-- Year Range -->
+
+    <select
+      name="year_range"
+      class="rounded-md border-gray-200 shadow-sm focus:border-indigo-400 focus:ring-indigo-400"
+    >
+      <option value="">All Years</option>
+      @for($y = now()->year - 5; $y <= now()->year + 5; $y++)
+        @php
+          $value = "{$y}-" . ($y + 1);
+        @endphp
+        <option value="{{ $value }}" {{ request('year_range') === $value ? 'selected' : '' }}>
+          {{ $y }} to {{ $y + 1 }}
+        </option>
+      @endfor
+    </select>
+
+   <!-- Apply Button -->
+
+    <button
+      type="submit"
+      class="btn btn-secondary btn-sm">
+      Apply
+    </button>
+
+    <!-- Reset Button -->
+    @if(request()->hasAny(['patient_id','type','year_range']))
+      <a href="{{ route('radiographs.index') }}" class="btn btn-black btn-link">
+        Reset
+      </a>
+    @endif
+
+  </form>
+</div>
+
+      <!-- Radiographs Table -->
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="myTable" class="table table-striped table-bordered table-hover">
             <thead class="bg-white">
               <tr>
                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Image</th>
@@ -78,6 +155,7 @@
 
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <div class="flex gap-2 items-center">
+
                       <!-- View button -->
                       <button
                         type="button"
@@ -88,12 +166,12 @@
                         data-type="{{ e($rg->type) }}"
                         data-findings="{{ e($rg->findings) }}"
                         data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
-                        class="btn-view inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-xs text-white rounded-md"
+                        class="btn btn-normal btn-primary"
                         title="View"
                       >View</button>
 
                       <!-- Edit button -->
-                      <button
+                      <x-button
                         type="button"
                         data-id="{{ $rg->id }}"
                         data-patient-id="{{ $rg->patient_id ?? '' }}"
@@ -101,13 +179,13 @@
                         data-type="{{ e($rg->type) }}"
                         data-findings="{{ e($rg->findings) }}"
                         data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
-                        class="btn-edit inline-flex items-center px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-xs text-gray-800 rounded-md"
-                      >Edit</button>
+                        class="btn btn-normal btn-warning"
+                      >Edit</x-button>
 
                       <form action="{{ route('radiographs.destroy', $rg->id) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-500 text-xs text-white rounded-md">Delete</button>
+                        <button type="submit" class="btn btn-normal btn-danger">Delete</button>
                       </form>
                     </div>
                   </td>
@@ -125,8 +203,8 @@
           </table>
         </div>
       </div>
-
-      {{-- Pagination --}}
+      
+   <!-- Pagination -->
       <div class="mt-4">
         {{ $radiographs->links() }}
       </div>
@@ -166,7 +244,7 @@
             <label class="block text-sm font-medium text-gray-700">Type of Radiograph</label>
     <input 
         type="text" 
-        id="type_input" 
+        id="type_id" 
         name="type" 
         required 
         class="mt-1 block w-full rounded-md border-gray-200 shadow-sm" 

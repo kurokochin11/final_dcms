@@ -33,7 +33,7 @@ $(document).ready(function () {
             <div class="bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg p-6">
                 <!-- Add Patient Button -->
                 <div class="flex justify-end mb-4">
-                    <x-button @click="openAdd = true" class="btn btn-primary"> <i class="fas fa-user-plus"></i> New Patient</x-button>
+                    <x-button @click="openAdd = true" class="btn btn-primary">  <i class="fa fa-plus me-1"></i>  New Patient</x-button>
                 </div>
 
                 @if(session('success'))
@@ -43,7 +43,7 @@ $(document).ready(function () {
                 @endif
 
                 <div class="table-responsive">
-                    <table id="myTable"  class="sub-item">
+                    <table id="myTable"  class="table table-striped table-bordered table-hover">
                         <thead class="bg-gray-100 dark:bg-gray-700">
                             <tr>
                 <th class="px-6 py-3 border border-gray-300">Patient No</th>
@@ -80,9 +80,9 @@ $(document).ready(function () {
                 
  <td class="px-4 py-2 border" style="text-align:left;">
          <div class="d-flex gap-1 align-items-center">
-            <x-button class="btn btn-primary btn-xs" @click="openViewId={{ $patient->id }}">View</x-button>
-            <x-button class="btn btn-warning btn-xs" @click="openEditId={{ $patient->id }}">Edit</x-button>
-            <x-danger-button class="btn btn-danger btn-xs" @click="openDeleteId={{ $patient->id }}">Delete</x-danger-button>
+            <x-button class="btn btn-primary btn-xs" @click="openViewId={{ $patient->id }}"> <i class="fas fa-eye"></i></x-button>
+            <x-button class="btn btn-warning btn-xs" @click="openEditId={{ $patient->id }}"> <i class="fas fa-edit"></i></x-button>
+            <x-danger-button class="btn btn-danger btn-xs" @click="openDeleteId={{ $patient->id }}"> <i class="fas fa-trash"></i></x-danger-button>
              <div class="dropdown">
     <button class="btn btn-secondary btn-xs dropdown-toggle" type="button" id="dropdownMenuButton{{ $patient->id }}" data-bs-toggle="dropdown" aria-expanded="false">
         Interview
@@ -184,25 +184,25 @@ $(document).ready(function () {
             <!-- TAB BUTTONS -->
             <div class="flex border-b mb-4">
                 <button type="button" @click="tab = 1"
-                    :class="tab === 1 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+                    :class="tab === 1 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
                     class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
                     Basic Info
                 </button>
 
                 <button type="button" @click="tab = 2"
-                    :class="tab === 2 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+                    :class="tab === 2 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
                     class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
                     Address
                 </button>
 
                 <button type="button" @click="tab = 3"
-                    :class="tab === 3 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+                    :class="tab === 3 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
                     class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
                     Contact
                 </button>
 
                 <button type="button" @click="tab = 4"
-                    :class="tab === 4 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+                    :class="tab === 4 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
                     class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
                     Emergency
                 </button>
@@ -362,25 +362,25 @@ $(document).ready(function () {
     <!-- TAB HEADERS -->
 <div class="flex border-b mb-4">
     <button type="button" @click="tab = 1"
-        :class="tab === 1 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        :class="tab === 1 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
         class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
         Basic Info
     </button>
 
     <button type="button" @click="tab = 2"
-        :class="tab === 2 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        :class="tab === 2 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
         class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
         Address
     </button>
 
     <button type="button" @click="tab = 3"
-        :class="tab === 3 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        :class="tab === 3 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
         class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
         Contact
     </button>
 
     <button type="button" @click="tab = 4"
-        :class="tab === 4 ? 'text-blue-600 bg-gray-100' : 'text-gray-600'"
+        :class="tab === 4 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
         class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
         Emergency
     </button>
@@ -401,7 +401,7 @@ $(document).ready(function () {
         <input type="text" name="middle_name" class="w-full border p-2" placeholder="Enter Middle Name">
 
         <label class="block mb-1 font-medium">Date of Birth</label>
-        <input type="date" name="date_of_birth" class="w-full border p-2" required>
+        <input type="date" name="date_of_birth" class="w-full border p-2" >
 
         <label class="block mb-1 font-medium">Age</label>
         <input type="text" name="age" class="w-full border p-2" placeholder="Enter Age" required>
@@ -442,7 +442,7 @@ $(document).ready(function () {
 <div x-show="tab === 2" class="space-y-2">
 
    <label class="block mb-1 font-medium">Address</label>
-        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"></textarea>
+        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"required></textarea >
 
         <label class="block mb-1 font-medium">City</label>
         <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
@@ -457,13 +457,13 @@ $(document).ready(function () {
     <!-- Step 3: Contact Info -->
     <div x-show="tab === 3" class="space-y-2">
         <label class="block mb-1 font-medium">Mobile Number</label>
-        <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number">
+        <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number"required>
 
         <label class="block mb-1 font-medium">Landline Number</label>
         <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
 
         <label class="block mb-1 font-medium">Email</label>
-        <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address">
+        <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address" required>
     </div>
 
     <!-- Step 4: Emergency & Referral -->
@@ -475,20 +475,20 @@ $(document).ready(function () {
         <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
 
         <label class="block mb-1 font-medium">Relationship to the patient</label>
-        <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship">
+        <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship"required>
 
         <label class="block mb-1 font-medium">Emergency Mobile</label>
-        <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number">
+        <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number" required>
 
         <label class="block mb-1 font-medium">Emergency Landline</label>
         <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
 
-        <!-- SUBMIT BUTTON -->
+         </div>
+            <!-- SUBMIT BUTTON -->
     <div class="mt-4 flex justify-end">
         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
             Submit
         </button>
-         </div>
     </div>
 </form>
    

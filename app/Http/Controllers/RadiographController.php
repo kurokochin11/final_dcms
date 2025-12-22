@@ -7,39 +7,45 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 class RadiographController extends Controller
 {
     /**
      * Display a listing of radiographs with optional filtering by type.
      */
-    public function index(Request $request)
-    {
-        // Get filter input from query string
-        $typeFilter = $request->input('types', []);
+   public function index(Request $request)
+{
+    $patientId = $request->patient_id;
+    $type = $request->type;
+    $yearRange = $request->year_range;
 
-        // Get all unique radiograph types for filter dropdown
-        $allTypes = Radiograph::select('type')->distinct()->pluck('type')->toArray();
+    // Get all types for dropdown
+    $allTypes = Radiograph::select('type')->distinct()->pluck('type');
 
-        // Query radiographs with optional type filtering
-        $radiographs = Radiograph::with('patient')
-            ->when(!empty($typeFilter), function ($query) use ($typeFilter) {
-                $query->whereIn('type', $typeFilter);
-            })
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+    $radiographs = Radiograph::with('patient')
+        ->when($patientId, function ($query) use ($patientId) {
+            $query->where('patient_id', $patientId);
+        })
+        ->when($type, function ($query) use ($type) {
+            $query->where('type', $type);
+        })
+        ->when($yearRange, function ($query) use ($yearRange) {
+            [$from, $to] = explode('-', $yearRange);
+            $query->whereYear('date_taken', '>=', $from)
+                  ->whereYear('date_taken', '<', $to);
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-        // Get patients for modal dropdown
-        $patients = Patient::orderBy('last_name')->get();
+    $patients = Patient::orderBy('last_name')->get();
 
-        // Pass variables to the view
-        return view('radiographs.index', [
-            'radiographs' => $radiographs,
-            'patients' => $patients,
-            'types' => $allTypes,  // use $types in Blade
-            'typeFilter' => $typeFilter,
-        ]);
-    }
+    return view('radiographs.index', [
+        'radiographs' => $radiographs,
+        'patients' => $patients,
+        'types' => $allTypes,
+    ]);
+}
 
     /**
      * Store a newly created radiograph.
