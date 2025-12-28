@@ -48,4 +48,9 @@ class CheckupResult extends Model
         return $this->belongsTo(CheckupQuestion::class, 'checkup_question_id', 'id');
         
     }
+    // ✅ Link to session
+    public function session()
+    {
+        return $this->belongsTo(CheckupSession::class, 'checkup_session_id');
+    }
 }

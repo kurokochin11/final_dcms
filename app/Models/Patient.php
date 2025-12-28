@@ -71,4 +71,14 @@ public function getFullNameAttribute()
     {
         return $this->hasMany(Appointment::class);
     }
+    //checkup sessions 
+      public function checkupSessions()
+    {
+        return $this->hasMany(CheckupSession::class);
+    }
+    public function latestSession()
+{
+    return $this->hasOne(CheckupSession::class)->latestOfMany();
+}
+
 }

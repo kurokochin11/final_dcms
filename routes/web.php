@@ -40,14 +40,20 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
         ->name('medical-history.answer_index');
 
     //check-up form routes
-    Route::post('/check-up/{patient}', [CheckupAnswerController::class, 'store'])
-    ->name('check-up.store');
-    Route::get('/check-up/{patient}', [CheckupFormController::class, 'index'])
+    Route::get('/check-up/{patient}', [CheckupAnswerController::class, 'index'])
     ->name('check-up.checkup_index');
 
-    //   View all submitted answers for check-up
-    Route::get('/check-up-answers', [CheckupAnswerController::class, 'checkup_answersIndex'])
-        ->name('check-up.checkup_answer_index');
+Route::post('/check-up/{patient}', [CheckupAnswerController::class, 'store'])
+    ->name('check-up.store');
+
+Route::get('/check-up-answers', [CheckupAnswerController::class, 'checkup_answersIndex'])
+    ->name('check-up.checkup_answer_index');
+
+Route::get('/check-up/{patient}/edit', [CheckupAnswerController::class, 'edit'])
+    ->name('check-up.edit');
+
+Route::put('/check-up/{patient}/update', [CheckupAnswerController::class, 'update'])
+    ->name('check-up.update');
 
     //extraoral examination routes "A"
 Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'index'])

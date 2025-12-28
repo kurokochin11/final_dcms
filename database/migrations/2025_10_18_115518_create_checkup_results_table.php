@@ -26,8 +26,6 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Avoid duplicate answers for same patient-question pair
-            $table->unique(['patient_id', 'checkup_question_id']);
         });
     }
 

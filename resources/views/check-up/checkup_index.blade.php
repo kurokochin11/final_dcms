@@ -1,20 +1,25 @@
+<link rel="stylesheet" href="{{ asset('assets/css/dental-checkup.css') }}">
+<script src="{{ asset('assets/js/dental-checkup.js') }}" defer></script>
+
 @section('title', 'Dental Check-up Form')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
              Dental Check-up 
-            <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-2">
-                <p>Name: {{ $patient->first_name }} {{ $patient->last_name }}</p>
-                <p>Gender: {{ $patient->sex }}</p>
-                <p>Age: {{ $patient->age }}</p>
-                <p>Address: {{ $patient->address }}</p>
-                <p>Middle Name: {{ $patient->middle_name }}</p>
-                <p>Email: {{ $patient->email }}</p>
-            </div>
-        </h2>
+               </h2>
+
+             <!-- Patient Info Section -->
+    <div class="text-base font-medium patient-info">
+        <p><strong>Name:</strong> {{ $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}</p>
+        <p><strong>Gender:</strong> {{ $patient->sex }}</p>
+        <p><strong>Age:</strong> {{ $patient->age }}</p>
+        <p><strong>Address:</strong> {{ $patient->address }}</p>
+        <p><strong>Email:</strong> {{ $patient->email }}</p>
+    </div>
+      
     </x-slot>
 
-    <div class="py-6" x-data="{ step: 1 }">
+    <div class="dental-checkup py-6" x-data="{ step: 1 }">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
 
@@ -185,7 +190,7 @@
 
                 <!-- Progress Indicator -->
                 <div class="mt-6 flex justify-center space-x-2">
-                    <template x-for="i in 3" :key="i">
+                    <template x-for="i in 3" >
                         <span class="w-3 h-3 rounded-full"
                               :class="step === i ? 'bg-blue-600' : 'bg-gray-400'"></span>
                     </template>

@@ -1,17 +1,23 @@
+
+<link rel="stylesheet" href="{{ asset('assets/css/medical-history.css') }}">
+<script src="{{ asset('assets/js/medical-history.js') }}" defer></script>
+
 @section('title', 'Patient Medical History Form')
 <x-app-layout>
     <x-slot name="header">
     <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        Medical History Form<br>
-        <div class="text-base font-medium text-gray-600 dark:text-gray-400">
-        <p>Name: {{ $patient->first_name }} {{ $patient->last_name }}</p>
-        <p>Gender: {{ $patient->sex }}</p>
-        <p>Age: {{ $patient->age }}</p>
-        <p>Address: {{ $patient->address }}</p>
-        <p>Middle Name: {{ $patient->middle_name }}</p>
-        <p>Email: {{ $patient->email }}</p>
-    </div>
+        Medical History Form:
     </h2>
+
+        <!-- Patient Info Section -->
+    <div class="text-base font-medium patient-info">
+        <p><strong>Name:</strong> {{ $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}</p>
+        <p><strong>Gender:</strong> {{ $patient->sex }}</p>
+        <p><strong>Age:</strong> {{ $patient->age }}</p>
+        <p><strong>Address:</strong> {{ $patient->address }}</p>
+        <p><strong>Email:</strong> {{ $patient->email }}</p>
+    </div>
+    
 </x-slot>
 
 
@@ -326,8 +332,8 @@
                             <label for="gs" class="whitespace-nowrap">
                                  s, please list:
                             </label>
-                            <input id="gs" type="text" name="medical_questions[36]"
-                                   class="block flex-1 border-gray-300 rounded">
+                           <textarea id="gs" name="medical_questions[36]" rows="4"
+              class="w-full border-gray-300 rounded-lg px-4 py-3 text-lg resize-y"></textarea>
                         </div>
                         
                          <div class="flex justify-between">
@@ -386,7 +392,7 @@
 
                 <!-- Progress Indicator -->
                 <div class="mt-6 flex justify-center space-x-2">
-                    <template x-for="i in 7">
+                    <template x-for="i in 8">
                         <span class="w-3 h-3 rounded-full"
                               :class="step === i ? 'bg-blue-600' : 'bg-gray-400'"></span>
                     </template>

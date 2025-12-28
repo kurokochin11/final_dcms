@@ -1,0 +1,103 @@
+/* ===============================
+   PATIENT INFO HEADER
+================================ */
+
+.patient-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: #4b5563; /* gray-700 */
+}
+
+.dark .patient-info {
+    color: #d1d5db; /* gray-300 for dark mode */
+}
+
+.patient-info p {
+    margin: 0;
+}
+
+
+/* ===============================
+   GENERAL FORM POLISH
+================================ */
+
+.dental-checkup [x-show] {
+    transition: opacity 0.25s ease-in-out;
+}
+
+.dental-checkup h3 {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+.dark .dental-checkup h3 {
+    border-color: #374151;
+}
+
+/* ===============================
+   INPUTS
+================================ */
+
+.dental-checkup input[type="text"],
+.dental-checkup input[type="date"],
+.dental-checkup textarea {
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dental-checkup input:focus,
+.dental-checkup textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px #2563eb;
+}
+
+.dark .dental-checkup input,
+.dark .dental-checkup textarea {
+    background-color: #1f2937;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+/* ===============================
+   RADIO BUTTONS
+================================ */
+
+.dental-checkup input[type="radio"] {
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+.dental-checkup label {
+    cursor: pointer;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+
+.dental-checkup button {
+    transition: background-color 0.2s ease,
+                transform 0.1s ease,
+                box-shadow 0.1s ease;
+}
+
+.dental-checkup button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* ===============================
+   PROGRESS INDICATOR
+================================ */
+
+.dental-checkup span.w-3.h-3 {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dental-checkup span.bg-blue-600 {
+    transform: scale(1.2);
+}

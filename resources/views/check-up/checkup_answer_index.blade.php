@@ -1,26 +1,40 @@
 <!-- KaiAdmin Main CSS (includes Bootstrap) -->
 <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
- <link rel="stylesheet" href="../assets/css/plugins.min.css" />
-    <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
-  <!-- JS -->
-    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
-    <script>
+<link rel="stylesheet" href="../assets/css/plugins.min.css" />
+<link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+
+<!-- JS -->
+<script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+
+<script>
 $(document).ready(function () {
     $('#myTable').DataTable({
         responsive: true
     });
 });
+
+// Safe modal functions
+function openModal(type, id) {
+    const modal = document.getElementById(`${type}Modal-${id}`);
+    if (!modal) return console.warn(`${type}Modal-${id} not found`);
+    modal.classList.remove('hidden');
+}
+
+function closeModal(type, id) {
+    const modal = document.getElementById(`${type}Modal-${id}`);
+    if (!modal) return;
+    modal.classList.add('hidden');
+}
 </script>
+
 @section('title', 'Patient Check-up Records')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="h4">
-            {{ __('Patient Check-up Records') }}
-        </h2>
+        <h2 class="h4">{{ __('Patient Check-up Records') }}</h2>
     </x-slot>
 
     <div class="py-8">
@@ -31,8 +45,9 @@ $(document).ready(function () {
                 </div>
             @endif
 
+            <!-- Patient Table -->
             <div class="table-responsive">
-                <table  id="myTable"  class="sub-item">
+                <table id="myTable" class="sub-item">
                     <thead class="bg-gray-100 dark:bg-gray-700">
                         <tr>
                             <th class="py-3 px-4 text-left text-gray-800 dark:text-gray-100">Patient No.</th>
@@ -52,11 +67,13 @@ $(document).ready(function () {
                                         class="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">
                                         View
                                     </button>
-                                    <button onclick="openModal('edit', '{{ $patient->id }}')" 
-                                        class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs">
-                                        Edit
-                                    </button>
-                                   
+
+                                    @if($patient->latestSession)
+                                        <button onclick="openModal('edit', '{{ $patient->id }}')" 
+                                            class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs">
+                                            Edit 
+                                        </button>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -76,43 +93,69 @@ $(document).ready(function () {
         </div>
     </div>
 
- <!-- ========== VIEW MODAL  ========== -->
+<!-- ========== VIEW MODAL ========== -->
 @foreach ($patients as $patient)
-    <div id="viewModal-{{ $patient->id }}"
-         class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="viewModal-{{ $patient->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 relative flex flex-col max-h-[90vh]">
+            
+            <!-- Filter by Year -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
+                    Filter by Year
+                </label>
 
-            <!-- Header -->
+                <select
+                    class="form-select w-48"
+                    onchange="filterSessionsByYear({{ $patient->id }}, this.value)">
+                    <option value="">All Years</option>
+
+                    @foreach(
+                        $patient->checkupSessions
+                            ->map(fn($s) => $s->checkupResults->firstWhere('checkup_question_id', 57)?->answer_value)
+                            ->filter()
+                            ->map(fn($d) => \Carbon\Carbon::parse($d)->year)
+                            ->unique()
+                            ->sortDesc() as $year
+                    )
+                        <option value="{{ $year }}">{{ $year }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
-                check-up results of {{ $patient->first_name }} {{ $patient->last_name }}
+                Check-up results of {{ $patient->first_name }} {{ $patient->last_name }}
             </h3>
 
-            @php
-                $idToSet = function($id) {
-                    $id = (int) $id;
-                   if ($id >= 41 && $id <= 57) return 'I'; 
-                    return 'Uncategorized';
-                };
-
-                $answersCollection = $patient->checkupAnswers ?? collect();
-                $groupedAnswers = $answersCollection->groupBy(function($ans) use ($idToSet) {
-                    return $ans->question->question_set ?? $idToSet($ans->checkup_question_id ?? 0);
-                });
-            @endphp
-
-            <!-- Scrollable answers area (includes signature table at the end) -->
-            <div class="flex-1 overflow-y-auto pr-2">
-                @if ($groupedAnswers->isEmpty())
+            <div class="flex-1 overflow-y-auto pr-2 space-y-6">
+                @if($patient->checkupSessions->isEmpty())
                     <p class="text-gray-600 dark:text-gray-300">No Results Recorded.</p>
                 @else
-                    <div class="space-y-10">
-                        @foreach ($groupedAnswers as $set => $answers)
-                            <section>
-                                <h4 class="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3 border-b border-gray-300 dark:border-gray-700 pb-1">
-                                    Section {{ $set }}
-                                </h4>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
+                    @foreach($patient->checkupSessions as $session)
+                        @php
+                            $medicalDate = $session->checkupResults
+                                ->firstWhere('checkup_question_id', 57)
+                                ?->answer_value;
+                            $medicalYear = $medicalDate ? \Carbon\Carbon::parse($medicalDate)->year : '';
+                        @endphp
+
+                        <div class="session-item" data-year="{{ $medicalYear }}">
+                            <h4 class="font-semibold text-gray-800 dark:text-gray-100 mb-2 border-b border-gray-300 dark:border-gray-700 pb-1">
+                                Medical Clearance Date:
+                                {{ $medicalDate ? \Carbon\Carbon::parse($medicalDate)->format('F j, Y') : 'N/A' }}
+                            </h4>
+
+                            @php
+                                $groupedAnswers = $session->checkupResults->groupBy(function($ans){
+                                    return $ans->question->question_set ?? 'Uncategorized';
+                                });
+                            @endphp
+
+                            @foreach($groupedAnswers as $set => $answers)
+                                <section>
+                                    <h5 class="text-md font-semibold text-gray-700 dark:text-gray-100 mb-2">
+                                        Section {{ $set }}
+                                    </h5>
+                                    <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg mb-4">
                                         <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
                                             <tr>
                                                 <th class="px-4 py-2 text-left w-2/3">Question</th>
@@ -120,8 +163,8 @@ $(document).ready(function () {
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                            @foreach ($answers as $answer)
-                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
+                                            @foreach($answers as $answer)
+                                                <tr>
                                                     <td class="px-4 py-2 align-top text-sm font-medium text-gray-800 dark:text-gray-100">
                                                         {{ $answer->question->question_text ?? 'Unknown Question' }}
                                                     </td>
@@ -132,59 +175,13 @@ $(document).ready(function () {
                                             @endforeach
                                         </tbody>
                                     </table>
-                                </div>
-                            </section>
-                        @endforeach
-
-                        <!-- ===== Signature joins the table here ===== -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                                <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left w-2/3">Patient's Signature</th>
-                                        <th class="px-4 py-2 text-left">Signed / Date</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody class="bg-white dark:bg-gray-800">
-                                    <tr>
-                                        <td class="px-4 py-4 align-top text-sm font-medium text-gray-800 dark:text-gray-100">
-                                            {{-- if you want to show label only, leave as-is --}}
-                                        </td>
-
-                                        <td class="px-4 py-4 align-top text-sm text-gray-700 dark:text-gray-300">
-                                            @if (!empty($patient->signature_path))
-                                                <div class="flex items-center space-x-4">
-                                                    <div class="w-48">
-                                                        <img src="{{ asset($patient->signature_path) }}" alt="Patient signature"
-                                                             class="max-h-20 object-contain border border-gray-200 dark:border-gray-600 rounded" />
-                                                    </div>
-                                                    <div>
-                                                        <div class="text-sm">
-                                                            Date: {{ $patient->signature_date ? \Carbon\Carbon::parse($patient->signature_date)->format('F j, Y') : '________________' }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="w-full">
-                                                    <div class="w-full border-b border-gray-400 dark:border-gray-600 h-10"></div>
-                                                    <div class="mt-2 text-sm">
-                                                        Date: ____________________________
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                </section>
+                            @endforeach
                         </div>
-                        <!-- ===== end signature table ===== -->
-
-                    </div>
+                    @endforeach
                 @endif
             </div>
 
-            <!-- Footer: signature already inside scroll area, footer pinned -->
             <div class="mt-4 text-right border-t border-gray-300 dark:border-gray-700 pt-4">
                 <button onclick="closeModal('view', '{{ $patient->id }}')"
                         class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">
@@ -195,107 +192,105 @@ $(document).ready(function () {
     </div>
 @endforeach
 
-   <!-- ========== EDIT MODAL ========== -->
+
+
+<!-- ========== EDIT MODAL ========== -->
 @foreach ($patients as $patient)
-    <div id="editModal-{{ $patient->id }}" 
-         class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    @if ($patient->latestSession)
+        <div id="editModal-{{ $patient->id }}" 
+             class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 relative">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
-                Edit Answers of this patient: {{ $patient->first_name }} {{ $patient->last_name }}
-            </h3>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 relative">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
+                    Edit Answers of {{ $patient->first_name }} {{ $patient->last_name }}
+                </h3>
 
-            @php
-                $idToSet = function($id) {
-                    $id = (int) $id;
-                    if ($id >= 1  && $id <= 11) return 'A';
-                    if ($id >= 12 && $id <= 18) return 'B';
-                    if ($id >= 19 && $id <= 24) return 'C';
-                    if ($id >= 25 && $id <= 28) return 'D';
-                    if ($id >= 29 && $id <= 34) return 'E';
-                    if ($id == 35) return 'F';
-                    if ($id == 36) return 'G';
-                    if ($id >= 37 && $id <= 40) return 'H';
-                    return 'Uncategorized';
-                };
+                @php
+                    $idToSet = function($id) {
+                        return ($id >= 41 && $id <= 57) ? 'I' : 'Uncategorized';
+                    };
+                    $groupedAnswers = $patient->latestSession->checkupResults->groupBy(function($ans) use ($idToSet) {
+                        return $ans->question->question_set ?? $idToSet($ans->checkup_question_id);
+                    });
+                @endphp
 
-                // Group answers by their section
-                $groupedAnswers = $patient->checkupAnswers->groupBy(function($ans) use ($idToSet) {
-                    return $ans->question->question_set ?? $idToSet($ans->checkup_question_id);
-                });
-            @endphp
+                <form method="POST" action="{{ route('check-up.update', $patient->id) }}">
+                    @csrf
+                    @method('PUT')
 
-            <form method="POST" action="{{ route('check-up.store', $patient->id) }}">
-                @csrf
+                    @if ($groupedAnswers->isEmpty())
+                        <p class="text-gray-600 dark:text-gray-300">No medical answers available to edit.</p>
+                    @else
+                        <div class="max-h-[65vh] overflow-y-auto space-y-10 pr-2">
+                            @foreach ($groupedAnswers as $set => $answers)
+                                <section>
+                                    <h4 class="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3 border-b border-gray-300 dark:border-gray-700 pb-1">
+                                        Section {{ $set }}
+                                    </h4>
 
-                @if ($groupedAnswers->isEmpty())
-                    <p class="text-gray-600 dark:text-gray-300">No medical answers available to edit.</p>
-                @else
-                    <div class="max-h-[65vh] overflow-y-auto space-y-10 pr-2">
-                        @foreach ($groupedAnswers as $set => $answers)
-                            <section>
-                                <!-- Section Header -->
-                                <h4 class="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3 border-b border-gray-300 dark:border-gray-700 pb-1">
-                                    Section {{ $set }}
-                                </h4>
-
-                                <!-- Table Layout -->
-                                <div class="overflow-x-auto">
-                                    <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                                        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
-                                            <tr>
-                                                <th class="px-4 py-2 text-left w-2/3">Question</th>
-                                                <th class="px-4 py-2 text-left">Answer</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                            @foreach ($answers as $answer)
-                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
-                                                    <td class="px-4 py-2 align-top text-sm font-medium text-gray-800 dark:text-gray-100">
-                                                        {{ $answer->question->question_text ?? 'Unknown Question' }}
-                                                    </td>
-                                                    <td class="px-4 py-2 align-top">
-                                                        <input type="text"
-                                                            name="medical_questions[{{ $answer->medical_question_id }}]"
-                                                            value="{{ old('medical_questions.' . $answer->medical_question_id, $answer->answer_value) }}"
-                                                            class="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm"
-                                                        />
-                                                    </td>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
+                                            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                                                <tr>
+                                                    <th class="px-4 py-2 text-left w-2/3">Question</th>
+                                                    <th class="px-4 py-2 text-left">Answer</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        @endforeach
-                    </div>
-                @endif
+                                            </thead>
+                                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                @foreach ($answers as $answer)
+                                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
+                                                        <td class="px-4 py-2 align-top text-sm font-medium text-gray-800 dark:text-gray-100">
+                                                            {{ $answer->question->question_text ?? 'Unknown Question' }}
+                                                        </td>
+                                                        <td class="px-4 py-2 align-top">
+                                                            <input type="text"
+                                                                name="checkup_questions[{{ $answer->checkup_question_id }}]"
+                                                                value="{{ old('checkup_questions.' . $answer->checkup_question_id, $answer->answer_value) }}"
+                                                                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm"
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </section>
+                            @endforeach
+                        </div>
+                    @endif
 
-                <!-- Buttons -->
-                <div class="mt-6 flex justify-end space-x-2">
-                    <button type="button" onclick="closeModal('edit', '{{ $patient->id }}')" 
-                        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-                        Cancel
-                    </button>
-                    <button type="submit" 
-                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
+                    <div class="mt-6 flex justify-end space-x-2">
+                        <button type="button" onclick="closeModal('edit', '{{ $patient->id }}')" 
+                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    @endif
 @endforeach
 
-   
-    <!-- ========== JS HANDLERS ========== -->
-    <script>
-        function openModal(type, id) {
-            document.getElementById(`${type}Modal-${id}`).classList.remove('hidden');
-        }
+<!-- JavaScript for Year Filter -->
+<script>
+function filterSessionsByYear(patientId, year) {
+    const modal = document.getElementById(`viewModal-${patientId}`);
+    if (!modal) return;
 
-        function closeModal(type, id) {
-            document.getElementById(`${type}Modal-${id}`).classList.add('hidden');
+    const sessions = modal.querySelectorAll('.session-item');
+
+    sessions.forEach(session => {
+        if (!year || session.dataset.year == year) {
+            session.style.display = 'block';
+        } else {
+            session.style.display = 'none';
         }
-    </script>
+    });
+}
+</script>
+
 </x-app-layout>

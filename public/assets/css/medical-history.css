@@ -1,0 +1,104 @@
+/* ===============================
+   PATIENT INFO HEADER
+================================ */
+.patient-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: #4b5563; /* gray-700 */
+}
+
+.dark .patient-info {
+    color: #d1d5db; /* gray-300 for dark mode */
+}
+
+.patient-info p {
+    margin: 0;
+}
+
+
+/* ===============================
+   GENERAL FORM POLISH
+================================ */
+
+[x-show] {
+    transition: opacity 0.25s ease-in-out;
+}
+
+h3 {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+/* ===============================
+   INPUTS
+================================ */
+
+input[type="text"],
+input[type="date"],
+textarea {
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #2563eb; /* blue-600 */
+    box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* ===============================
+   RADIO BUTTONS
+================================ */
+
+input[type="radio"] {
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+label {
+    cursor: pointer;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+
+button {
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* ===============================
+   PROGRESS INDICATOR
+================================ */
+
+span.w-3.h-3 {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+span.bg-blue-600 {
+    transform: scale(1.2);
+}
+
+/* ===============================
+   DARK MODE SUPPORT
+================================ */
+
+.dark h3 {
+    border-color: #374151;
+}
+
+.dark input,
+.dark textarea {
+    background-color: #1f2937;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
