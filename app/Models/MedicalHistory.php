@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Models;
+// namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
 
-class MedicalHistory extends Model
-{
-    use HasFactory;
+// class MedicalHistory extends Model
+// {
+//     use HasFactory;
 
-    protected $fillable = ['question', 'section'];
+//     protected $fillable = ['question', 'section'];
 
-    public function answers()
-    {
-        return $this->hasMany(MedicalAnswer::class, 'question_id');
-    }
-}
+//     public function answers()
+//     {
+//         return $this->hasMany(MedicalAnswer::class, 'question_id');
+//     }
+// }

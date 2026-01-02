@@ -5,17 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CheckupAnswer extends Model
+class Diagnosis extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'patient_id',
-        'question',
-        'answer',
+        'dental_caries',
+        'periodontal_disease',
+        'pulpal_periapical',
+        'occlusal_diagnosis',
+        'other_oral_conditions',
     ];
 
-    // Each answer belongs to a patient
+    /**
+     * Get the patient that owns the diagnosis.
+     */
     public function patient()
     {
         return $this->belongsTo(Patient::class);

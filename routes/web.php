@@ -11,6 +11,7 @@ use App\Http\Controllers\ExtraoralExaminationController;
 use App\Http\Controllers\IntraoralExaminationController;
 use App\Http\Controllers\RadiographController;
 use App\Http\Controllers\TreatmentPlanController;
+use App\Http\Controllers\DiagnosisController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,6 +40,10 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
     Route::get('/answers', [MedicalHistoryController::class, 'answersIndex'])
         ->name('medical-history.answer_index');
 
+        // Edit existing medical history answers
+          Route::put('/{patient}', [MedicalHistoryController::class, 'update'])
+        ->name('medical-history.update');
+        
     //check-up form routes
     Route::get('/check-up/{patient}', [CheckupAnswerController::class, 'index'])
     ->name('check-up.checkup_index');
@@ -100,5 +105,11 @@ Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destro
     Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
 Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 
+// Diagnosis routes
+    Route::get('/diagnoses', [DiagnosisController::class, 'index'])->name('diagnoses.index');
+    Route::post('/diagnoses', [DiagnosisController::class, 'store'])->name('diagnoses.store');
+    Route::get('/diagnoses/{diagnosis}', [DiagnosisController::class, 'show'])->name('diagnoses.show'); // Optional, for AJAX
+    Route::put('/diagnoses/{diagnosis}', [DiagnosisController::class, 'update'])->name('diagnoses.update');
+    Route::delete('/diagnoses/{diagnosis}', [DiagnosisController::class, 'destroy'])->name('diagnoses.destroy');
 });
 

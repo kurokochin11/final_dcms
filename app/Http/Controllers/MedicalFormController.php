@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\MedicalQuestion;
 use App\Models\PatientResponse;
 use App\Models\Patient;
+use App\Models\MedicalSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -41,6 +41,7 @@ class MedicalFormController extends Controller
                 if (trim($value) !== '') {
                     $responsesToInsert[] = [
                         'patient_id' => $patientId,
+                        
                         'medical_question_id' => (int) $questionId,
                         'answer_value' => $value,
                         'created_at' => $now,

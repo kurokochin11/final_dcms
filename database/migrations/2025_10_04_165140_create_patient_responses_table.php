@@ -26,8 +26,6 @@ return new class extends Migration
 
             $table->timestamps();
 
-           
-            $table->unique(['patient_id', 'medical_question_id']);
         });
     }
 

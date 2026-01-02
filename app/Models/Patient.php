@@ -81,4 +81,14 @@ public function getFullNameAttribute()
     return $this->hasOne(CheckupSession::class)->latestOfMany();
 }
 
+// medical sessions
+public function medicalSessions()
+{
+    return $this->hasMany(MedicalSession::class);
+}
+
+public function latestMedicalSession()
+{
+    return $this->hasOne(MedicalSession::class)->latestOfMany();
+}
 }

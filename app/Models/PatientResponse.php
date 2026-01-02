@@ -48,4 +48,10 @@ class PatientResponse extends Model
         return $this->belongsTo(MedicalQuestion::class, 'medical_question_id', 'id');
         
     }
+    //medical session 
+    public function session()
+{
+    return $this->belongsTo(MedicalSession::class, 'medical_session_id');
+}
+
 }
