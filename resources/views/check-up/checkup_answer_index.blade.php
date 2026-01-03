@@ -98,30 +98,36 @@ function closeModal(type, id) {
     <div id="viewModal-{{ $patient->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 relative flex flex-col max-h-[90vh]">
             
-            <!-- Filter by Year -->
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
-                    Filter by Year
-                </label>
+          <!-- Filter by Medical Date -->
+<div class="mb-4">
+    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
+        Filter by Medical Date
+    </label>
 
-                <select
-                    class="form-select w-48"
-                    onchange="filterSessionsByYear({{ $patient->id }}, this.value)">
-                    <option value="">All Years</option>
+    <select
+        class="form-select w-64"
+        onchange="filterSessionsByDate({{ $patient->id }}, this.value)">
+        <option value="">All Dates</option>
 
-                    @foreach(
-                        $patient->checkupSessions
-                            ->map(fn($s) => $s->checkupResults->firstWhere('checkup_question_id', 57)?->answer_value)
-                            ->filter()
-                            ->map(fn($d) => \Carbon\Carbon::parse($d)->year)
-                            ->unique()
-                            ->sortDesc() as $year
-                    )
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-
+        @foreach(
+            $patient->checkupSessions
+                ->map(fn($s) =>
+                    optional(
+                        $s->checkupResults
+                          ->firstWhere('checkup_question_id', 57)
+                    )->answer_value
+                )
+                ->filter()
+                ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+                ->unique()
+                ->sortDesc() as $date
+        )
+            <option value="{{ $date }}">
+                {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
+            </option>
+        @endforeach
+    </select>
+</div>
             <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Check-up results of {{ $patient->first_name }} {{ $patient->last_name }}
             </h3>

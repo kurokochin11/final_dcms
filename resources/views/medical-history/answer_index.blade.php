@@ -69,24 +69,26 @@
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 flex flex-col max-h-[90vh]">
 
-        <!-- FILTER -->
-        <div class="mb-4">
-            <label class="font-semibold text-sm">Filter by Year</label>
-            <select class="form-select w-48"
-                onchange="filterMedicalSessionsByYear({{ $patient->id }}, this.value)">
-                <option value="">All Years</option>
+      <!-- FILTER -->
+<div class="mb-4">
+    <label class="font-semibold text-sm">Filter by Medical Date</label>
+    <select class="form-select w-64"
+        onchange="filterMedicalSessionsByDate({{ $patient->id }}, this.value)">
+        <option value="">All Dates</option>
 
-                @foreach(
-                    $patient->medicalSessions
-                        ->pluck('created_at')
-                        ->map(fn($d) => $d->year)
-                        ->unique()
-                        ->sortDesc() as $year
-                )
-                    <option value="{{ $year }}">{{ $year }}</option>
-                @endforeach
-            </select>
-        </div>
+        @foreach(
+            $patient->medicalSessions
+                ->pluck('created_at')
+                ->map(fn($d) => $d->format('Y-m-d'))
+                ->unique()
+                ->sortDesc() as $date
+        )
+            <option value="{{ $date }}">
+                {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
         <h3 class="text-lg font-bold mb-4">
             Medical History of {{ $patient->first_name }} {{ $patient->last_name }}
