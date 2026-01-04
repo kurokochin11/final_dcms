@@ -1,5 +1,24 @@
-@section('title', 'Patient Medical History Records')
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="../assets/css/plugins.min.css" />
+<link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
 
+<!-- JS -->
+<script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+
+<script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
+@section('title', 'Patient Medical History Records')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="h4">{{ __('Patient Medical History Records') }}</h2>
@@ -15,11 +34,12 @@
             @endif
 
             <!-- ================= PATIENT TABLE ================= -->
-            <div class="table-responsive">
-                <table class="sub-item w-full">
+           <div class="table-responsive">
+              <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
+>
                     <thead class="bg-gray-100 dark:bg-gray-700">
                         <tr>
-                            <th>#</th>
+                            <th>Patient No.</th>
                             <th>Patient Name</th>
                             <th>Email</th>
                             <th class="text-center">Actions</th>
@@ -33,16 +53,15 @@
                                 <td>{{ $patient->email ?? 'N/A' }}</td>
                                 <td class="text-center space-x-2">
 
-                                    <button onclick="openModal('view', '{{ $patient->id }}')"
-                                        class="px-2 py-1 bg-blue-600 text-white rounded text-xs">
-                                        View
-                                    </button>
+                                    <x-button class="btn btn-primary btn-xs"  onclick="openModal('view', '{{ $patient->id }}')">
+                                        <i class="fas fa-eye"></i>
+                                    </x-button>
 
                                     @if($patient->latestMedicalSession)
-                                        <button onclick="openModal('edit', '{{ $patient->id }}')"
-                                            class="px-2 py-1 bg-yellow-500 text-white rounded text-xs">
-                                            Edit
-                                        </button>
+                                        <x-button class="btn btn-warning btn-xs" onclick="openModal('edit', '{{ $patient->id }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </x-button>
+                                    
                                     @endif
 
                                 </td>
@@ -156,10 +175,10 @@
         </div>
 
         <div class="mt-4 text-right border-t pt-4">
-            <button onclick="closeModal('view', '{{ $patient->id }}')"
+            <x-button class="btn btn-black btn-xs" onclick="closeModal('view', '{{ $patient->id }}')"
                 class="px-4 py-2 bg-gray-600 text-white rounded">
                 Close
-            </button>
+            </x-button>
         </div>
     </div>
 </div>
@@ -214,14 +233,13 @@
             </div>
 
             <div class="mt-6 flex justify-end space-x-2">
-                <button type="button" onclick="closeModal('edit', '{{ $patient->id }}')"
-                    class="px-4 py-2 bg-gray-500 text-white rounded">
+                <x-button class="btn btn-black btn-xs" type="button" onclick="closeModal('edit', '{{ $patient->id }}')">
                     Cancel
-                </button>
-                <button type="submit"
-                    class="px-4 py-2 bg-green-600 text-white rounded">
-                    Save
-                </button>
+                </x-button>
+
+                <x-button class="btn btn-success btn-xs" type="submit">
+                    Save Changes
+                </x-button>
             </div>
         </form>
     </div>

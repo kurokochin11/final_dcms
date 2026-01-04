@@ -47,7 +47,8 @@ function closeModal(type, id) {
 
             <!-- Patient Table -->
             <div class="table-responsive">
-                <table id="myTable" class="sub-item">
+              <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
+
                     <thead class="bg-gray-100 dark:bg-gray-700">
                         <tr>
                             <th class="py-3 px-4 text-left text-gray-800 dark:text-gray-100">Patient No.</th>
@@ -63,16 +64,14 @@ function closeModal(type, id) {
                                 <td class="py-3 px-4">{{ $patient->first_name }} {{ $patient->last_name }}</td>
                                 <td class="py-3 px-4">{{ $patient->email ?? 'N/A' }}</td>
                                 <td class="py-3 px-4 text-center space-x-2">
-                                    <button onclick="openModal('view', '{{ $patient->id }}')" 
-                                        class="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">
-                                        View
-                                    </button>
+                                    <x-button class="btn btn-primary btn-xs"  onclick="openModal('view', '{{ $patient->id }}')">
+                                        <i class="fas fa-eye"></i>
+                                    </x-button>
 
                                     @if($patient->latestSession)
-                                        <button onclick="openModal('edit', '{{ $patient->id }}')" 
-                                            class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs">
-                                            Edit 
-                                        </button>
+                                        <x-button class="btn btn-warning btn-xs" onclick="openModal('edit', '{{ $patient->id }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </x-button>
                                     @endif
                                 </td>
                             </tr>
@@ -189,10 +188,11 @@ function closeModal(type, id) {
             </div>
 
             <div class="mt-4 text-right border-t border-gray-300 dark:border-gray-700 pt-4">
-                <button onclick="closeModal('view', '{{ $patient->id }}')"
-                        class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">
+                <x-button onclick="closeModal('view', '{{ $patient->id }}')"
+                         class="btn btn-dark btn-xs">
                     Close
-                </button>
+                </x-button>
+
             </div>
         </div>
     </div>
@@ -266,14 +266,12 @@ function closeModal(type, id) {
                     @endif
 
                     <div class="mt-6 flex justify-end space-x-2">
-                        <button type="button" onclick="closeModal('edit', '{{ $patient->id }}')" 
-                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        <x-button class="btn btn-black btn-xs" type="button" onclick="closeModal('edit', '{{ $patient->id }}')" >
                             Cancel
-                        </button>
-                        <button type="submit" 
-                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                        </x-button>
+                        <x-button type="submit" class="btn btn-success btn-xs">
                             Save Changes
-                        </button>
+                        </x-button>
                     </div>
                 </form>
             </div>
