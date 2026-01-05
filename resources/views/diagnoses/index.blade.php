@@ -1,28 +1,47 @@
-@section('title', 'Diagnoses')
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="../assets/css/plugins.min.css" />
+<link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+
+<!-- JS -->
+<script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+
+<script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
+@section('title', 'Diagnosis')
 <x-app-layout>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     {{-- Page header --}}
     <header class="mb-6">
-      <h1 class="text-2xl font-semibold text-gray-900">Section 7: Diagnosis</h1>
+      <h1 class="text-2xl font-semibold text-gray-900">Diagnosis</h1>
     </header>
 
     {{-- Card --}}
     <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-medium text-gray-800">Diagnoses</h2>
-        <button
+        <h2 class="text-lg font-medium text-gray-800">Records</h2>
+        <x-button
           type="button"
           id="btnOpenModal"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-md"
-        >
-          + New Diagnosis
-        </button>
+           class="btn btn-primary btn-xs" >  <i class="fas fa-plus me-1"></i>
+      New Diagnosis
+        </x-button>
       </div>
 
       {{-- Table --}}
       <div class="bg-white rounded-md shadow border border-gray-100">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
+        <div class="table-responsive">
+              <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
             <thead class="bg-white">
               <tr>
                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient</th>
@@ -57,13 +76,13 @@
                         data-pulpal_periapical="{{ $diagnosis->pulpal_periapical }}"
                         data-occlusal_diagnosis="{{ $diagnosis->occlusal_diagnosis }}"
                         data-other_oral_conditions="{{ $diagnosis->other_oral_conditions }}"
-                        class="btn-edit inline-flex items-center px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-xs text-gray-800 rounded-md"
-                      >Edit</button>
-
+                        class="btn-edit btn btn-warning btn-xs"title="Edit"><i class="fas fa-edit text-white"></i>
+                    
                       <form action="{{ route('diagnoses.destroy', $diagnosis->id) }}" method="POST" onsubmit="return confirm('Delete this diagnosis?');" class="inline">
+
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-500 text-xs text-white rounded-md">Delete</button>
+                        <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-500 text-xs text-white rounded-md"> <i class="fas fa-trash me-1"></i> </button>
                       </form>
                     </div>
                   </td>
