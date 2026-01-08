@@ -156,7 +156,7 @@ $(document).ready(function () {
 
         <!-- Footer -->
         <div class="bg-light px-4 py-3 text-end border-top">
-          <button type="button" class="btn btn-dark" @click="openViewId = null">Close</button>
+          <button type="button" class="btn btn-dark btn-medium" @click="openViewId = null">Close</button>
         </div>
 
     </div>
