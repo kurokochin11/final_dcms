@@ -12,12 +12,9 @@
 
 <script>
 $(document).ready(function () {
-    $('#myTable').DataTable({
-        responsive: true
-    });
+    $('#myTable').DataTable({ responsive: true });
 });
 
-// Safe modal functions
 function openModal(type, id) {
     const modal = document.getElementById(`${type}Modal-${id}`);
     if (!modal) return console.warn(`${type}Modal-${id} not found`);
@@ -32,269 +29,240 @@ function closeModal(type, id) {
 </script>
 
 @section('title', 'Patient Check-up Records')
+
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="h4">{{ __('Patient Check-up Records') }}</h2>
-    </x-slot>
+<x-slot name="header">
+    <h2 class="h4">{{ __('Patient Check-up Records') }}</h2>
+</x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
+<div class="py-8">
+<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <!-- Patient Table -->
-            <div class="table-responsive">
-              <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
-
-                    <thead class="bg-gray-100 dark:bg-gray-700">
-                        <tr>
-                            <th class="py-3 px-4 text-left text-gray-800 dark:text-gray-100">Patient No.</th>
-                            <th class="py-3 px-4 text-left text-gray-800 dark:text-gray-100">Patient Name</th>
-                            <th class="py-3 px-4 text-left text-gray-800 dark:text-gray-100">Email</th>
-                            <th class="py-3 px-4 text-center text-gray-800 dark:text-gray-100">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($patients as $index => $patient)
-                            <tr class="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
-                                <td class="py-3 px-4">{{ $index + 1 }}</td>
-                                <td class="py-3 px-4">{{ $patient->first_name }} {{ $patient->last_name }}</td>
-                                <td class="py-3 px-4">{{ $patient->email ?? 'N/A' }}</td>
-                                <td class="py-3 px-4 text-center space-x-2">
-                                    <x-button class="btn btn-primary btn-xs"  onclick="openModal('view', '{{ $patient->id }}')">
-                                        <i class="fas fa-eye"></i>
-                                    </x-button>
-
-                                    @if($patient->latestSession)
-                                        <x-button class="btn btn-warning btn-xs" onclick="openModal('edit', '{{ $patient->id }}')">
-                                            <i class="fas fa-edit"></i>
-                                        </x-button>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-4 text-center text-gray-600 dark:text-gray-300">
-                                    No patients found.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
-                <div class="p-4">
-                    {{ $patients->links() }}
-                </div>
-            </div>
-        </div>
+@if (session('success'))
+    <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded">
+        {{ session('success') }}
     </div>
+@endif
 
-<!-- ========== VIEW MODAL ========== -->
+<!-- ================= PATIENT TABLE ================= -->
+<div class="table-responsive">
+<table id="myTable" class="table table-striped table-bordered table-hover align-middle">
+<thead>
+<tr>
+    <th>#</th>
+    <th>Patient Name</th>
+    <th>Email</th>
+    <th class="text-center">Action</th>
+</tr>
+</thead>
+<tbody>
+@foreach ($patients as $index => $patient)
+<tr>
+    <td>{{ $index + 1 }}</td>
+    <td>{{ $patient->first_name }} {{ $patient->last_name }}</td>
+    <td>{{ $patient->email ?? 'N/A' }}</td>
+    <td class="text-center">
+        <x-button class="btn btn-primary btn-xs"
+            onclick="openModal('view', '{{ $patient->id }}')">
+            <i class="fas fa-eye"></i>
+        </x-button>
+    </td>
+</tr>
+@endforeach
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ================= VIEW MODAL ================= -->
 @foreach ($patients as $patient)
-    <div id="viewModal-{{ $patient->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 relative flex flex-col max-h-[90vh]">
-            
-          <!-- Filter by Medical Date -->
-<div class="mb-4">
-    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
-        Filter by Medical Date
-    </label>
+<div id="viewModal-{{ $patient->id }}"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 
-    <select
-        class="form-select w-64"
-        onchange="filterSessionsByDate({{ $patient->id }}, this.value)">
-        <option value="">All Dates</option>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 flex flex-col max-h-[90vh]">
 
-        @foreach(
-            $patient->checkupSessions
-                ->map(fn($s) =>
-                    optional(
-                        $s->checkupResults
-                          ->firstWhere('checkup_question_id', 57)
-                    )->answer_value
-                )
-                ->filter()
-                ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
-                ->unique()
-                ->sortDesc() as $date
-        )
-            <option value="{{ $date }}">
-                {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
-            </option>
+<h3 class="text-lg font-bold mb-4">
+    Check-up Records of {{ $patient->first_name }} {{ $patient->last_name }}
+</h3>
+{{-- DATE FILTER --}}
+<div class="mb-3 flex items-center gap-2">
+    <label class="fw-bold">Filter by Medical Date:</label>
+    <select class="form-select form-select-sm w-auto medical-date-filter"
+            data-patient="{{ $patient->id }}">
+        <option value="all">All Dates</option>
+
+        @foreach ($patient->checkupSessions as $session)
+            @php
+                $date = optional(
+                    $session->checkupResults->firstWhere('checkup_question_id', 57)
+                )->answer_value;
+            @endphp
+
+            @if ($date)
+                <option value="{{ $date }}">
+                    {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
+                </option>
+            @endif
         @endforeach
     </select>
 </div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
-                Check-up results of {{ $patient->first_name }} {{ $patient->last_name }}
-            </h3>
 
-            <div class="flex-1 overflow-y-auto pr-2 space-y-6">
-                @if($patient->checkupSessions->isEmpty())
-                    <p class="text-gray-600 dark:text-gray-300">No Results Recorded.</p>
-                @else
-                    @foreach($patient->checkupSessions as $session)
-                        @php
-                            $medicalDate = $session->checkupResults
-                                ->firstWhere('checkup_question_id', 57)
-                                ?->answer_value;
-                            $medicalYear = $medicalDate ? \Carbon\Carbon::parse($medicalDate)->year : '';
-                        @endphp
+<div class="flex-1 overflow-y-auto space-y-6">
 
-                        <div class="session-item" data-year="{{ $medicalYear }}">
-                            <h4 class="font-semibold text-gray-800 dark:text-gray-100 mb-2 border-b border-gray-300 dark:border-gray-700 pb-1">
-                                Medical Clearance Date:
-                                {{ $medicalDate ? \Carbon\Carbon::parse($medicalDate)->format('F j, Y') : 'N/A' }}
-                            </h4>
+@foreach ($patient->checkupSessions as $session)
+@php
+    $date = optional(
+        $session->checkupResults->firstWhere('checkup_question_id', 57)
+    )->answer_value;
+@endphp
 
-                            @php
-                                $groupedAnswers = $session->checkupResults->groupBy(function($ans){
-                                    return $ans->question->question_set ?? 'Uncategorized';
-                                });
-                            @endphp
+<div class="border rounded p-4 checkup-session"
+     data-medical-date="{{ $date }}">
 
-                            @foreach($groupedAnswers as $set => $answers)
-                                <section>
-                                    <h5 class="text-md font-semibold text-gray-700 dark:text-gray-100 mb-2">
-                                        Section {{ $set }}
-                                    </h5>
-                                    <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg mb-4">
-                                        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
-                                            <tr>
-                                                <th class="px-4 py-2 text-left w-2/3">Question</th>
-                                                <th class="px-4 py-2 text-left">Answer</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                            @foreach($answers as $answer)
-                                                <tr>
-                                                    <td class="px-4 py-2 align-top text-sm font-medium text-gray-800 dark:text-gray-100">
-                                                        {{ $answer->question->question_text ?? 'Unknown Question' }}
-                                                    </td>
-                                                    <td class="px-4 py-2 align-top text-sm text-gray-700 dark:text-gray-300">
-                                                        {{ $answer->answer_value ?? '-' }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </section>
-                            @endforeach
-                        </div>
-                    @endforeach
-                @endif
-            </div>
 
-            <div class="mt-4 text-right border-t border-gray-300 dark:border-gray-700 pt-4">
-                <x-button onclick="closeModal('view', '{{ $patient->id }}')"
-                         class="btn btn-dark btn-xs">
-                    Close
-                </x-button>
 
-            </div>
-        </div>
-    </div>
+<div class="flex justify-between items-center mb-2 border-b pb-1">
+    <h4 class="font-semibold">
+        Medical Date:
+        {{ $date ? \Carbon\Carbon::parse($date)->format('F j, Y') : 'N/A' }}
+    </h4>
+
+    <x-button class="btn btn-warning btn-xs"
+        onclick="openModal('editSession', '{{ $session->id }}')">
+        <i class="fas fa-edit"></i> Edit
+    </x-button>
+</div>
+
+@php
+$groupedAnswers = $session->checkupResults->groupBy(
+    fn($ans) => $ans->question->question_set ?? 'Uncategorized'
+);
+@endphp
+
+@foreach ($groupedAnswers as $set => $answers)
+<table class="table table-bordered mb-3">
+<thead>
+<tr>
+    <th width="70%">Question</th>
+    <th>Answer</th>
+</tr>
+</thead>
+<tbody>
+@foreach ($answers as $answer)
+<tr>
+    <td>{{ $answer->question->question_text }}</td>
+    <td>{{ $answer->answer_value ?? '-' }}</td>
+</tr>
+@endforeach
+</tbody>
+</table>
 @endforeach
 
+</div>
+@endforeach
 
+</div>
 
-<!-- ========== EDIT MODAL ========== -->
+<div class="mt-4 text-right">
+<x-button class="btn btn-dark btn-xs"
+    onclick="closeModal('view', '{{ $patient->id }}')">
+    Close
+</x-button>
+</div>
+
+</div>
+</div>
+@endforeach
+
+<!-- ================= EDIT SESSION MODAL ================= -->
 @foreach ($patients as $patient)
-    @if ($patient->latestSession)
-        <div id="editModal-{{ $patient->id }}" 
-             class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+@foreach ($patient->checkupSessions as $session)
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 relative">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
-                    Edit Answers of {{ $patient->first_name }} {{ $patient->last_name }}
-                </h3>
+<div id="editSessionModal-{{ $session->id }}"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 
-                @php
-                    $idToSet = function($id) {
-                        return ($id >= 41 && $id <= 57) ? 'I' : 'Uncategorized';
-                    };
-                    $groupedAnswers = $patient->latestSession->checkupResults->groupBy(function($ans) use ($idToSet) {
-                        return $ans->question->question_set ?? $idToSet($ans->checkup_question_id);
-                    });
-                @endphp
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6">
 
-                <form method="POST" action="{{ route('check-up.update', $patient->id) }}">
-                    @csrf
-                    @method('PUT')
+<h3 class="text-lg font-bold mb-4">
+    Edit Check-up Session
+</h3>
 
-                    @if ($groupedAnswers->isEmpty())
-                        <p class="text-gray-600 dark:text-gray-300">No medical answers available to edit.</p>
-                    @else
-                        <div class="max-h-[65vh] overflow-y-auto space-y-10 pr-2">
-                            @foreach ($groupedAnswers as $set => $answers)
-                                <section>
-                                    <h4 class="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3 border-b border-gray-300 dark:border-gray-700 pb-1">
-                                        Section {{ $set }}
-                                    </h4>
+@php
+$groupedAnswers = $session->checkupResults->groupBy(
+    fn($ans) => $ans->question->question_set ?? 'Uncategorized'
+);
+@endphp
 
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                                            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
-                                                <tr>
-                                                    <th class="px-4 py-2 text-left w-2/3">Question</th>
-                                                    <th class="px-4 py-2 text-left">Answer</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                                @foreach ($answers as $answer)
-                                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
-                                                        <td class="px-4 py-2 align-top text-sm font-medium text-gray-800 dark:text-gray-100">
-                                                            {{ $answer->question->question_text ?? 'Unknown Question' }}
-                                                        </td>
-                                                        <td class="px-4 py-2 align-top">
-                                                            <input type="text"
-                                                                name="checkup_questions[{{ $answer->checkup_question_id }}]"
-                                                                value="{{ old('checkup_questions.' . $answer->checkup_question_id, $answer->answer_value) }}"
-                                                                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm"
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </section>
-                            @endforeach
-                        </div>
-                    @endif
+<form method="POST"
+      action="{{ route('check-up.session.update', $session->id) }}">
+@csrf
+@method('PUT')
 
-                    <div class="mt-6 flex justify-end space-x-2">
-                        <x-button class="btn btn-black btn-xs" type="button" onclick="closeModal('edit', '{{ $patient->id }}')" >
-                            Cancel
-                        </x-button>
-                        <x-button type="submit" class="btn btn-success btn-xs">
-                            Save Changes
-                        </x-button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
+<div class="max-h-[65vh] overflow-y-auto space-y-6">
+
+@foreach ($groupedAnswers as $set => $answers)
+<section>
+<h4 class="font-semibold mb-2">Section {{ $set }}</h4>
+
+<table class="table table-bordered">
+@foreach ($answers as $answer)
+<tr>
+<td width="70%">{{ $answer->question->question_text }}</td>
+<td>
+<input type="text"
+    name="checkup_questions[{{ $answer->checkup_question_id }}]"
+    value="{{ $answer->answer_value }}"
+    class="form-control">
+</td>
+</tr>
+@endforeach
+</table>
+</section>
 @endforeach
 
-<!-- JavaScript for Year Filter -->
+</div>
+
+<div class="mt-4 flex justify-end gap-2">
+<x-button class="btn btn-black btn-xs"
+    type="button"
+    onclick="closeModal('editSession', '{{ $session->id }}')">
+    Cancel
+</x-button>
+
+<x-button class="btn btn-success btn-xs" type="submit">
+    Save Changes
+</x-button>
+</div>
+
+</form>
+</div>
+</div>
+
+@endforeach
+@endforeach
+
+<!-- ================= FILTER SCRIPT ================= -->
 <script>
-function filterSessionsByYear(patientId, year) {
-    const modal = document.getElementById(`viewModal-${patientId}`);
-    if (!modal) return;
+$(document).on('change', '.medical-date-filter', function () {
+    const selectedDate = $(this).val();
+    const modal = $(this).closest('.bg-white');
 
-    const sessions = modal.querySelectorAll('.session-item');
+    modal.find('.checkup-session').each(function () {
+        const sessionDate = $(this).data('medical-date');
 
-    sessions.forEach(session => {
-        if (!year || session.dataset.year == year) {
-            session.style.display = 'block';
+        if (selectedDate === 'all' || sessionDate === selectedDate) {
+            $(this).show();
         } else {
-            session.style.display = 'none';
+            $(this).hide();
         }
     });
-}
+     modal.find('.overflow-y-auto').animate(
+        { scrollTop: 0 },
+        300
+    );
+});
 </script>
+
 
 </x-app-layout>

@@ -11,36 +11,42 @@ use Illuminate\Support\Facades\DB;
 
 class CheckupAnswerController extends Controller
 {
-    // Show check-up form for a patient (latest answers can be pre-filled)
+    /**
+     * Show check-up form (new submission)
+     */
     public function index(Patient $patient)
     {
         $questions = CheckupQuestion::all();
 
-        // Get latest session
         $latestSession = $patient->checkupSessions()->latest()->first();
 
-        // Pre-fill latest answers if available
-        $existingAnswers = $latestSession 
+        $existingAnswers = $latestSession
             ? $latestSession->checkupResults->pluck('answer_value', 'checkup_question_id')
             : collect();
 
-        return view('check-up.checkup_index', compact('patient', 'questions', 'existingAnswers'));
+        return view(
+            'check-up.checkup_index',
+            compact('patient', 'questions', 'existingAnswers')
+        );
     }
 
-    // Store submitted answers as a new session
+    /**
+     * Store a NEW check-up session
+     */
     public function store(Request $request, Patient $patient)
     {
         $answers = $request->input('checkup_questions', []);
 
         DB::transaction(function () use ($patient, $answers) {
-            // Create new session
+
             $session = CheckupSession::create([
                 'patient_id' => $patient->id,
             ]);
 
             $data = [];
+
             foreach ($answers as $questionId => $value) {
-                if (!empty($value)) {
+                if ($value !== null && $value !== '') {
                     $data[] = [
                         'patient_id' => $patient->id,
                         'checkup_question_id' => $questionId,
@@ -52,59 +58,105 @@ class CheckupAnswerController extends Controller
                 }
             }
 
-            if ($data) {
+            if (!empty($data)) {
                 CheckupResult::insert($data);
             }
         });
 
-        return redirect()->route('check-up.checkup_answer_index')
+        return redirect()
+            ->route('check-up.checkup_answer_index')
             ->with('success', 'Check-up submitted successfully!');
     }
 
-    // Show all patients with their sessions and answers
+    /**
+     * Index page — patients + sessions
+     */
     public function checkup_answersIndex()
     {
-        $patients = Patient::with(['checkupSessions.checkupResults.question'])->paginate(50);
-        return view('check-up.checkup_answer_index', compact('patients'));
+        $patients = Patient::with([
+            'checkupSessions.checkupResults.question'
+        ])->paginate(50);
+
+        return view(
+            'check-up.checkup_answer_index',
+            compact('patients')
+        );
     }
 
-    // Edit latest submission
+    /**
+     * (OPTIONAL / LEGACY)
+     * Edit latest session by patient
+     * — not used by modal anymore
+     */
     public function edit(Patient $patient)
     {
         $questions = CheckupQuestion::all();
 
-        // Fetch latest session
         $latestSession = $patient->checkupSessions()->latest()->first();
-        $answers = $latestSession ? $latestSession->checkupResults->pluck('answer_value', 'checkup_question_id') : collect();
 
-        return view('check-up.checkup_edit', compact('patient', 'questions', 'latestSession', 'answers'));
+        $answers = $latestSession
+            ? $latestSession->checkupResults->pluck('answer_value', 'checkup_question_id')
+            : collect();
+
+        return view(
+            'check-up.checkup_edit',
+            compact('patient', 'questions', 'latestSession', 'answers')
+        );
     }
 
-    // Update latest submission
-public function update(Request $request, Patient $patient)
-{
-    $latestSession = $patient->checkupSessions()->latest()->first();
+    /**
+     * (OPTIONAL / LEGACY)
+     * Update latest session by patient
+     * — not used by modal anymore
+     */
+    public function update(Request $request, Patient $patient)
+    {
+        $latestSession = $patient->checkupSessions()->latest()->first();
 
-    if (!$latestSession) {
-        return redirect()->back()->with('error', 'No submission found to update.');
-    }
-
-    $answers = $request->input('checkup_questions', []);
-
-    DB::transaction(function () use ($latestSession, $answers) {
-        foreach ($answers as $questionId => $value) {
-            $result = $latestSession->checkupResults()
-                        ->where('checkup_question_id', $questionId)
-                        ->first();
-
-            if ($result) {
-                $result->update(['answer_value' => $value]);
-            }
-            // Removed creation of new answer
+        if (!$latestSession) {
+            return redirect()->back()
+                ->with('error', 'No submission found to update.');
         }
-    });
 
-    return redirect()->route('check-up.checkup_answer_index')
-                     ->with('success', 'Latest check-up updated successfully!');
-}
+        $answers = $request->input('checkup_questions', []);
+
+        DB::transaction(function () use ($latestSession, $answers) {
+            foreach ($answers as $questionId => $value) {
+                $latestSession->checkupResults()
+                    ->where('checkup_question_id', $questionId)
+                    ->update([
+                        'answer_value' => $value,
+                        'updated_at' => now(),
+                    ]);
+            }
+        });
+
+        return redirect()
+            ->route('check-up.checkup_answer_index')
+            ->with('success', 'Latest check-up updated successfully!');
+    }
+
+    /**
+     * ✅ MAIN METHOD USED BY YOUR EDIT MODAL
+     * Update a SPECIFIC check-up session
+     */
+    public function updateSession(Request $request, CheckupSession $session)
+    {
+        $answers = $request->input('checkup_questions', []);
+
+        DB::transaction(function () use ($session, $answers) {
+            foreach ($answers as $questionId => $value) {
+                $session->checkupResults()
+                    ->where('checkup_question_id', $questionId)
+                    ->update([
+                        'answer_value' => $value,
+                        'updated_at' => now(),
+                    ]);
+            }
+        });
+
+        return redirect()
+            ->route('check-up.checkup_answer_index')
+            ->with('success', 'Check-up session updated successfully!');
+    }
 }

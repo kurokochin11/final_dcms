@@ -18,10 +18,8 @@ class MedicalHistoryController extends Controller
     {
         $questions = MedicalQuestion::all();
 
-        // ✅ Get latest medical session
         $latestSession = $patient->medicalSessions()->latest()->first();
 
-        // ✅ Pre-fill answers from latest session
         $existingAnswers = $latestSession
             ? $latestSession->responses->pluck('answer_value', 'medical_question_id')
             : collect();
@@ -42,17 +40,17 @@ class MedicalHistoryController extends Controller
 
         DB::transaction(function () use ($patient, $answers) {
 
-            // ✅ Create new medical session
             $session = MedicalSession::create([
                 'patient_id' => $patient->id,
             ]);
 
             $data = [];
+
             foreach ($answers as $questionId => $value) {
                 if (!empty(trim($value))) {
                     $data[] = [
                         'patient_id'          => $patient->id,
-                        'medical_session_id'  => $session->id, // ✅ IMPORTANT
+                        'medical_session_id'  => $session->id,
                         'medical_question_id' => $questionId,
                         'answer_value'        => $value,
                         'created_at'          => now(),
@@ -84,6 +82,7 @@ class MedicalHistoryController extends Controller
     }
 
     /**
+     * (OPTIONAL / LEGACY)
      * Edit latest medical submission
      */
     public function edit(Patient $patient)
@@ -105,7 +104,8 @@ class MedicalHistoryController extends Controller
     }
 
     /**
-     * Update latest medical submission (NO new session)
+     * (OPTIONAL / LEGACY)
+     * Update latest medical submission
      */
     public function update(Request $request, Patient $patient)
     {
@@ -119,20 +119,41 @@ class MedicalHistoryController extends Controller
 
         DB::transaction(function () use ($latestSession, $answers) {
             foreach ($answers as $questionId => $value) {
-                $response = $latestSession->responses()
+                $latestSession->responses()
                     ->where('medical_question_id', $questionId)
-                    ->first();
-
-                if ($response) {
-                    $response->update([
+                    ->update([
                         'answer_value' => $value,
+                        'updated_at'   => now(),
                     ]);
-                }
             }
         });
 
         return redirect()
             ->route('medical-history.answer_index')
             ->with('success', 'Latest medical history updated successfully!');
+    }
+
+    /**
+     * ✅ MAIN METHOD FOR EDIT MODAL
+     * Update a SPECIFIC medical session
+     */
+    public function updateSession(Request $request, MedicalSession $session)
+    {
+        $answers = $request->input('medical_questions', []);
+
+        DB::transaction(function () use ($session, $answers) {
+            foreach ($answers as $questionId => $value) {
+                $session->responses()
+                    ->where('medical_question_id', $questionId)
+                    ->update([
+                        'answer_value' => $value,
+                        'updated_at'   => now(),
+                    ]);
+            }
+        });
+
+        return redirect()
+            ->route('medical-history.answer_index')
+            ->with('success', 'Medical session updated successfully!');
     }
 }

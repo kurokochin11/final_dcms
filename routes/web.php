@@ -41,8 +41,8 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
         ->name('medical-history.answer_index');
 
         // Edit existing medical history answers
-          Route::put('/{patient}', [MedicalHistoryController::class, 'update'])
-        ->name('medical-history.update');
+      Route::put( '/medical-history/session/{session}',[MedicalHistoryController::class, 'updateSession'])->name('medical-history.update-session');
+
         
     //check-up form routes
     Route::get('/check-up/{patient}', [CheckupAnswerController::class, 'index'])
@@ -57,8 +57,7 @@ Route::get('/check-up-answers', [CheckupAnswerController::class, 'checkup_answer
 Route::get('/check-up/{patient}/edit', [CheckupAnswerController::class, 'edit'])
     ->name('check-up.edit');
 
-Route::put('/check-up/{patient}/update', [CheckupAnswerController::class, 'update'])
-    ->name('check-up.update');
+Route::put('/check-up/session/{session}', [CheckupAnswerController::class, 'updateSession'])->name('check-up.session.update');
 
     //extraoral examination routes "A"
 Route::get('/extraoral-examinations', [ExtraoralExaminationController::class, 'index'])
