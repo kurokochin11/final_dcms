@@ -1,3 +1,22 @@
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="../assets/css/plugins.min.css" />
+<link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+<!-- JS -->
+<script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+<script src="assets/js/kaiadmin.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
 @section('title', 'Extraoral Examinations')
 <x-app-layout>
   
@@ -13,18 +32,18 @@
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Records</h3>
         <div x-data>
           <button @click="$dispatch('open-extraoral-modal', { mode: 'create' })" type="button"
-                  class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-            + New Exam
+                  class="inline-flex items-center px-4 py-2 bg-primary text-white border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-light gap-2">
+              <i class="fas fa-plus"></i>New Exam
           </button>
         </div>
       </div>
 
       <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-        <div class="p-4">
-          <table class="min-w-full text-left">
+          <div class="table-responsive">
+                    <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
             <thead class="text-gray-600 dark:text-gray-300">
               <tr>
-                <th class="px-4 py-2">#</th>
+                <th class="px-4 py-2">Patient No.</th>
                 <th class="px-4 py-2">Patient</th>
                 <th class="px-4 py-2">Facial Symmetry</th>
                 <th class="px-4 py-2">Lymph Nodes</th>
@@ -35,6 +54,7 @@
                 <th class="px-4 py-2">Actions</th>
               </tr>
             </thead>
+
             <tbody>
               @forelse($examinations ?? [] as $exam)
                 @php
@@ -71,19 +91,32 @@
                   <td class="px-4 py-2">
                     <div class="flex items-center gap-2">
                       {{-- Put JSON safely in data-record and dispatch using onclick to avoid Blade/JS quoting issues --}}
+                    
+<button
+    type="button"
+    class="btn btn-info btn-xs"
+    data-record='{{ json_encode($record, JSON_HEX_APOS | JSON_HEX_QUOT) }}'
+    onclick="window.dispatchEvent(
+        new CustomEvent('open-extraoral-view', {
+            detail: JSON.parse(this.dataset.record)
+        })
+    )">
+     <i class="fas fa-eye"></i>
+</button>
+
                       <button
                         type="button"
                         class="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-400"
                         data-record='{{ json_encode($record, JSON_HEX_APOS | JSON_HEX_QUOT) }}'
                         onclick="window.dispatchEvent(new CustomEvent('open-extraoral-modal',{detail:{mode:'edit', record: JSON.parse(this.dataset.record)}}))"
                       >
-                        Edit
+                         <i class="fas fa-edit"></i>
                       </button>
 
-                      <form action="{{ route('extraoral_examinations.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline">
+                      <form action="{{ route('extraoral_examinations.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline-block m-0 p-0" >
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500">Delete</button>
+                        <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500"> <i class="fas fa-trash"></i></button>
                       </form>
                     </div>
                   </td>
@@ -93,6 +126,64 @@
               @endforelse
             </tbody>
           </table>
+<!-- VIEW EXTRAORAL MODAL -->
+<div
+  x-data="{
+    open: false,
+    record: {},
+    show(data) {
+      this.record = data
+      this.open = true
+    },
+    close() {
+      this.open = false
+      this.record = {}
+    }
+  }"
+  x-on:open-extraoral-view.window="show($event.detail)"
+  x-show="open"
+  class="fixed inset-0 z-50 flex items-center justify-center"
+  style="display:none;"
+  aria-modal="true"
+  role="dialog"
+>
+  <!-- Overlay -->
+  <div class="fixed inset-0 bg-black bg-opacity-40" @click="close"></div>
+
+  <!-- Modal -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl z-10 mx-4 overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-4 flex items-center justify-between border-b dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        Extraoral Examination (View)
+      </h3>
+      <button @click="close" class="text-gray-600 hover:text-gray-800 dark:text-gray-300">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 py-4 space-y-3 text-sm text-gray-800 dark:text-gray-200">
+      <p><strong>Facial Symmetry:</strong> <span x-text="record.facial_symmetry ?? '—'"></span></p>
+      <p x-show="record.facial_symmetry_notes" class="text-gray-500" x-text="record.facial_symmetry_notes"></p>
+
+      <p><strong>Lymph Nodes:</strong> <span x-text="record.lymph_nodes ?? '—'"></span></p>
+      <p x-show="record.lymph_nodes_location" class="text-gray-500" x-text="record.lymph_nodes_location"></p>
+
+      <hr class="border-gray-300 dark:border-gray-700">
+
+      <p><strong>TMJ Pain:</strong> <span x-text="record.tmj_pain == '1' ? 'Yes' : 'No'"></span></p>
+      <p><strong>TMJ Clicking:</strong> <span x-text="record.tmj_clicking == '1' ? 'Yes' : 'No'"></span></p>
+      <p><strong>Limited Opening:</strong> <span x-text="record.tmj_limited_opening == '1' ? 'Yes' : 'No'"></span></p>
+
+      <p><strong>MIO (mm):</strong> <span x-text="record.mio ?? '—'"></span></p>
+      <p x-show="record.notes"><strong>Notes:</strong> <span x-text="record.notes"></span></p>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-3 flex justify-end border-t dark:border-gray-700">
+      <button @click="close" class="btn btn-dark btn-sm">Close</button>
+    </div>
+  </div>
+</div>
 
           <div class="mt-4">
             {{ $examinations->links() }}
@@ -104,6 +195,22 @@
 
   
   <script>
+    function extraoralViewModal() {
+  return {
+    open: false,
+    record: {},
+
+    show(data) {
+      this.record = data || {};
+      this.open = true;
+    },
+
+    close() {
+      this.open = false;
+      this.record = {};
+    }
+  }
+}
   function extraoralModal() {
     return {
       // base URLs generated by Blade (correct hyphenated URI)

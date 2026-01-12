@@ -68,6 +68,7 @@ Route::post('/extraoral-examinations', [ExtraoralExaminationController::class, '
 
 Route::put('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminationController::class, 'update'])
     ->name('extraoral_examinations.update');
+Route::get('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminationController::class, 'show'])->name('extraoral-examinations.show');
 
 Route::delete('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminationController::class, 'destroy'])
     ->name('extraoral_examinations.destroy');

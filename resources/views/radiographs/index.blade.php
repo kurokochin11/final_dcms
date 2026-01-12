@@ -24,7 +24,7 @@ $(document).ready(function() {
 
         <!-- Header -->
         <header class="mb-6">
-            <h1 class="text-2xl font-semibold text-gray-900">Radiograph Records</h1>
+            <h1 class="text-2xl font-semibold text-gray-900">Radiograph Section</h1>
         </header>
 
         ,
@@ -311,7 +311,7 @@ $(document).ready(function() {
                     </div>
                     <div class="mt-4">
                         <a id="downloadLink" href="#" target="_blank"
-                              class="btn btn-success d-inline-flex align-items-center gap-2 "> <i class="fas fa-download"></i>Download Image</a>
+                              class="btn btn-success d-inline-flex align-items-center gap-2 "> <i class="fas fa-images"></i>See the full Image</a>
                     </div>
                 </div>
             </div>

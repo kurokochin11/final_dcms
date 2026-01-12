@@ -40,6 +40,12 @@ class ExtraoralExaminationController extends Controller
 
         return redirect()->back()->with('success', 'Extraoral examination added.');
     }
+public function show(ExtraoralExamination $extraoral_examination)
+{
+    return response()->json(
+        $extraoral_examination->load('patient')
+    );
+}
 
     public function update(Request $request, ExtraoralExamination $extraoral_examination)
     {
