@@ -45,12 +45,7 @@ $(document).ready(function() {
               <tr>
                 <th class="px-4 py-2">Patient No.</th>
                 <th class="px-4 py-2">Patient</th>
-                <th class="px-4 py-2">Facial Symmetry</th>
-                <th class="px-4 py-2">Lymph Nodes</th>
-                <th class="px-4 py-2">Pain</th>
-                <th class="px-4 py-2">Clicking/Popping</th>
-                <th class="px-4 py-2">Limited Opening</th>
-                <th class="px-4 py-2">MIO (mm)</th>
+                <th class="px-4 py-2">Examination Date </th>
                 <th class="px-4 py-2">Actions</th>
               </tr>
             </thead>
@@ -77,17 +72,11 @@ $(document).ready(function() {
                 <tr class="border-t">
                   <td class="px-4 py-2">{{ $loop->iteration }}</td>
                   <td class="px-4 py-2">{{ optional($exam->patient)->first_name ?? '—' }} {{ optional($exam->patient)->last_name ?? '' }}</td>
-                  <td class="px-4 py-2">{{ $exam->facial_symmetry ?? '—' }} @if($exam->facial_symmetry_notes)<div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $exam->facial_symmetry_notes }} </div>
-                 @endif
+                 
           </td>
-                  <td class="px-4 py-2">{{ $exam->lymph_nodes ?? '—' }} @if($exam->lymph_nodes_location)<div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $exam->lymph_nodes_location }}</div>
-                 @endif
+                  
         </td>
-                  <td class="px-4 py-2">{{ $exam->tmj_pain ? 'Yes' : 'No' }}</td>
-                  <td class="px-4 py-2">{{ $exam->tmj_clicking ? 'Yes' : 'No' }}</td>
-                  <td class="px-4 py-2">{{ $exam->tmj_limited_opening ? 'Yes' : 'No' }}</td>
-                  <td class="px-4 py-2">{{ $exam->mio ?? '—' }}</td>
-
+                 
                   <td class="px-4 py-2">
                     <div class="flex items-center gap-2">
                       {{-- Put JSON safely in data-record and dispatch using onclick to avoid Blade/JS quoting issues --}}
