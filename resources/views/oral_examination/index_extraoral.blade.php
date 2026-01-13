@@ -11,11 +11,44 @@
 <script src="assets/js/kaiadmin.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('#myTable').DataTable({
+    // Initialize DataTable and store in a variable
+    var table = $('#myTable').DataTable({
         responsive: true
+    });
+
+    // Apply filters on button click
+    $('#applyFilters').on('click', function() {
+        const patient = $('#patientFilter').val().trim(); // trim to avoid extra spaces
+        const date = $('#dateFilter').val().trim();
+
+        // Apply search to specific columns
+        table
+          .columns(1).search(patient, false, false) // Column 1 = Patient
+          .columns(2).search(date, false, false)    // Column 2 = Examination Date
+          .draw();
+    });
+
+    // Optional: filter live on change instead of clicking Apply
+    $('#patientFilter, #dateFilter').on('change', function() {
+        const patient = $('#patientFilter').val().trim();
+        const date = $('#dateFilter').val().trim();
+
+        table
+          .columns(1).search(patient, false, false)
+          .columns(2).search(date, false, false)
+          .draw();
+    });
+
+    // Reset filters
+    $('#resetFilters').on('click', function () {
+        $('#patientFilter').val('');
+        $('#dateFilter').val('');
+        table.search('').columns().search('').draw();
     });
 });
 </script>
+
+
 
 @section('title', 'Extraoral Examinations')
 <x-app-layout>
@@ -41,6 +74,43 @@ $(document).ready(function() {
       <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
           <div class="table-responsive">
                     <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
+
+ <!-- FILTERS INLINE -->
+<div class="d-flex align-items-center mb-3 gap-2">
+  <!-- Patient Filter -->
+  <select id="patientFilter" class="form-select form-select-sm" style="width: 200px;">
+    <option value="">All Patients</option>
+    @foreach(
+      $examinations
+        ->map(fn($e) => optional($e->patient)->first_name.' '.optional($e->patient)->last_name)
+        ->filter()
+        ->unique()
+        ->sort()
+      as $name
+    )
+      <option value="{{ $name }}">{{ $name }}</option>
+    @endforeach
+  </select>
+
+  <!-- Date Filter -->
+  <select id="dateFilter" class="form-select form-select-sm" style="width: 150px;">
+    <option value="">All Dates</option>
+    @foreach(
+      $examinations
+        ->pluck('examination_date')
+        ->unique()
+        ->sortDesc()
+      as $date
+    )
+      @php $formatted = \Carbon\Carbon::parse($date)->format('M d, Y'); @endphp
+      <option value="{{ $formatted }}">{{ $formatted }}</option>
+    @endforeach
+  </select>
+
+ 
+</div>
+
+
             <thead class="text-gray-600 dark:text-gray-300">
               <tr>
                 <th class="px-4 py-2">Patient No.</th>
@@ -57,6 +127,9 @@ $(document).ready(function() {
                   $record = [
                     'id' => $exam->id,
                     'patient_id' => $exam->patient_id,
+                    'patient_first_name' => optional($exam->patient)->first_name,
+                     'patient_last_name' => optional($exam->patient)->last_name,
+                    'examination_date' => $exam->examination_date,
                     'facial_symmetry' => $exam->facial_symmetry,
                     'facial_symmetry_notes' => $exam->facial_symmetry_notes,
                     'lymph_nodes' => $exam->lymph_nodes,
@@ -72,18 +145,17 @@ $(document).ready(function() {
                 <tr class="border-t">
                   <td class="px-4 py-2">{{ $loop->iteration }}</td>
                   <td class="px-4 py-2">{{ optional($exam->patient)->first_name ?? '—' }} {{ optional($exam->patient)->last_name ?? '' }}</td>
-                 
-          </td>
-                  
-        </td>
-                 
+                 <td class="px-4 py-2"> {{ \Carbon\Carbon::parse($exam->examination_date)->format('M d, Y') }}
+                </td>
+                 </td>
+                   </td>
                   <td class="px-4 py-2">
                     <div class="flex items-center gap-2">
                       {{-- Put JSON safely in data-record and dispatch using onclick to avoid Blade/JS quoting issues --}}
                     
 <button
     type="button"
-    class="btn btn-info btn-xs"
+    class="btn btn-primary btn-xs"
     data-record='{{ json_encode($record, JSON_HEX_APOS | JSON_HEX_QUOT) }}'
     onclick="window.dispatchEvent(
         new CustomEvent('open-extraoral-view', {
@@ -92,7 +164,6 @@ $(document).ready(function() {
     )">
      <i class="fas fa-eye"></i>
 </button>
-
                       <button
                         type="button"
                         class="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-400"
@@ -143,13 +214,15 @@ $(document).ready(function() {
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl z-10 mx-4 overflow-hidden">
     <!-- Header -->
     <div class="px-6 py-4 flex items-center justify-between border-b dark:border-gray-700">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-        Extraoral Examination (View)
-      </h3>
+     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+  Extraoral Examination of  <span class="font-semibold"x-text="(record.patient_first_name ?? '—') + ' ' + (record.patient_last_name ?? '')"></span>
+</h3>
+
       <button @click="close" class="text-gray-600 hover:text-gray-800 dark:text-gray-300">&times;</button>
     </div>
 
     <!-- Body -->
+     <p> <strong>Examination Date:</strong> <span x-text="record.examination_date ?? '—'"></span></p>
     <div class="px-6 py-4 space-y-3 text-sm text-gray-800 dark:text-gray-200">
       <p><strong>Facial Symmetry:</strong> <span x-text="record.facial_symmetry ?? '—'"></span></p>
       <p x-show="record.facial_symmetry_notes" class="text-gray-500" x-text="record.facial_symmetry_notes"></p>
@@ -165,6 +238,8 @@ $(document).ready(function() {
 
       <p><strong>MIO (mm):</strong> <span x-text="record.mio ?? '—'"></span></p>
       <p x-show="record.notes"><strong>Notes:</strong> <span x-text="record.notes"></span></p>
+      
+
     </div>
 
     <!-- Footer -->
@@ -212,6 +287,7 @@ $(document).ready(function() {
         id: null,
         patient_id: '{{ isset($patient) && $patient ? $patient->id : '' }}',
         facial_symmetry: '',
+        examination_date: '',
         facial_symmetry_notes: '',
         lymph_nodes: '',
         lymph_nodes_location: '',
@@ -243,6 +319,7 @@ $(document).ready(function() {
             this.form.patient_id = '{{ $patient->id }}';
           @else
             this.form.patient_id = '';
+             this.form.examination_date = new Date().toISOString().split('T')[0];
           @endif
           this.form.facial_symmetry = '';
           this.form.facial_symmetry_notes = '';
@@ -257,6 +334,7 @@ $(document).ready(function() {
           const r = d.record || {};
           this.form.id = r.id ?? null;
           this.form.patient_id = r.patient_id ?? (this.form.patient_id || '');
+           this.form.examination_date = r.examination_date ?? ''; 
           this.form.facial_symmetry = r.facial_symmetry ?? '';
           this.form.facial_symmetry_notes = r.facial_symmetry_notes ?? '';
           this.form.lymph_nodes = r.lymph_nodes ?? '';
@@ -277,10 +355,11 @@ $(document).ready(function() {
       }
     }
   }
+  
 </script>
 
 
-  <!-- Modal + Alpine -->
+  <!-- ADD / EDIT MODAL -->
   <div
     x-data="extraoralModal()"
     x-on:open-extraoral-modal.window="setForm($event.detail)"
@@ -309,13 +388,27 @@ $(document).ready(function() {
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Patient</label>
             <select name="patient_id" x-model="form.patient_id" required class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2">
-              <option value="">-- Select patient --</option>
+              <option value="">Select patient </option>
               @foreach($patients ?? [] as $p)
                 <option value="{{ $p->id }}">{{ $p->first_name }} {{ $p->last_name }}</option>
               @endforeach
             </select>
           </div>
         @endif
+
+<!-- Examination Date -->
+<div>
+  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Examination Date
+  </label>
+  <input
+    type="date"
+    name="examination_date"
+    x-model="form.examination_date"
+    required
+    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700
+           bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2">
+</div>
 
         <!-- Facial Symmetry -->
         <div>
@@ -399,9 +492,10 @@ $(document).ready(function() {
 
         <div class="flex items-center justify-end gap-3 pt-3">
           <button type="button" @click="close" class="px-4 py-2 rounded-md border text-gray-700 dark:text-gray-200">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-500" x-text="mode === 'create' ? 'Save' : 'Update'"></button>
+          <button type="submit" class="btn btn-success btn-sm"  x-text="mode === 'create' ? 'Save' : 'Update'"></button>
         </div>
       </form>
     </div>
   </div>
+  
 </x-app-layout>

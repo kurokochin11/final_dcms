@@ -20,6 +20,7 @@ class ExtraoralExaminationController extends Controller
     {
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
+              'examination_date' => 'required|date',
             'facial_symmetry' => 'nullable|string|max:255',
             'facial_symmetry_notes' => 'nullable|string',
             'lymph_nodes' => 'nullable|string|max:255',
@@ -51,6 +52,7 @@ public function show(ExtraoralExamination $extraoral_examination)
     {
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
+              'examination_date' => 'required|date',
             'facial_symmetry' => 'nullable|string|max:255',
             'facial_symmetry_notes' => 'nullable|string',
             'lymph_nodes' => 'nullable|string|max:255',

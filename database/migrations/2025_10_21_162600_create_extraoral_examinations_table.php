@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('extraoral_examinations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
+       
+            $table->date('examination_date');
 
             // Extraoral fields
             $table->string('facial_symmetry')->nullable(); // "Normal" or "Asymmetrical"

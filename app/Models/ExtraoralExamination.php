@@ -11,6 +11,7 @@ class ExtraoralExamination extends Model
 
     protected $fillable = [
         'patient_id',
+        'examination_date',
         'facial_symmetry',
         'facial_symmetry_notes',
         'lymph_nodes',
