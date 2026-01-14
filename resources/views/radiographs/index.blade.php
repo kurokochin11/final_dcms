@@ -271,7 +271,7 @@ $(document).ready(function() {
                 <div class="mt-6 flex justify-end gap-3">
                     <x-button type="button" id="btnCancel" class="btn btn-sm btn-black">Cancel</x-button>
                     <x-button type="submit" id="btnSave"
-                        class="btn btn-sm btn-success">Save</x-button>
+                        class="btn btn-sm btn-primary">Submit</x-button>
                 </div>
             </form>
         </div>

@@ -67,6 +67,22 @@ $(document).ready(function () {
                   <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->other_oral_conditions ?? '—' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <div class="flex gap-2 items-center">
+ <!-- VIEW -->
+    <button
+      type="button"
+      class="btn btn-primary btn-xs btn-view"
+      title="View"
+      data-patient="{{ $diagnosis->patient->first_name }} {{ $diagnosis->patient->last_name }}"
+      data-dental_caries="{{ $diagnosis->dental_caries }}"
+      data-periodontal_disease="{{ $diagnosis->periodontal_disease }}"
+      data-pulpal_periapical="{{ $diagnosis->pulpal_periapical }}"
+      data-occlusal_diagnosis="{{ $diagnosis->occlusal_diagnosis }}"
+      data-other_oral_conditions="{{ $diagnosis->other_oral_conditions }}"
+    >
+      <i class="fas fa-eye"></i>
+    </button>
+                     
+                 <!-- EDIT -->
                       <button
                         type="button"
                         data-id="{{ $diagnosis->id }}"
@@ -77,7 +93,8 @@ $(document).ready(function () {
                         data-occlusal_diagnosis="{{ $diagnosis->occlusal_diagnosis }}"
                         data-other_oral_conditions="{{ $diagnosis->other_oral_conditions }}"
                         class="btn-edit btn btn-warning btn-xs"title="Edit"><i class="fas fa-edit text-white"></i>
-                    
+
+                     <!-- DELETE -->
                       <form action="{{ route('diagnoses.destroy', $diagnosis->id) }}" method="POST" onsubmit="return confirm('Delete this diagnosis?');" class="inline">
 
                         @csrf
@@ -118,7 +135,7 @@ $(document).ready(function () {
           <div>
             <label class="block text-sm font-medium text-gray-700">Patient</label>
             <select id="patient_id" name="patient_id" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
-              <option value="">— select patient —</option>
+              <option value="">select patient </option>
               @foreach($patients as $patient)
                 <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
               @endforeach
@@ -152,8 +169,8 @@ $(document).ready(function () {
         </div>
 
         <div class="mt-6 flex justify-end gap-3">
-          <button type="button" id="btnCancel" class="px-4 py-2 rounded-md bg-gray-100 text-gray-700">Cancel</button>
-          <button type="submit" id="btnSave" class="px-4 py-2 rounded-md bg-indigo-600 text-white">Save</button>
+          <button type="button" id="btnCancel" class="btn btn-dark btn-sm">Cancel</button>
+          <button type="submit" id="btnSave" class="btn btn-primary btn-sm">Submit</button>
         </div>
       </form>
     </div>

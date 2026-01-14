@@ -491,8 +491,8 @@ $(document).ready(function() {
         </fieldset>
 
         <div class="flex items-center justify-end gap-3 pt-3">
-          <button type="button" @click="close" class="px-4 py-2 rounded-md border text-gray-700 dark:text-gray-200">Cancel</button>
-          <button type="submit" class="btn btn-success btn-sm"  x-text="mode === 'create' ? 'Save' : 'Update'"></button>
+          <button type="button" @click="close"class="btn btn-dark btn-sm">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"  x-text="mode === 'create' ? 'Submit' : 'Update'"></button>
         </div>
       </form>
     </div>

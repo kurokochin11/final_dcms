@@ -230,8 +230,8 @@ $groupedAnswers = $session->checkupResults->groupBy(
     Cancel
 </x-button>
 
-<x-button class="btn btn-success btn-xs" type="submit">
-    Save Changes
+<x-button class="btn btn-primary btn-xs" type="submit">
+    Update
 </x-button>
 </div>
 
