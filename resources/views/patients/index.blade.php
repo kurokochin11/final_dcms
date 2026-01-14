@@ -80,11 +80,11 @@ $(document).ready(function () {
                 
  <td class="px-4 py-2 border" style="text-align:left;">
          <div class="d-flex gap-1 align-items-center">
-            <x-button class="btn btn-primary btn-xs" @click="openViewId={{ $patient->id }}"> <i class="fas fa-eye"></i></x-button>
-            <x-button class="btn btn-warning btn-xs" @click="openEditId={{ $patient->id }}"> <i class="fas fa-edit"></i></x-button>
-            <x-danger-button class="btn btn-danger btn-xs" @click="openDeleteId={{ $patient->id }}"> <i class="fas fa-trash"></i></x-danger-button>
+            <button class="btn btn-primary btn-medium" @click="openViewId={{ $patient->id }}"> <i class="fas fa-eye"></i></button>
+            <button class="btn btn-warning text-white btn-medium" @click="openEditId={{ $patient->id }}"> <i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger btn-medium" @click="openDeleteId={{ $patient->id }}"> <i class="fas fa-trash"></i></button>
              <div class="dropdown">
-    <button class="btn btn-secondary btn-xs dropdown-toggle" type="button" id="dropdownMenuButton{{ $patient->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ $patient->id }}" data-bs-toggle="dropdown" aria-expanded="false">
         Interview
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $patient->id }}">
@@ -149,9 +149,9 @@ $(document).ready(function () {
                 <div class="grid grid-cols-2 gap-x-6 gap-y-2">
                     <p><span class="font-semibold">Sex:</span> {{ $patient->sex }}</p>
                     <p><span class="font-semibold">Age:</span> {{ $patient->age }}</p>
+                   <p><span class="font-semibold">Birth Date:</span>{{ $patient->date_of_birth->format('F d, Y') }}</p>
+                   <p><span class="font-semibold">Date Registered:</span>{{ $patient->date_registered->format('F d, Y') }}</p>
 
-                    <p><span class="font-semibold">Birth Date:</span> {{ $patient->date_of_birth->format('Y-m-d') }}</p>
-                    <p><span class="font-semibold">Date Registered:</span> {{ $patient->date_registered->format('Y-m-d') }}</p>
 
                     <p><span class="font-semibold">Civil Status:</span> {{ $patient->civil_status ?? '-' }}</p>
                     <p><span class="font-semibold">Nationality:</span> {{ $patient->nationality ?? '-' }}</p>
@@ -380,30 +380,44 @@ $(document).ready(function () {
     </div>
 </div>
 <!-- DELETE MODAL -->
-<div x-show="openDeleteId === {{ $patient->id }}" x-cloak
-     class="fixed inset-0 flex items-center justify-center z-50">
+<div x-show="openDeleteId === {{ $patient->id }}"
+     x-cloak
+     class="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
 
-    <div class="bg-white rounded-lg shadow-lg w-1/3 p-6 text-center border border-gray-200">
+    <div class="bg-white rounded-lg shadow-lg w-1/3 overflow-hidden border border-gray-200">
+
         <!-- HEADER -->
-        <h2 class="text-xl font-bold text-red-600 mb-4">Delete Patient?</h2>
+        <div class="bg-red-600 text-white px-6 py-4">
+            <h2 class="text-lg font-semibold">Delete Patient</h2>
+        </div>
 
         <!-- BODY -->
-        <p class="mb-4 text-gray-700">
-            Are you sure you want to delete
-            <b>{{ $patient->first_name }} {{ $patient->last_name }}</b>?
-        </p>
+        <div class="p-6 text-center">
+            <p class="mb-4 text-gray-700">
+                Are you sure you want to delete
+                <b>{{ $patient->first_name }} {{ $patient->last_name }}</b>?
+            </p>
 
-        <!-- ACTIONS -->
-        <form method="POST" action="{{ route('patients.destroy', $patient->id) }}" class="flex justify-center gap-3">
-            @csrf
-            @method('DELETE')
-            <button type="button" @click="openDeleteId = null" class="btn btn-black px-4 py-2 rounded">
-                Cancel
-            </button>
-            <button type="submit" class="btn btn-danger px-4 py-2 rounded">
-                Delete
-            </button>
-        </form>
+            <!-- ACTIONS -->
+            <form method="POST"
+                  action="{{ route('patients.destroy', $patient->id) }}"
+                  class="flex justify-center gap-3 mt-6">
+                @csrf
+                @method('DELETE')
+
+                <button type="button"
+                        @click="openDeleteId = null"
+                        class="btn btn-black px-4 py-2 rounded">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="btn btn-danger px-4 py-2 rounded">
+                    Delete
+                </button>
+            </form>
+        </div>
+
     </div>
 </div>
 

@@ -159,34 +159,36 @@ $(document).ready(function() {
                                     <div class="flex gap-2 items-center">
 
                                         <!-- View button -->
-                                        <x-button type="button" data-id="{{ $rg->id }}"
+                                        <button type="button" data-id="{{ $rg->id }}"
                                             data-patient-id="{{ $rg->patient_id ?? '' }}"
                                             data-patient="{{ e(optional($rg->patient)->first_name . ' ' . optional($rg->patient)->last_name) }}"
                                             data-date="{{ optional($rg->date_taken) ? \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') : '' }}"
                                             data-type="{{ e($rg->type) }}" data-findings="{{ e($rg->findings) }}"
                                             data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
-                                            class="btn btn-primary btn-xs btn-view" title="View">
+                                            class="btn btn-primary btn-medium btn-view" title="View">
                                             <i class="fas fa-eye"></i>
-                                        </x-button>
+                                        </button>
 
                                         <!-- Edit button -->
-                                        <x-button type="button" data-id="{{ $rg->id }}"
+                                        <button type="button" data-id="{{ $rg->id }}"
                                             data-patient-id="{{ $rg->patient_id ?? '' }}"
                                             data-date="{{ optional($rg->date_taken) ? \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') : '' }}"
                                             data-type="{{ e($rg->type) }}" data-findings="{{ e($rg->findings) }}"
                                             data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
-                                            class="btn btn-xs btn-warning btn-edit">
+                                            class="btn btn-medium btn-warning text-white btn-edit">
                                             <i class="fas fa-edit"></i>
-                                        </x-button>
+                                        </button>
 
-                                        <form action="{{ route('radiographs.destroy', $rg->id) }}" method="POST"
-                                            onsubmit="return confirm('Delete this record?');"
-                                            class="d-flex align-items-center m-0">
-                                            @csrf
-                                            @method('DELETE')
-                                            <x-button type="submit" class="btn btn-xs btn-danger" title="Delete"><i
-                                                    class="fas fa-trash"></i></x-button>
-                                        </form>
+                                       <form method="POST" class="d-flex align-items-center m-0 delete-form">
+                                      @csrf
+                                  @method('DELETE')
+                                    <button type="button"
+                                 class="btn btn-medium btn-danger btn-delete"
+                               data-action="{{ route('radiographs.destroy', $rg->id) }}"
+                              data-patient="{{ optional($rg->patient)->first_name }} {{ optional($rg->patient)->last_name }}">
+                                            <i class="fas fa-trash"></i>
+                                   </button>
+                                     </form>
                                     </div>
                                 </td>
                             </tr>
@@ -212,7 +214,9 @@ $(document).ready(function() {
     </div>
 
    {{-- Add/Edit Modal --}}
-<div id="modalBackdrop" class="fixed inset-0 flex items-center justify-center z-40">
+<<div id="modalBackdrop"
+     class="fixed inset-0 hidden items-center justify-center z-40 bg-black/40">
+
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
 
         <!-- HEADER -->
@@ -284,9 +288,10 @@ $(document).ready(function() {
 </div>
 
     {{-- View Modal --}}
-<div id="viewBackdrop" class="fixed inset-0 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
+<div id="viewBackdrop"
+     class="fixed inset-0 hidden items-center justify-center z-50 bg-black/40">
 
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
         <!-- HEADER -->
         <div class="p-5 border-b flex items-start justify-between gap-4 bg-blue-600 text-white rounded-t-lg">
             <div>
@@ -327,9 +332,85 @@ $(document).ready(function() {
         </div>
     </div>
 </div>
+{{-- Delete Confirmation Modal --}}
+<div id="deleteBackdrop"
+     class="fixed inset-0 hidden items-center justify-center z-50 bg-black/40">
+
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+        <!-- Header -->
+        <div class="p-4 border-b bg-red-600 text-white rounded-t-lg">
+            <h3 class="text-lg font-medium">Confirm Delete</h3>
+        </div>
+
+        <!-- Body -->
+<div class="p-5 text-sm text-gray-700">
+    <p>
+        Are you sure you want to delete this radiograph record of
+        <span class="font-semibold text-gray-900" id="deletePatientName"></span>?
+    </p>
+</div>
+
+
+     <!-- Footer -->
+<div class="p-4 d-flex justify-content-end gap-2 border-top">
+
+    <!-- Cancel -->
+    <button type="button"
+        id="btnDeleteCancel"
+        class="btn btn-dark btn-sm">
+        Cancel
+    </button>
+
+    <!-- Confirm Delete -->
+    <form id="deleteForm" method="POST" class="m-0">
+        @csrf
+        @method('DELETE')
+
+        <button type="submit"
+            class="btn btn-danger btn-sm">
+            Delete
+        </button>
+    </form>
+
+</div>
+
+
+    </div>
+</div>
 
     {{-- JS --}}
     <script>
+        const deleteBackdrop = document.getElementById('deleteBackdrop');
+const deleteForm = document.getElementById('deleteForm');
+const deletePatientName = document.getElementById('deletePatientName');
+const btnDeleteCancel = document.getElementById('btnDeleteCancel');
+
+function openDeleteModal(action, patient) {
+    deleteForm.action = action;
+    deletePatientName.innerText = patient || '';
+    deleteBackdrop.classList.remove('hidden');
+    deleteBackdrop.classList.add('flex');
+}
+
+function closeDeleteModal() {
+    deleteBackdrop.classList.remove('flex');
+    deleteBackdrop.classList.add('hidden');
+    deleteForm.action = '';
+    deletePatientName.innerText = '';
+}
+
+btnDeleteCancel.addEventListener('click', closeDeleteModal);
+
+// Listen for delete button clicks
+document.addEventListener('click', function (e) {
+    const deleteBtn = e.target.closest('.btn-delete');
+    if (!deleteBtn) return;
+
+    const action = deleteBtn.dataset.action;
+    const patient = deleteBtn.dataset.patient;
+    openDeleteModal(action, patient);
+});
+
     (function() {
         const backdrop = document.getElementById('modalBackdrop');
         const openBtn = document.getElementById('btnOpenModal');
@@ -438,7 +519,17 @@ $(document).ready(function() {
                 const imagepath = viewBtn.dataset.imagepath || '';
 
                 viewPatientName.innerText = patient || '—';
-                viewDate.innerText = date ? new Date(date).toLocaleDateString() : '—';
+                if (date) {
+    const d = new Date(date);
+    viewDate.innerText = d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+    });
+} else {
+    viewDate.innerText = '—';
+}
+
                 viewType.innerText = type || '—';
                 viewFindings.innerText = findings || 'No findings recorded.';
 
