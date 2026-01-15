@@ -16,6 +16,7 @@ class Diagnosis extends Model
         'pulpal_periapical',
         'occlusal_diagnosis',
         'other_oral_conditions',
+          'diagnosis_date', 
     ];
 
     /**

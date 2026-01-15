@@ -80,7 +80,7 @@ Route::delete('/extraoral-examinations/{extraoral_examination}', [ExtraoralExami
     Route::get('/{intraoral}/edit', [IntraoralExaminationController::class, 'edit'])->name('edit');
     Route::put('/{intraoral}', [IntraoralExaminationController::class, 'update'])->name('update');
     Route::delete('/{intraoral}', [IntraoralExaminationController::class, 'destroy'])->name('destroy');
-Route::get('/oral_examination/{intraoral}/view', [IntraoralExaminationController::class, 'view'])->name('intraoral.view');
+Route::get('/{intraoral}/view', [IntraoralExaminationController::class, 'view'])->name('intraoral.view');
 
 });
  //radiograph routes
@@ -112,4 +112,5 @@ Route::delete('/appointments/{appointment}', [AppointmentController::class, 'des
     Route::put('/diagnoses/{diagnosis}', [DiagnosisController::class, 'update'])->name('diagnoses.update');
     Route::delete('/diagnoses/{diagnosis}', [DiagnosisController::class, 'destroy'])->name('diagnoses.destroy');
 });
+
 

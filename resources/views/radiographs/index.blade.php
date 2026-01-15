@@ -211,112 +211,122 @@ $(document).ready(function() {
         </div>
     </div>
 
-    {{-- Add/Edit Modal --}}
-    <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-40">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
-            <div class="p-5 border-b flex items-center justify-between">
-                <h3 id="modalTitle" class="text-lg font-medium text-gray-800">Add Radiograph</h3>
-                <button type="button" id="modalClose" class="text-gray-500 hover:text-gray-700"
-                    aria-label="Close">✕</button>
+   {{-- Add/Edit Modal --}}
+<div id="modalBackdrop" class="fixed inset-0 flex items-center justify-center z-40">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
+
+        <!-- HEADER -->
+        <div class="p-5 border-b flex items-center justify-between bg-blue-600 text-white rounded-t-lg">
+            <h3 id="modalTitle" class="text-lg font-medium">Add Radiograph</h3>
+            <button type="button" id="modalClose" class="text-white hover:text-gray-200"
+                aria-label="Close">✕</button>
+        </div>
+
+        <!-- FORM -->
+        <form id="modalForm" class="p-5" method="POST" action="{{ route('radiographs.store') }}"
+            enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="_method" id="form_method" value="">
+            <input type="hidden" name="edit_id" id="edit_id" value="">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Patient</label>
+                    <select id="patient_id" name="patient_id" required
+                        class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
+                        <option value="">Select Patient</option>
+                        @foreach($patients as $patient)
+                        <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date Taken</label>
+                    <input id="date_taken" name="date_taken" type="date"
+                        class="mt-1 block w-full rounded-md border-gray-200 shadow-sm" required>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Type of Radiograph</label>
+                    <input type="text" id="type_id" name="type" required
+                        class="mt-1 block w-full rounded-md border-gray-200 shadow-sm"
+                        placeholder="Enter radiograph type" list="typesList">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Findings</label>
+                    <textarea id="findings" name="findings" rows="4"
+                        class="mt-1 block w-full rounded-md border-gray-200 shadow-sm"></textarea>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Radiograph Image</label>
+                    <input id="image" name="image" type="file" class="mt-1 block w-full" accept="image/*,.pdf">
+                    <div id="currentPreview" class="mt-3 hidden">
+                        <div class="text-sm text-gray-500">Current image preview</div>
+                        <img id="previewImg" src="" class="mt-2 w-28 h-28 object-cover rounded-md border">
+                    </div>
+                </div>
+
             </div>
 
-            <form id="modalForm" class="p-5" method="POST" action="{{ route('radiographs.store') }}"
-                enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="_method" id="form_method" value="">
-                <input type="hidden" name="edit_id" id="edit_id" value="">
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" id="btnCancel"
+                    class="btn btn-black btn-sm">Cancel</button>
+               <button type="submit" id="btnSave" class="btn btn-primary btn-sm">Submit</button>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Patient</label>
-                        <select id="patient_id" name="patient_id" required
-                            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
-                            <option value="">select patient </option>
-                            @foreach($patients as $patient)
-                            <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Date Taken</label>
-                        <input id="date_taken" name="date_taken" type="date"
-                            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm" required>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">Type of Radiograph</label>
-                        <input type="text" id="type_id" name="type" required
-                            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm"
-                            placeholder="Enter radiograph type" list="typesList">
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">Findings</label>
-                        <textarea id="findings" name="findings" rows="4"
-                            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm"></textarea>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">Radiograph Image</label>
-                        <input id="image" name="image" type="file" class="mt-1 block w-full" accept="image/*,.pdf">
-                        <div id="currentPreview" class="mt-3 hidden">
-                            <div class="text-sm text-gray-500">Current image preview</div>
-                            <img id="previewImg" src="" class="mt-2 w-28 h-28 object-cover rounded-md border">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex justify-end gap-3">
-                    <x-button type="button" id="btnCancel" class="btn btn-sm btn-black">Cancel</x-button>
-                    <x-button type="submit" id="btnSave"
-                        class="btn btn-sm btn-primary">Submit</x-button>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+</div>
 
     {{-- View Modal --}}
-    <div id="viewBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
-            <div class="p-5 border-b flex items-start justify-between gap-4">
-                <div>
-                    <h3 id="viewPatientName" class="text-lg font-medium text-gray-800">Patient Name</h3>
-                    <div id="viewSubtitle" class="text-sm text-gray-500"></div>
+<div id="viewBackdrop" class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
+
+        <!-- HEADER -->
+        <div class="p-5 border-b flex items-start justify-between gap-4 bg-blue-600 text-white rounded-t-lg">
+            <div>
+                <h3 id="viewPatientName" class="text-lg font-medium">Patient Name</h3>
+                <div id="viewSubtitle" class="text-sm opacity-80"></div>
+            </div>
+            <button type="button" id="viewClose" class="text-white hover:text-gray-200" aria-label="Close">✕</button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2">
+                <div class="bg-gray-50 rounded-md p-4 flex items-center justify-center border">
+                    <img id="viewImageLarge" src="" alt="Radiograph" class="max-h-96 object-contain">
                 </div>
-                <button type="button" id="viewClose" class="text-gray-500 hover:text-gray-700"
-                    aria-label="Close">✕</button>
             </div>
 
-            <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2">
-                    <div class="bg-gray-50 rounded-md p-4 flex items-center justify-center border">
-                        <img id="viewImageLarge" src="" alt="Radiograph" class="max-h-96 object-contain">
-                    </div>
+            <div class="md:col-span-1 space-y-4">
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700">Date</h4>
+                    <p id="viewDate" class="mt-1 text-sm text-gray-700">—</p>
                 </div>
-
-                <div class="md:col-span-1 space-y-4">
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-700">Date</h4>
-                        <p id="viewDate" class="mt-1 text-sm text-gray-700">—</p>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-700">Type of Radiograph</h4>
-                        <p id="viewType" class="mt-1 text-sm text-gray-700">—</p>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-700">Findings</h4>
-                        <p id="viewFindings" class="mt-1 text-sm text-gray-700 whitespace-pre-wrap">—</p>
-                    </div>
-                    <div class="mt-4">
-                        <a id="downloadLink" href="#" target="_blank"
-                              class="btn btn-success d-inline-flex align-items-center gap-2 "> <i class="fas fa-images"></i>See the full Image</a>
-                    </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700">Type of Radiograph</h4>
+                    <p id="viewType" class="mt-1 text-sm text-gray-700">—</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700">Findings</h4>
+                    <p id="viewFindings" class="mt-1 text-sm text-gray-700 whitespace-pre-wrap">—</p>
+                </div>
+                <div class="mt-4">
+                    <a id="downloadLink" href="#" target="_blank"
+                       class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 inline-flex items-center gap-2">
+                        <i class="fas fa-images"></i> See the full Image
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
     {{-- JS --}}
     <script>

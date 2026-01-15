@@ -414,20 +414,32 @@
 </div>
 
 {{-- VIEW MODAL --}}
-<div id="viewIntraoralModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
-        <button onclick="closeViewModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">View Examination</h2>
+<div id="viewIntraoralModal"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
 
-        <div id="viewIntraoralContent" class="space-y-3 text-gray-800 dark:text-gray-200">
-            {{-- Content will be filled dynamically --}}
-        </div>
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
+
+        <button onclick="closeViewModal()"
+            class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+            ✕
+        </button>
+
+        <h2 class="text-2xl font-semibold mb-4">
+            Intraoral Examination (View)
+        </h2>
+
+        <div id="viewIntraoralContent" class="space-y-3"></div>
 
         <div class="flex justify-end mt-4">
-            <button type="button" onclick="closeViewModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Close</button>
+            <button onclick="closeViewModal()"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                Close
+            </button>
         </div>
     </div>
 </div>
+
+
 
 <script>
     // Create Modal JS
@@ -614,50 +626,80 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// View Modal JS
 function openViewModal(id) {
     fetch(`/oral_examination/${id}/view`, {
-        headers: { 'Accept': 'application/json' },
-        credentials: 'same-origin'
+        headers: { 'Accept': 'application/json' }
     })
     .then(res => res.json())
     .then(data => {
+        document.getElementById('viewIntraoralContent').innerHTML = `
+            <div class="space-y-2">
 
-      
-        const content = document.getElementById('viewIntraoralContent');
-        content.innerHTML = `
-            <p><strong>Patient:</strong> ${data.patient_id}</p>
-            <p><strong>Soft Tissues Status:</strong> ${data.soft_tissues_status}</p>
-            <p><strong>Soft Tissues:</strong> ${data.soft_tissues}</p>
-            <p><strong>Gingiva:</strong> ${data.gingiva_color} / ${data.gingiva_texture}</p>
-            <p><strong>Bleeding:</strong> ${data.bleeding}</p>
-            <p><strong>Recession:</strong> ${data.recession}</p>
-            <p><strong>Teeth:</strong> ${data.teeth_condition}</p>
-            <p><strong>Occlusion:</strong> ${data.occlusion_class}${data.occlusion_other ? ' — ' + data.occlusion_other : ''}</p>
-            <p><strong>Hygiene:</strong> ${data.hygiene_status} — Plaque: ${data.plaque_index} — Calculus: ${data.calculus}</p>
-            ${data.odontogram ? `<div><strong>Odontogram:</strong><br><img src="${data.odontogram}" class="max-h-60 mt-2" /></div>` : ''}
+                <div>
+                    <span class="font-bold text-lg">Patient:</span>
+                    <span>${data.patient_name ?? '-'}</span>
+                </div>
+
+                <div>
+                    <strong>Soft Tissues Status:</strong>
+                    ${data.soft_tissues_status ?? '-'}
+                </div>
+
+                <div>
+                    <strong>Soft Tissues:</strong>
+                    ${data.soft_tissues ?? '-'}
+                </div>
+
+                <div>
+                    <strong>Gingiva:</strong>
+                    ${data.gingiva_color ?? '-'} /
+                    ${data.gingiva_texture ?? '-'}
+                </div>
+
+                <div><strong>Bleeding:</strong> ${data.bleeding ?? 'No'}</div>
+                <div><strong>Recession:</strong> ${data.recession ?? 'No'}</div>
+
+                <div>
+                    <strong>Teeth Condition:</strong>
+                    ${data.teeth_condition ?? '-'}
+                </div>
+
+                <div>
+                    <strong>Occlusion:</strong>
+                    ${data.occlusion_class ?? '-'}
+                    ${data.occlusion_other ? ' - ' + data.occlusion_other : ''}
+                </div>
+
+                <div>
+                    <strong>Oral Hygiene:</strong><br>
+                    Status: ${data.hygiene_status ?? '-'}<br>
+                    Plaque: ${data.plaque_index ?? '-'}<br>
+                    Calculus: ${data.calculus ?? '-'}
+                </div>
+
+                ${data.odontogram ? `
+                    <div>
+                        <strong>Odontogram:</strong><br>
+                        <img src="${data.odontogram}"
+                             class="mt-2 max-h-64 border rounded">
+                    </div>
+                ` : ''}
+            </div>
         `;
-        document.getElementById('viewIntraoralModal').classList.remove('hidden');
+
+        document.getElementById('viewIntraoralModal')
+            .classList.remove('hidden');
     })
-    .catch(err => {
-        console.error('View fetch error:', err);
-        alert('Failed to fetch examination data.');
-    });
+    .catch(() => alert('Failed to load data'));
 }
 
-// Close modal
 function closeViewModal() {
-    document.getElementById('viewIntraoralModal').classList.add('hidden');
+    document.getElementById('viewIntraoralModal')
+        .classList.add('hidden');
 }
 
-// Close modal when clicking outside content
-document.getElementById('viewIntraoralModal').addEventListener('click', function(e) {
-    if (e.target.id === 'viewIntraoralModal') {
-        closeViewModal();
-    }
-});
+
 
 </script>
-
 
 </x-app-layout>

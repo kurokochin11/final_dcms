@@ -32,6 +32,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => 'nullable|string|max:255',
             'occlusal_diagnosis' => 'nullable|string|max:255',
             'other_oral_conditions' => 'nullable|string|max:255',
+             'diagnosis_date' => 'nullable|date',
         ]);
 
         Diagnosis::create([
@@ -41,6 +42,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => $request->pulpal_periapical,
             'occlusal_diagnosis' => $request->occlusal_diagnosis,
             'other_oral_conditions' => $request->other_oral_conditions,
+             'diagnosis_date' => $request->diagnosis_date ?? now()->toDateString(), // <-- default to today if null
         ]);
 
         return redirect()->route('diagnoses.index')->with('success', 'Diagnosis added successfully.');
@@ -60,6 +62,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => 'nullable|string|max:255',
             'occlusal_diagnosis' => 'nullable|string|max:255',
             'other_oral_conditions' => 'nullable|string|max:255',
+               'diagnosis_date' => 'nullable|date', 
         ]);
 
         $diagnosis->update([
@@ -69,6 +72,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => $request->pulpal_periapical,
             'occlusal_diagnosis' => $request->occlusal_diagnosis,
             'other_oral_conditions' => $request->other_oral_conditions,
+             'diagnosis_date' => $request->diagnosis_date ?? $diagnosis->diagnosis_date ?? now()->toDateString(),
         ]);
 
         return redirect()->route('diagnoses.index')->with('success', 'Diagnosis updated successfully.');

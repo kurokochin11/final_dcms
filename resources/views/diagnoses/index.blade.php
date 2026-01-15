@@ -12,8 +12,35 @@
 
 <script>
 $(document).ready(function () {
-    $('#myTable').DataTable({
+    // Initialize DataTable
+    var table = $('#myTable').DataTable({
         responsive: true
+    });
+
+    // Custom filter function for Patient and Date
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var patientFilter = $('#filterPatient').val().toLowerCase();
+        var dateFilter = $('#filterDate').val();
+
+        var patientName = data[1].toLowerCase(); // column index 1 = Patient
+        var diagnosisDate = data[2]; // column index 2 = Date
+
+        var patientMatch = patientFilter === "" || patientName.includes(patientFilter);
+        var dateMatch = dateFilter === "" || diagnosisDate === dateFilter;
+
+        return patientMatch && dateMatch;
+    });
+
+    // Trigger filter on change
+    $('#filterPatient, #filterDate').on('change', function() {
+        table.draw();
+    });
+
+    // Optional: Reset filters
+    $('#resetFilters').on('click', function() {
+        $('#filterPatient').val('');
+        $('#filterDate').val('');
+        table.draw();
     });
 });
 </script>
@@ -42,14 +69,43 @@ $(document).ready(function () {
       <div class="bg-white rounded-md shadow border border-gray-100">
         <div class="table-responsive">
               <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
+               <div class="mb-4 flex flex-wrap gap-4 items-end p-3 bg-gray-50 rounded shadow-sm">
+  <!-- Patient Filter -->
+  <div class="flex flex-col">
+    <label for="filterPatient" class="text-xs font-semibold text-gray-600 mb-1">Patient Filter</label>
+    <select id="filterPatient" class="form-control form-control-sm w-48">
+      <option value="">All Patients</option>
+      @foreach($patients as $patient)
+        <option value="{{ $patient->first_name }} {{ $patient->last_name }}">
+          {{ $patient->first_name }} {{ $patient->last_name }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+
+  <!-- Date Filter -->
+  <div class="flex flex-col">
+    <label for="filterDate" class="text-xs font-semibold text-gray-600 mb-1">Date Filter</label>
+    <select id="filterDate" class="form-control form-control-sm w-48">
+      <option value="">All Dates</option>
+      @foreach($diagnoses as $diagnosis)
+        @if($diagnosis->diagnosis_date)
+          <option value="{{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('M d, Y') }}">
+            {{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('M d, Y') }}
+          </option>
+        @endif
+      @endforeach
+    </select>
+  </div>
+
+  
+
+
             <thead class="bg-white">
               <tr>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient No.</th>
                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dental Caries</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Periodontal Disease</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pulpal/Periapical</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Occlusal Diagnosis</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Other Oral Conditions</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -57,14 +113,11 @@ $(document).ready(function () {
             <tbody class="bg-white">
               @forelse($diagnoses as $diagnosis)
                 <tr class="border-b last:border-b-0">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $diagnosis->patient->id ?? '—' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                     {{ $diagnosis->patient->first_name ?? '—' }} {{ $diagnosis->patient->last_name ?? '' }}
                   </td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->dental_caries ?? '—' }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->periodontal_disease ?? '—' }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->pulpal_periapical ?? '—' }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->occlusal_diagnosis ?? '—' }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->other_oral_conditions ?? '—' }}</td>
+                   <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->diagnosis_date ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('M d, Y') : '—' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <div class="flex gap-2 items-center">
  <!-- VIEW -->
@@ -73,6 +126,7 @@ $(document).ready(function () {
       class="btn btn-primary btn-xs btn-view"
       title="View"
       data-patient="{{ $diagnosis->patient->first_name }} {{ $diagnosis->patient->last_name }}"
+      data-diagnosis-date="{{ $diagnosis->diagnosis_date }}"
       data-dental_caries="{{ $diagnosis->dental_caries }}"
       data-periodontal_disease="{{ $diagnosis->periodontal_disease }}"
       data-pulpal_periapical="{{ $diagnosis->pulpal_periapical }}"
@@ -87,6 +141,7 @@ $(document).ready(function () {
                         type="button"
                         data-id="{{ $diagnosis->id }}"
                         data-patient-id="{{ $diagnosis->patient_id }}"
+                        data-diagnosis-date="{{ $diagnosis->diagnosis_date }}"
                         data-dental_caries="{{ $diagnosis->dental_caries }}"
                         data-periodontal_disease="{{ $diagnosis->periodontal_disease }}"
                         data-pulpal_periapical="{{ $diagnosis->pulpal_periapical }}"
@@ -118,7 +173,7 @@ $(document).ready(function () {
     </div>
   </div>
 
-  {{-- Add/Edit Modal --}}
+  <!--ADD/EDIT MODAL-->
   <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-40">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
       <div class="p-5 border-b flex items-center justify-between">
@@ -141,6 +196,13 @@ $(document).ready(function () {
               @endforeach
             </select>
           </div>
+
+          <div>
+    <label class="block text-sm font-medium text-gray-700"> Date</label>
+    <input type="date" id="diagnosis_date" name="diagnosis_date"
+           class="mt-1 block w-full rounded-md border-gray-200 shadow-sm"
+           value="{{ now()->toDateString() }}"> 
+</div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700">Dental Caries</label>
@@ -176,8 +238,81 @@ $(document).ready(function () {
     </div>
   </div>
 
+<!-- VIEW MODAL -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow">
+      
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="viewModalLabel">View Diagnosis</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="fw-semibold text-secondary">Patient</div>
+            <div id="view_patient">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="fw-semibold text-secondary">Date</div>
+            <div id="view_date">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="fw-semibold text-secondary">Dental Caries</div>
+            <div id="view_dental_caries">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="fw-semibold text-secondary">Periodontal Disease</div>
+            <div id="view_periodontal_disease">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="fw-semibold text-secondary">Pulpal/Periapical Diagnosis</div>
+            <div id="view_pulpal_periapical">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="fw-semibold text-secondary">Occlusal Diagnosis</div>
+            <div id="view_occlusal_diagnosis">—</div>
+          </div>
+          <div class="col-12">
+            <div class="fw-semibold text-secondary">Other Oral Conditions</div>
+            <div id="view_other_oral_conditions">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-black btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
   {{-- JS --}}
   <script>
+    document.addEventListener('click', function(e) {
+  const viewBtn = e.target.closest('.btn-view');
+  if (viewBtn) {
+    // Fill modal content
+    document.getElementById('view_patient').innerText = viewBtn.dataset.patient || '—';
+    document.getElementById('view_date').innerText = viewBtn.dataset.diagnosisDate || '—';
+    document.getElementById('view_dental_caries').innerText = viewBtn.dataset.dental_caries || '—';
+    document.getElementById('view_periodontal_disease').innerText = viewBtn.dataset.periodontal_disease || '—';
+    document.getElementById('view_pulpal_periapical').innerText = viewBtn.dataset.pulpal_periapical || '—';
+    document.getElementById('view_occlusal_diagnosis').innerText = viewBtn.dataset.occlusal_diagnosis || '—';
+    document.getElementById('view_other_oral_conditions').innerText = viewBtn.dataset.other_oral_conditions || '—';
+
+    // Open Bootstrap modal
+    var viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
+    viewModal.show();
+  }
+});
+
+
   (function(){
     const backdrop = document.getElementById('modalBackdrop');
     const openBtn = document.getElementById('btnOpenModal');
@@ -213,6 +348,7 @@ $(document).ready(function () {
         editId.value = id;
 
         document.getElementById('patient_id').value = editBtn.dataset.patientId || '';
+        document.getElementById('diagnosis_date').value = editBtn.dataset.diagnosisDate || '';
         document.getElementById('dental_caries').value = editBtn.dataset.dental_caries || '';
         document.getElementById('periodontal_disease').value = editBtn.dataset.periodontal_disease || '';
         document.getElementById('pulpal_periapical').value = editBtn.dataset.pulpal_periapical || '';

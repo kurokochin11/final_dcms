@@ -191,60 +191,118 @@ $(document).ready(function() {
   x-data="{
     open: false,
     record: {},
-    show(data) {
-      this.record = data
-      this.open = true
-    },
-    close() {
-      this.open = false
-      this.record = {}
-    }
+    show(data) { this.record = data; this.open = true },
+    close() { this.open = false; this.record = {} }
   }"
   x-on:open-extraoral-view.window="show($event.detail)"
   x-show="open"
-  class="fixed inset-0 z-50 flex items-center justify-center"
-  style="display:none;"
-  aria-modal="true"
+  x-cloak
+  class="modal fade"
+  :class="{ 'show d-block': open }"
+  tabindex="-1"
   role="dialog"
 >
-  <!-- Overlay -->
-  <div class="fixed inset-0 bg-black bg-opacity-40" @click="close"></div>
+  <!-- Optional: remove dark backdrop entirely for full brightness -->
+  <!-- <div class="modal-backdrop fade show bg-black bg-opacity-10" @click="close"></div> -->
 
-  <!-- Modal -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl z-10 mx-4 overflow-hidden">
-    <!-- Header -->
-    <div class="px-6 py-4 flex items-center justify-between border-b dark:border-gray-700">
-     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-  Extraoral Examination of  <span class="font-semibold"x-text="(record.patient_first_name ?? '—') + ' ' + (record.patient_last_name ?? '')"></span>
-</h3>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg bg-white">
 
-      <button @click="close" class="text-gray-600 hover:text-gray-800 dark:text-gray-300">&times;</button>
-    </div>
+      <!-- HEADER -->
+      <div class="modal-header" style="background-color: #4f9fff; color: white;">
+        <div>
+          <h5 class="modal-title mb-0 fw-bold">Extraoral Examination</h5>
+          <small class="opacity-75 fw-semibold"
+            x-text="`${record.patient_first_name ?? '—'} ${record.patient_last_name ?? ''}`">
+          </small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" @click="close"></button>
+      </div>
 
-    <!-- Body -->
-     <p> <strong>Examination Date:</strong> <span x-text="record.examination_date ?? '—'"></span></p>
-    <div class="px-6 py-4 space-y-3 text-sm text-gray-800 dark:text-gray-200">
-      <p><strong>Facial Symmetry:</strong> <span x-text="record.facial_symmetry ?? '—'"></span></p>
-      <p x-show="record.facial_symmetry_notes" class="text-gray-500" x-text="record.facial_symmetry_notes"></p>
+      <!-- BODY -->
+      <div class="modal-body">
 
-      <p><strong>Lymph Nodes:</strong> <span x-text="record.lymph_nodes ?? '—'"></span></p>
-      <p x-show="record.lymph_nodes_location" class="text-gray-500" x-text="record.lymph_nodes_location"></p>
+        <!-- DATE -->
+        <div class="mb-4">
+          <span class="text-muted">Examination Date</span>
+          <div class="fw-bold fs-6" x-text="record.examination_date ?? '—'"></div>
+        </div>
 
-      <hr class="border-gray-300 dark:border-gray-700">
+        <!-- GENERAL FINDINGS -->
+        <div class="card mb-3 border-light shadow-sm">
+          <div class="card-header fw-semibold bg-light">General Findings</div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Facial Symmetry</span>
+                <span class="fw-semibold" x-text="record.facial_symmetry ?? '—'"></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Lymph Nodes</span>
+                <span class="fw-semibold" x-text="record.lymph_nodes ?? '—'"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-      <p><strong>TMJ Pain:</strong> <span x-text="record.tmj_pain == '1' ? 'Yes' : 'No'"></span></p>
-      <p><strong>TMJ Clicking:</strong> <span x-text="record.tmj_clicking == '1' ? 'Yes' : 'No'"></span></p>
-      <p><strong>Limited Opening:</strong> <span x-text="record.tmj_limited_opening == '1' ? 'Yes' : 'No'"></span></p>
+        <!-- ADDITIONAL NOTES -->
+        <div x-show="record.facial_symmetry_notes || record.lymph_nodes_location" class="mb-4">
+          <div class="text-muted small fw-semibold">Additional Notes</div>
+          <div class="border rounded p-2 bg-light">
+            <p class="mb-1" x-show="record.facial_symmetry_notes"
+               x-text="record.facial_symmetry_notes"></p>
+            <p class="mb-0" x-show="record.lymph_nodes_location"
+               x-text="record.lymph_nodes_location"></p>
+          </div>
+        </div>
 
-      <p><strong>MIO (mm):</strong> <span x-text="record.mio ?? '—'"></span></p>
-      <p x-show="record.notes"><strong>Notes:</strong> <span x-text="record.notes"></span></p>
-      
+        <!-- TMJ ASSESSMENT -->
+        <div class="card border-light shadow-sm">
+          <div class="card-header fw-semibold bg-light">TMJ Assessment</div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Pain</span>
+                <span class="badge rounded-pill"
+                  :class="record.tmj_pain == '1' ? 'bg-danger' : 'bg-success'"
+                  x-text="record.tmj_pain == '1' ? 'Yes' : 'No'">
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Clicking</span>
+                <span class="badge rounded-pill"
+                  :class="record.tmj_clicking == '1' ? 'bg-warning text-dark' : 'bg-success'"
+                  x-text="record.tmj_clicking == '1' ? 'Yes' : 'No'">
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Limited Opening</span>
+                <span class="badge rounded-pill"
+                  :class="record.tmj_limited_opening == '1' ? 'bg-danger' : 'bg-success'"
+                  x-text="record.tmj_limited_opening == '1' ? 'Yes' : 'No'">
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">MIO (mm)</span>
+                <span class="fw-semibold" x-text="record.mio ?? '—'"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-    </div>
+        <!-- CLINICIAN NOTES -->
+        <div x-show="record.notes" class="mt-3">
+          <div class="text-muted small fw-semibold">Clinician Notes</div>
+          <div class="border rounded p-2 bg-light" x-text="record.notes"></div>
+        </div>
 
-    <!-- Footer -->
-    <div class="px-6 py-3 flex justify-end border-t dark:border-gray-700">
-      <button @click="close" class="btn btn-dark btn-sm">Close</button>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer">
+        <button class="btn btn-dark btn-sm" @click="close">Close</button>
+      </div>
+
     </div>
   </div>
 </div>

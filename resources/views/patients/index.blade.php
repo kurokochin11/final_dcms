@@ -105,111 +105,174 @@ $(document).ready(function () {
  </td>
 </tr>
 </div>
-                   <!-- VIEW MODAL -->
-<div x-show="openViewId === {{ $patient->id }}" x-cloak
-     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded w-1/2 max-h-[90vh] overflow-hidden shadow-lg relative">
+<!-- VIEW MODAL -->
+<div
+    x-show="openViewId === {{ $patient->id }}"
+    x-cloak
+    class="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+>
 
-        <!-- Sticky Header with Close -->
-        <div class="bg-gray-100 px-6 py-3 flex justify-between items-center sticky top-0 z-10 border-b">
-            <h2 class="text-lg font-bold">
-                {{ $patient->nickname ?? $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}
-            </h2>
-            <button class="text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none"@click="openViewId = null"
-                    class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
-        </div>
+    <!-- MODAL BOX -->
+    <div
+        class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl"
+        @click.outside="openViewId = null"
+    >
 
-        <!-- Scrollable Content -->
-        <div class="p-6 overflow-y-auto max-h-[80vh] space-y-2">
-
-            <!-- General Info -->
-            <div class="mb-4">
-                <h3 class="font-semibold mb-2">General Information</h3>
-                <p><b>Sex:</b> {{ $patient->sex }}</p>
-                <p><b>Birth Date:</b> {{ $patient->date_of_birth->format('Y-m-d') }}</p>
-                <p><b>Age:</b> {{ $patient->age }}</p>
-                <p><b>Date Registered:</b> {{ $patient->date_registered->format('Y-m-d') }}</p>
-                <p><b>Civil Status:</b> {{ $patient->civil_status ?? '-' }}</p>
-                <p><b>Nationality:</b> {{ $patient->nationality ?? '-' }}</p>
-                <p><b>Religion:</b> {{ $patient->religion ?? '-' }}</p>
-                <p><b>Occupation:</b> {{ $patient->occupation ?? '-' }}</p>
-                <p><b>Address:</b> {{ $patient->address ?? '-' }}</p>
-                <p><b>City:</b> {{ $patient->city ?? '-' }}</p>
-                <p><b>Province:</b> {{ $patient->province ?? '-' }}</p>
-                <p><b>Zip Code:</b> {{ $patient->zip_code ?? '-' }}</p>
-                <p><b>Mobile:</b> {{ $patient->mobile_number ?? '-' }}</p>
-                <p><b>Landline:</b> {{ $patient->landline_number ?? '-' }}</p>
-                <p><b>Email:</b> {{ $patient->email ?? '-' }}</p>
-                <p><b>Referred By:</b> {{ $patient->referred_by ?? '-' }}</p>
+        <!-- HEADER -->
+        <div class="px-6 py-4 flex justify-between items-center bg-blue-600 text-white rounded-t-xl">
+            <div>
+                <h2 class="text-lg font-bold">
+                    {{ $patient->nickname ?? $patient->first_name }}
+                    {{ $patient->middle_name }}
+                    {{ $patient->last_name }}
+                </h2>
+                <p class="text-sm opacity-80">Patient Information</p>
             </div>
 
-            <!-- Emergency Contact -->
-            <div class="mb-4">
-                <h3 class="font-semibold mb-2">Emergency Contact</h3>
-                <p><b>Name:</b> {{ $patient->emergencyContact->full_name ?? '-' }}</p>
-                <p><b>Relationship:</b> {{ $patient->emergencyContact->relationship ?? '-' }}</p>
-                <p><b>Mobile:</b> {{ $patient->emergencyContact->mobile_number ?? '-' }}</p>
-                <p><b>Landline:</b> {{ $patient->emergencyContact->landline_number ?? '-' }}</p>
+            <button
+                @click="openViewId = null"
+                class="text-white hover:text-gray-200 text-2xl font-bold leading-none"
+            >
+                &times;
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="p-6 overflow-y-auto max-h-[70vh] text-sm text-gray-700 dark:text-gray-200 space-y-6">
+
+            <!-- GENERAL INFO -->
+            <div>
+                <h3 class="text-base font-semibold text-blue-600 mb-3">
+                    General Information
+                </h3>
+
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <p><span class="font-semibold">Sex:</span> {{ $patient->sex }}</p>
+                    <p><span class="font-semibold">Age:</span> {{ $patient->age }}</p>
+
+                    <p><span class="font-semibold">Birth Date:</span> {{ $patient->date_of_birth->format('Y-m-d') }}</p>
+                    <p><span class="font-semibold">Date Registered:</span> {{ $patient->date_registered->format('Y-m-d') }}</p>
+
+                    <p><span class="font-semibold">Civil Status:</span> {{ $patient->civil_status ?? '-' }}</p>
+                    <p><span class="font-semibold">Nationality:</span> {{ $patient->nationality ?? '-' }}</p>
+
+                    <p><span class="font-semibold">Religion:</span> {{ $patient->religion ?? '-' }}</p>
+                    <p><span class="font-semibold">Occupation:</span> {{ $patient->occupation ?? '-' }}</p>
+
+                    <p class="col-span-2">
+                        <span class="font-semibold">Address:</span>
+                        {{ $patient->address ?? '-' }}
+                    </p>
+
+                    <p><span class="font-semibold">City:</span> {{ $patient->city ?? '-' }}</p>
+                    <p><span class="font-semibold">Province:</span> {{ $patient->province ?? '-' }}</p>
+
+                    <p><span class="font-semibold">Zip Code:</span> {{ $patient->zip_code ?? '-' }}</p>
+                    <p><span class="font-semibold">Mobile:</span> {{ $patient->mobile_number ?? '-' }}</p>
+
+                    <p><span class="font-semibold">Landline:</span> {{ $patient->landline_number ?? '-' }}</p>
+                    <p><span class="font-semibold">Email:</span> {{ $patient->email ?? '-' }}</p>
+
+                    <p class="col-span-2">
+                        <span class="font-semibold">Referred By:</span>
+                        {{ $patient->referred_by ?? '-' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- EMERGENCY CONTACT -->
+            <div>
+                <h3 class="text-base font-semibold text-blue-600 mb-3">
+                    Emergency Contact
+                </h3>
+
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <p>
+                        <span class="font-semibold">Name:</span>
+                        {{ $patient->emergencyContact->full_name ?? '-' }}
+                    </p>
+                    <p>
+                        <span class="font-semibold">Relationship:</span>
+                        {{ $patient->emergencyContact->relationship ?? '-' }}
+                    </p>
+                    <p>
+                        <span class="font-semibold">Mobile:</span>
+                        {{ $patient->emergencyContact->mobile_number ?? '-' }}
+                    </p>
+                    <p>
+                        <span class="font-semibold">Landline:</span>
+                        {{ $patient->emergencyContact->landline_number ?? '-' }}
+                    </p>
+                </div>
             </div>
 
         </div>
 
-        <!-- Footer -->
-        <div class="bg-light px-4 py-3 text-end border-top">
-          <button type="button" class="btn btn-dark btn-medium" @click="openViewId = null">Close</button>
+        <!-- FOOTER -->
+        <div class="px-6 py-3 border-t bg-gray-50 dark:bg-gray-700 flex justify-end">
+            <button
+                type="button"
+                @click="openViewId = null"
+                class="btn btn-dark btn-sm"
+            >
+                Close
+            </button>
         </div>
 
     </div>
 </div>
+
 <!-- EDIT MODAL -->
 <div x-show="openEditId === {{ $patient->id }}" x-cloak
-     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+     class="fixed inset-0 flex items-center justify-center z-50">
 
-    <div class="relative bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto"
+    <div class="relative bg-white rounded w-1/2 max-h-[90vh] overflow-y-auto shadow-lg"
          x-data="{ tab: 1 }">
-  
-        <!-- CLOSE BUTTON -->
-        <button type="button"
-            class="absolute top-3 right-4 text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none"
-            @click="openEditId = null">
-            &times;
-        </button>
 
-        <h2 class="text-lg font-bold mb-2">Edit Patient</h2>
+        <!-- HEADER -->
+        <div class="px-6 py-4 flex justify-between items-center bg-blue-600 rounded-t-xl shadow">
+            <h2 class="text-lg font-bold text-white">Edit Patient</h2>
+            <button type="button"
+                class="text-white hover:text-gray-200 text-2xl font-bold leading-none"
+                @click="openEditId = null">
+                &times;
+            </button>
+        </div>
 
         <form method="POST" action="{{ route('patients.update', $patient->id) }}">
             @csrf
             @method('PUT')
 
             <!-- TAB BUTTONS -->
-            <div class="flex border-b mb-4">
+            <div class="flex border-b mb-4 bg-blue-500 rounded-t">
                 <button type="button" @click="tab = 1"
-                    :class="tab === 1 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-                    class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
+                    :class="tab === 1 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
+                    class="px-4 py-2 rounded-t transition-colors">
                     Basic Info
                 </button>
 
                 <button type="button" @click="tab = 2"
-                    :class="tab === 2 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-                    class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
+                    :class="tab === 2 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
+                    class="px-4 py-2 rounded-t transition-colors">
                     Address
                 </button>
 
                 <button type="button" @click="tab = 3"
-                    :class="tab === 3 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-                    class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
+                    :class="tab === 3 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
+                    class="px-4 py-2 rounded-t transition-colors">
                     Contact
                 </button>
 
                 <button type="button" @click="tab = 4"
-                    :class="tab === 4 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-                    class="px-4 py-2 font-semibold hover:bg-gray-50 rounded-t">
+                    :class="tab === 4 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
+                    class="px-4 py-2 rounded-t transition-colors">
                     Emergency
                 </button>
             </div>
 
             <!-- TAB CONTENT -->
-           <div class="relative border rounded bg-white p-4 mb-4" style="min-height:520px">
+            <div class="relative border rounded bg-white p-4 mb-4" style="min-height:520px">
+
                 <!-- TAB 1: BASIC INFO -->
                 <div x-show="tab === 1" class="space-y-2">
                     <label class="font-medium">Last Name</label>
@@ -305,35 +368,45 @@ $(document).ready(function () {
 
             </div>
 
-          <!-- FIXED BUTTONS INSIDE MODAL -->
-  <div class="flex justify-end space-x-2 mt-4">
-    <button type="button" @click="openEditId = null"
-        class="btn btn-dark btn-sm">       
-         Cancel
-    </button>
-    <button type="submit"
-        class="btn btn-primary btn-sm">
-        Update
-    </button>
-</div>
+            <!-- FIXED BUTTONS INSIDE MODAL -->
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" @click="openEditId = null"
+                    class="btn btn-dark btn-sm">Cancel</button>
+                <button type="submit"
+                    class="btn btn-primary btn-sm">Update</button>
+            </div>
         </form>
 
     </div>
 </div>
-                                <!-- DELETE MODAL -->
-                                <div x-show="openDeleteId === {{ $patient->id }}" x-cloak
-                                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                    <div class="bg-white p-6 rounded w-1/3 text-center">
-                                        <h2 class="text-lg font-bold mb-4">Delete Patient?</h2>
-                                        <p class="mb-4">Are you sure you want to delete <b>{{ $patient->first_name }} {{ $patient->last_name }}</b>?</p>
-                                        <form method="POST" action="{{ route('patients.destroy', $patient->id) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <x-secondary-button type="button" @click="openDeleteId = null">Cancel</x-secondary-button>
-                                            <x-danger-button type="submit">Delete</x-danger-button>
-                                        </form>
-                                    </div>
-                                </div>
+<!-- DELETE MODAL -->
+<div x-show="openDeleteId === {{ $patient->id }}" x-cloak
+     class="fixed inset-0 flex items-center justify-center z-50">
+
+    <div class="bg-white rounded-lg shadow-lg w-1/3 p-6 text-center border border-gray-200">
+        <!-- HEADER -->
+        <h2 class="text-xl font-bold text-red-600 mb-4">Delete Patient?</h2>
+
+        <!-- BODY -->
+        <p class="mb-4 text-gray-700">
+            Are you sure you want to delete
+            <b>{{ $patient->first_name }} {{ $patient->last_name }}</b>?
+        </p>
+
+        <!-- ACTIONS -->
+        <form method="POST" action="{{ route('patients.destroy', $patient->id) }}" class="flex justify-center gap-3">
+            @csrf
+            @method('DELETE')
+            <button type="button" @click="openDeleteId = null" class="btn btn-black px-4 py-2 rounded">
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-danger px-4 py-2 rounded">
+                Delete
+            </button>
+        </form>
+    </div>
+</div>
+
                             @endforeach
                         </tbody>
                     </table>
@@ -341,157 +414,160 @@ $(document).ready(function () {
                 <div class="mt-4">
                     {{ $patients->links() }}
                 </div>
+                <!-- ADD MODAL -->
+<div x-show="openAdd" x-cloak
+     class="fixed inset-0 flex items-center justify-center z-50">
 
-               <!-- ADD MODAL -->
-<div x-show="openAdd" x-cloak 
-     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="relative bg-white p-6 rounded w-1/2 max-h-[90vh] overflow-y-auto">
+    <div class="relative bg-white rounded-lg w-1/2 max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
 
-        <!-- X Button (Always Visible) -->
-        <button type="button"
-            class="absolute top-3 right-4 text-gray-700 hover:text-red-600 text-3xl font-extrabold leading-none"
-            @click="openAdd = false">
-            &times;
-        </button>
+        <!-- HEADER -->
+        <div class="bg-blue-600 text-white p-4 rounded-t flex justify-between items-center">
+            <h2 class="text-lg font-bold">Add Patient</h2>
+            <button type="button"
+                class="text-white hover:text-gray-200 text-2xl font-extrabold leading-none"
+                @click="openAdd = false">&times;</button>
+        </div>
 
-        <h2 class="text-lg font-bold mb-2">Add Patient</h2>
-          
-<form method="POST" action="{{ route('patients.store') }}" x-data="{ tab: 1 }">
-    @csrf
+        <!-- FORM -->
+        <form method="POST" action="{{ route('patients.store') }}" x-data="{ tab: 1 }" class="p-6">
+            @csrf
 
-    <!-- TAB HEADERS -->
-<div class="flex border-b mb-4">
-    <button type="button" @click="tab = 1"
-        :class="tab === 1 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
-        Basic Info
-    </button>
+            <!-- TAB HEADERS -->
+            <div class="flex border-b mb-4">
+                <button type="button" @click="tab = 1"
+                    :class="tab === 1 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
+                    class="px-4 py-2 font-semibold rounded-t mr-1">
+                    Basic Info
+                </button>
 
-    <button type="button" @click="tab = 2"
-        :class="tab === 2 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
-        Address
-    </button>
+                <button type="button" @click="tab = 2"
+                    :class="tab === 2 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
+                    class="px-4 py-2 font-semibold rounded-t mr-1">
+                    Address
+                </button>
 
-    <button type="button" @click="tab = 3"
-        :class="tab === 3 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
-        Contact
-    </button>
+                <button type="button" @click="tab = 3"
+                    :class="tab === 3 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
+                    class="px-4 py-2 font-semibold rounded-t mr-1">
+                    Contact
+                </button>
 
-    <button type="button" @click="tab = 4"
-        :class="tab === 4 ? 'text-blue-600 bg-blue-100' : 'text-gray-600'"
-        class="px-4 py-2 font-semibold border-transparent hover:bg-gray-50 rounded-t">
-        Emergency
-    </button>
-</div>
+                <button type="button" @click="tab = 4"
+                    :class="tab === 4 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
+                    class="px-4 py-2 font-semibold rounded-t">
+                    Emergency
+                </button>
+            </div>
 
- <div class="relative border rounded bg-white p-4 mb-4"
-       style="min-height:520px">
+            <!-- TAB CONTENT -->
+            <div class="border rounded bg-white p-4 mb-4" style="min-height:520px">
+                
+                <!-- Step 1: Basic Info -->
+                <div x-show="tab === 1" class="space-y-2">
+                    <label class="block font-medium">Last Name</label>
+                    <input type="text" name="last_name" class="w-full border p-2" placeholder="Enter Last Name" required>
 
-         <!-- Step 1: Basic Info -->
-    <div x-show="tab === 1" class="space-y-2">
-        <label class="block mb-1 font-medium">Last Name</label>
-        <input type="text" name="last_name" class="w-full border p-2" placeholder="Enter Last Name" required>
+                    <label class="block font-medium">First Name</label>
+                    <input type="text" name="first_name" class="w-full border p-2" placeholder="Enter First Name" required>
 
-        <label class="block mb-1 font-medium">First Name</label>
-        <input type="text" name="first_name" class="w-full border p-2" placeholder="Enter First Name" required>
+                    <label class="block font-medium">Middle Name</label>
+                    <input type="text" name="middle_name" class="w-full border p-2" placeholder="Enter Middle Name">
 
-        <label class="block mb-1 font-medium">Middle Name</label>
-        <input type="text" name="middle_name" class="w-full border p-2" placeholder="Enter Middle Name">
+                    <label class="block font-medium">Date of Birth</label>
+                    <input type="date" name="date_of_birth" class="w-full border p-2">
 
-        <label class="block mb-1 font-medium">Date of Birth</label>
-        <input type="date" name="date_of_birth" class="w-full border p-2" >
+                    <label class="block font-medium">Age</label>
+                    <input type="text" name="age" class="w-full border p-2" placeholder="Enter Age" required>
 
-        <label class="block mb-1 font-medium">Age</label>
-        <input type="text" name="age" class="w-full border p-2" placeholder="Enter Age" required>
-   <label class="block mb-1 font-medium">Nationality</label>
-        <input type="text" name="nationality" class="w-full border p-2" placeholder="Enter Nationality">
+                    <label class="block font-medium">Nationality</label>
+                    <input type="text" name="nationality" class="w-full border p-2" placeholder="Enter Nationality">
 
-        <label class="block mb-1 font-medium">Religion</label>
-        <input type="text" name="religion" class="w-full border p-2" placeholder="Enter Religion">
+                    <label class="block font-medium">Religion</label>
+                    <input type="text" name="religion" class="w-full border p-2" placeholder="Enter Religion">
 
-        <label class="block mb-1 font-medium">Occupation</label>
-        <input type="text" name="occupation" class="w-full border p-2" placeholder="Enter Occupation">
+                    <label class="block font-medium">Occupation</label>
+                    <input type="text" name="occupation" class="w-full border p-2" placeholder="Enter Occupation">
 
-        <label class="block mb-1 font-medium">Sex</label>
-        <select name="sex" class="w-full border p-2" required>
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Prefer not to say">Prefer not to say</option>
-        </select>
+                    <label class="block font-medium">Sex</label>
+                    <select name="sex" class="w-full border p-2" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
 
-        <label class="block mb-1 font-medium">Civil Status</label>
-        <select name="civil_status" class="w-full border p-2">
-            <option value="">Select Civil Status</option>
-            <option value="Single">Single</option>
-            <option value="Married">Married</option>
-            <option value="Widowed">Widowed</option>
-            <option value="Separated">Separated</option>
-            <option value="Divorced">Divorced</option>
-            <option value="Annulled">Annulled</option>
-            <option value="Commonlaw">Common-Law / Live-in</option>
-        </select>
+                    <label class="block font-medium">Civil Status</label>
+                    <select name="civil_status" class="w-full border p-2">
+                        <option value="">Select Civil Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Widowed">Widowed</option>
+                        <option value="Separated">Separated</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Annulled">Annulled</option>
+                        <option value="Commonlaw">Common-Law / Live-in</option>
+                    </select>
 
-        <label class="block mb-1 font-medium">Date Registered</label>
-        <input type="date" name="date_registered" class="w-full border p-2">
-    </div>
+                    <label class="block font-medium">Date Registered</label>
+                    <input type="date" name="date_registered" class="w-full border p-2">
+                </div>
 
- <!-- Step 2: Personal Address -->
-<div x-show="tab === 2" class="space-y-2">
+                <!-- Step 2: Address -->
+                <div x-show="tab === 2" class="space-y-2">
+                    <label class="block font-medium">Address</label>
+                    <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address" required></textarea>
 
-   <label class="block mb-1 font-medium">Address</label>
-        <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address"required></textarea >
+                    <label class="block font-medium">City</label>
+                    <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
 
-        <label class="block mb-1 font-medium">City</label>
-        <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
+                    <label class="block font-medium">Province</label>
+                    <input type="text" name="province" class="w-full border p-2" placeholder="Enter Province">
 
-        <label class="block mb-1 font-medium">Province</label>
-        <input type="text" name="province" class="w-full border p-2" placeholder="Enter Province">
+                    <label class="block font-medium">Zip Code</label>
+                    <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
+                </div>
 
-        <label class="block mb-1 font-medium">Zip Code</label>
-        <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
-</div>
+                <!-- Step 3: Contact -->
+                <div x-show="tab === 3" class="space-y-2">
+                    <label class="block font-medium">Mobile Number</label>
+                    <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number" required>
 
-    <!-- Step 3: Contact Info -->
-    <div x-show="tab === 3" class="space-y-2">
-        <label class="block mb-1 font-medium">Mobile Number</label>
-        <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number"required>
+                    <label class="block font-medium">Landline Number</label>
+                    <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
 
-        <label class="block mb-1 font-medium">Landline Number</label>
-        <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
+                    <label class="block font-medium">Email</label>
+                    <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address" required>
+                </div>
 
-        <label class="block mb-1 font-medium">Email</label>
-        <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address" required>
-    </div>
+                <!-- Step 4: Emergency -->
+                <div x-show="tab === 4" class="space-y-2">
+                    <label class="block font-medium">Referred By</label>
+                    <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
 
-    <!-- Step 4: Emergency & Referral -->
-    <div x-show="tab === 4" class="space-y-2">
-        <label class="block mb-1 font-medium">Referred By</label>
-        <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
+                    <label class="block font-medium">Emergency Contact Name</label>
+                    <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
 
-        <label class="block mb-1 font-medium">Emergency Contact Name</label>
-        <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
+                    <label class="block font-medium">Relationship</label>
+                    <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship" required>
 
-        <label class="block mb-1 font-medium">Relationship to the patient</label>
-        <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship"required>
+                    <label class="block font-medium">Emergency Mobile</label>
+                    <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number" required>
 
-        <label class="block mb-1 font-medium">Emergency Mobile</label>
-        <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number" required>
+                    <label class="block font-medium">Emergency Landline</label>
+                    <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+                </div>
 
-        <label class="block mb-1 font-medium">Emergency Landline</label>
-        <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+            </div>
 
-         </div>
             <!-- SUBMIT BUTTON -->
-    <div class="mt-4 flex justify-end">
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
-            Submit
-        </button>
+            <div class="flex justify-end mt-4">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Submit
+                </button>
+            </div>
+
+        </form>
     </div>
-</form>
-   
 </div>
-</div>
+
 </x-app-layout> 

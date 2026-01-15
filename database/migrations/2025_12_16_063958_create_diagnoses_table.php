@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('pulpal_periapical')->nullable();
             $table->string('occlusal_diagnosis')->nullable();
             $table->string('other_oral_conditions')->nullable();
+             $table->date('diagnosis_date')->nullable(); 
             $table->timestamps();
         });
     }
