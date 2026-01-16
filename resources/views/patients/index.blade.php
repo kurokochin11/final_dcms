@@ -75,9 +75,7 @@ $(document).ready(function () {
         <span class="badge bg-danger">Not Interviewed</span>
     @endif
       
-</td>
-                    
-                
+</td>           
  <td class="px-4 py-2 border" style="text-align:left;">
          <div class="d-flex gap-1 align-items-center">
             <button class="btn btn-primary btn-medium" @click="openViewId={{ $patient->id }}"> <i class="fas fa-eye"></i></button>

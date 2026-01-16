@@ -209,24 +209,43 @@ $(document).ready(function() {
     <div class="modal-content shadow-lg bg-white">
 
       <!-- HEADER -->
-      <div class="modal-header" style="background-color: #4f9fff; color: white;">
-        <div>
-          <h5 class="modal-title mb-0 fw-bold">Extraoral Examination</h5>
-          <small class="opacity-75 fw-semibold"
-            x-text="`${record.patient_first_name ?? '—'} ${record.patient_last_name ?? ''}`">
-          </small>
-        </div>
-        <button type="button" class="btn-close btn-close-white" @click="close"></button>
-      </div>
+<div class="modal-header bg-primary text-white">
+    <div>
+        <h5 class="modal-title mb-0 fw-bold">
+            Extraoral Examination
+        </h5>
+
+        <small class="fw-bold"
+               x-text="`${record.patient_first_name ?? '—'} ${record.patient_last_name ?? ''}`">
+        </small>
+    </div>
+
+    <button type="button"
+            class="btn-close btn-close-white"
+            @click="close">
+    </button>
+</div>
 
       <!-- BODY -->
       <div class="modal-body">
 
         <!-- DATE -->
-        <div class="mb-4">
-          <span class="text-muted">Examination Date</span>
-          <div class="fw-bold fs-6" x-text="record.examination_date ?? '—'"></div>
-        </div>
+     <!-- DATE -->
+<div class="mb-4">
+    <span class="text-muted">Examination Date</span>
+    <div class="fw-bold fs-6"
+         x-text="
+            record.examination_date
+            ? new Date(record.examination_date).toLocaleDateString('en-US', {
+                month: 'long',
+                day: '2-digit',
+                year: 'numeric'
+              })
+            : '—'
+         ">
+    </div>
+</div>
+
 
         <!-- GENERAL FINDINGS -->
         <div class="card mb-3 border-light shadow-sm">

@@ -214,8 +214,9 @@ $(document).ready(function() {
     </div>
 
    {{-- Add/Edit Modal --}}
-<<div id="modalBackdrop"
+<div id="modalBackdrop"
      class="fixed inset-0 hidden items-center justify-center z-40 bg-black/40">
+
 
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
 
@@ -293,9 +294,17 @@ $(document).ready(function() {
 
     <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
         <!-- HEADER -->
-        <div class="p-5 border-b flex items-start justify-between gap-4 bg-blue-600 text-white rounded-t-lg">
+        <div class="px-5 py-4 border-b flex items-center justify-between bg-blue-600 text-white rounded-t-lg">
+
             <div>
-                <h3 id="viewPatientName" class="text-lg font-medium">Patient Name</h3>
+               <h3 class="text-lg font-medium flex items-center gap-2">
+    <span class="text-xs uppercase tracking-wide opacity-80">
+        Patient Name:
+    </span>
+    <span id="viewPatientName" class="font-semibold">
+        —
+    </span>
+</h3>
                 <div id="viewSubtitle" class="text-sm opacity-80"></div>
             </div>
             <button type="button" id="viewClose" class="text-white hover:text-gray-200" aria-label="Close">✕</button>
@@ -489,7 +498,7 @@ document.addEventListener('click', function (e) {
                 const findings = editBtn.dataset.findings || '';
                 const imagepath = editBtn.dataset.imagepath || '';
 
-                modalTitle.innerText = "Edit Radiograph";
+                modalTitle.innerText = "Edit Radiograph Records";
                 modalForm.action = "/radiographs/" + id;
                 methodInput.value = 'PUT';
                 editId.value = id;
