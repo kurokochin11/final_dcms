@@ -218,7 +218,9 @@ $(document).ready(function() {
      class="fixed inset-0 hidden items-center justify-center z-40 bg-black/40">
 
 
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4
+            max-h-[90vh] overflow-hidden flex flex-col">
+
 
         <!-- HEADER -->
         <div class="p-5 border-b flex items-center justify-between bg-blue-600 text-white rounded-t-lg">
@@ -228,7 +230,8 @@ $(document).ready(function() {
         </div>
 
         <!-- FORM -->
-        <form id="modalForm" class="p-5" method="POST" action="{{ route('radiographs.store') }}"
+       <form id="modalForm"class="p-5 overflow-y-auto"style="max-height: calc(90vh - 80px);"method="POST" action="{{ route('radiographs.store') }}"
+
             enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="_method" id="form_method" value="">

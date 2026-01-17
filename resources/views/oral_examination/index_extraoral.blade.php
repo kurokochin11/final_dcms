@@ -155,7 +155,7 @@ $(document).ready(function() {
                     
 <button
     type="button"
-    class="btn btn-primary btn-xs"
+    class="btn btn-primary btn-medium"
     data-record='{{ json_encode($record, JSON_HEX_APOS | JSON_HEX_QUOT) }}'
     onclick="window.dispatchEvent(
         new CustomEvent('open-extraoral-view', {
@@ -166,18 +166,20 @@ $(document).ready(function() {
 </button>
                       <button
                         type="button"
-                        class="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-400"
+                        class="btn btn-warning text-white btn-medium"
                         data-record='{{ json_encode($record, JSON_HEX_APOS | JSON_HEX_QUOT) }}'
                         onclick="window.dispatchEvent(new CustomEvent('open-extraoral-modal',{detail:{mode:'edit', record: JSON.parse(this.dataset.record)}}))"
                       >
                          <i class="fas fa-edit"></i>
                       </button>
 
-                      <form action="{{ route('extraoral_examinations.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline-block m-0 p-0" >
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500"> <i class="fas fa-trash"></i></button>
+                    <form action="{{ route('extraoral_examinations.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline-block m-0 p-0" >
+      @csrf
+    @method('DELETE')
+
+      <button type="submit" class="btn btn-danger btn-medium"> <i class="fas fa-trash"></i></button>
                       </form>
+
                     </div>
                   </td>
                 </tr>
@@ -186,6 +188,9 @@ $(document).ready(function() {
               @endforelse
             </tbody>
           </table>
+
+       
+
 <!-- VIEW EXTRAORAL MODAL -->
 <div
   x-data="{
@@ -202,8 +207,7 @@ $(document).ready(function() {
   tabindex="-1"
   role="dialog"
 >
-  <!-- Optional: remove dark backdrop entirely for full brightness -->
-  <!-- <div class="modal-backdrop fade show bg-black bg-opacity-10" @click="close"></div> -->
+ 
 
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content shadow-lg bg-white">
@@ -336,6 +340,10 @@ $(document).ready(function() {
 
   
   <script>
+    
+
+
+
     function extraoralViewModal() {
   return {
     open: false,
@@ -446,15 +454,18 @@ $(document).ready(function() {
     aria-modal="true"
     role="dialog"
   >
-    <div class="fixed inset-0 bg-black bg-opacity-40" @click="close"></div>
+   
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl z-10 mx-4 overflow-hidden">
-      <div class="px-6 py-4 flex items-center justify-between border-b dark:border-gray-700">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100" x-text="mode === 'create' ? 'Add Extraoral Examination' : 'Edit Extraoral Examination'"></h3>
-        <button @click="close" class="text-gray-600 hover:text-gray-800 dark:text-gray-300">&times;</button>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl z-10 mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+
+      <div class="px-6 py-4 flex items-center justify-between bg-blue-600 text-white">
+      <h3 class="text-lg font-medium" x-text="mode === 'create' ? 'Add Extraoral Examination' : 'Edit Extraoral Examination'"></h3>
+<button @click="close"aria-label="Close"class="text-white text-2xl font-bold hover:text-gray-200focus:outline-none focus:ring-2 focus:ring-white rounded"> &times;
+</button>
+
       </div>
+<form :action="formAction"method="POST" class="px-6 py-4 space-y-4 overflow-y-auto"style="max-height: calc(90vh - 64px);">
 
-      <form :action="formAction" method="POST" class="px-6 py-4 space-y-4">
         @csrf
       <input type="hidden" name="_method" x-bind:value="mode === 'edit' ? 'PUT' : ''" />
 
