@@ -173,11 +173,7 @@ $(document).ready(function() {
                          <i class="fas fa-edit"></i>
                       </button>
 
-                    <form action="{{ route('extraoral_examinations.destroy', $exam) }}" method="POST" onsubmit="return confirm('Delete this record?');" class="inline-block m-0 p-0" >
-      @csrf
-    @method('DELETE')
-
-      <button type="submit" class="btn btn-danger btn-medium"> <i class="fas fa-trash"></i></button>
+      <button type="button" class="btn btn-danger btn-medium" data-url="{{ route('extraoral_examinations.destroy', $exam) }}" onclick="openDeleteModal(this)"> <i class="fas fa-trash"></i></button>
                       </form>
 
                     </div>
@@ -188,6 +184,36 @@ $(document).ready(function() {
               @endforelse
             </tbody>
           </table>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Delete Record</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        Are you sure you want to delete this record?
+      </div>
+
+      <div class="modal-footer justify-content-center">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+
+        <form id="deleteForm" method="POST">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn btn-danger btn-sm">
+            Delete
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 
        
 
@@ -233,7 +259,6 @@ $(document).ready(function() {
       <!-- BODY -->
       <div class="modal-body">
 
-        <!-- DATE -->
      <!-- DATE -->
 <div class="mb-4">
     <span class="text-muted">Examination Date</span>
@@ -337,13 +362,38 @@ $(document).ready(function() {
       </div>
     </div>
   </div>
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Delete Record</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        Are you sure you want to delete this record?
+      </div>
+
+      <div class="modal-footer justify-content-center">
+        <button class="btn btn-black btn-sm" data-bs-dismiss="modal">Cancel</button>
+
+        <form id="deleteForm" method="POST">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn btn-danger btn-sm">
+            Delete
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 
   
   <script>
-    
-
-
-
     function extraoralViewModal() {
   return {
     open: false,
@@ -440,7 +490,12 @@ $(document).ready(function() {
       }
     }
   }
-  
+  function openDeleteModal(button) {
+    const url = button.getAttribute('data-url');
+    document.getElementById('deleteForm').action = url;
+
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
 </script>
 
 
