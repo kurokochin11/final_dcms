@@ -78,7 +78,7 @@ function closeModal(type, id) {
 <!-- ================= VIEW MODAL ================= -->
 @foreach ($patients as $patient)
 <div id="viewModal-{{ $patient->id }}"
-     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+     class="hidden fixed inset-0  flex items-center justify-center z-50">
 
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6 flex flex-col max-h-[90vh]">
 
@@ -92,21 +92,25 @@ function closeModal(type, id) {
             data-patient="{{ $patient->id }}">
         <option value="all">All Dates</option>
 
-        @foreach ($patient->checkupSessions as $session)
-            @php
-                $date = optional(
-                    $session->checkupResults->firstWhere('checkup_question_id', 57)
-                )->answer_value;
-            @endphp
+        @php
+            // Collect unique dates
+            $dates = $patient->checkupSessions
+                ->map(function($session) {
+                    return optional($session->checkupResults
+                        ->firstWhere('checkup_question_id', 57))->answer_value;
+                })
+                ->filter() // remove nulls
+                ->unique(); // only unique values
+        @endphp
 
-            @if ($date)
-                <option value="{{ $date }}">
-                    {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
-                </option>
-            @endif
+        @foreach ($dates as $date)
+            <option value="{{ $date }}">
+                {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
+            </option>
         @endforeach
     </select>
 </div>
+
 
 <div class="flex-1 overflow-y-auto space-y-6">
 
@@ -165,10 +169,10 @@ $groupedAnswers = $session->checkupResults->groupBy(
 </div>
 
 <div class="mt-4 text-right">
-<x-button class="btn btn-dark btn-xs"
+<button class="btn btn-dark btn-medium"
     onclick="closeModal('view', '{{ $patient->id }}')">
     Close
-</x-button>
+</button>
 </div>
 
 </div>
@@ -180,63 +184,83 @@ $groupedAnswers = $session->checkupResults->groupBy(
 @foreach ($patient->checkupSessions as $session)
 
 <div id="editSessionModal-{{ $session->id }}"
-     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+     class="hidden fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50">
 
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-5xl overflow-hidden">
 
-<h3 class="text-lg font-bold mb-4">
-    Edit Check-up Session
-</h3>
+        <!-- HEADER -->
+        <div class="bg-primary text-white px-6 py-3 flex justify-between items-center">
+            <h3 class="text-lg font-bold mb-0">
+                Edit Check-up Session -
+                <span class="text-medium font-bold">
+                    {{ $patient->first_name }} {{ $patient->last_name }}
+                </span>
+            </h3>
 
-@php
-$groupedAnswers = $session->checkupResults->groupBy(
-    fn($ans) => $ans->question->question_set ?? 'Uncategorized'
-);
-@endphp
+            <button type="button"
+                onclick="closeModal('editSession', '{{ $session->id }}')"
+                class="text-white text-2xl leading-none hover:opacity-75">
+                &times;
+            </button>
+        </div>
 
-<form method="POST"
-      action="{{ route('check-up.session.update', $session->id) }}">
-@csrf
-@method('PUT')
+        <!-- BODY -->
+        <div class="p-6">
 
-<div class="max-h-[65vh] overflow-y-auto space-y-6">
+            @php
+            $groupedAnswers = $session->checkupResults->groupBy(
+                fn($ans) => $ans->question->question_set ?? 'Uncategorized'
+            );
+            @endphp
 
-@foreach ($groupedAnswers as $set => $answers)
-<section>
-<h4 class="font-semibold mb-2">Section {{ $set }}</h4>
+            <form method="POST"
+                  action="{{ route('check-up.session.update', $session->id) }}">
+                @csrf
+                @method('PUT')
 
-<table class="table table-bordered">
-@foreach ($answers as $answer)
-<tr>
-<td width="70%">{{ $answer->question->question_text }}</td>
-<td>
-<input type="text"
-    name="checkup_questions[{{ $answer->checkup_question_id }}]"
-    value="{{ $answer->answer_value }}"
-    class="form-control">
-</td>
-</tr>
-@endforeach
-</table>
-</section>
-@endforeach
+                <div class="max-h-[65vh] overflow-y-auto space-y-6">
 
-</div>
+                    @foreach ($groupedAnswers as $set => $answers)
+                    <section>
+                        <h4 class="font-semibold mb-2">Section {{ $set }}</h4>
 
-<div class="mt-4 flex justify-end gap-2">
-<x-button class="btn btn-black btn-xs"
-    type="button"
-    onclick="closeModal('editSession', '{{ $session->id }}')">
-    Cancel
-</x-button>
+                        <table class="table table-bordered">
+                            @foreach ($answers as $answer)
+                            <tr>
+                                <td width="70%">
+                                    {{ $answer->question->question_text }}
+                                </td>
+                                <td>
+                                    <input type="text"
+                                           name="checkup_questions[{{ $answer->checkup_question_id }}]"
+                                           value="{{ $answer->answer_value }}"
+                                           class="form-control">
+                                </td>
+                            </tr>
+                            @endforeach
+                        </table>
+                    </section>
+                    @endforeach
 
-<x-button class="btn btn-primary btn-xs" type="submit">
-    Update
-</x-button>
-</div>
+                </div>
 
-</form>
-</div>
+                <!-- FOOTER -->
+                <div class="mt-4 flex justify-end gap-2">
+                    <button class="btn btn-black btn-sm"
+                        type="button"
+                        onclick="closeModal('editSession', '{{ $session->id }}')">
+                        Cancel
+                    </button>
+
+                    <button class="btn btn-primary btn-sm" type="submit">
+                        Update
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 </div>
 
 @endforeach

@@ -72,14 +72,19 @@ class MedicalHistoryController extends Controller
     /**
      * Show all patients with medical sessions & answers
      */
-    public function answersIndex()
-    {
-        $patients = Patient::with([
-            'medicalSessions.responses.question'
-        ])->paginate(10);
+   public function answersIndex()
+{
+    $patients = Patient::whereHas('medicalSessions', function ($q) {
+        $q->whereHas('responses');
+    })
+    ->with([
+        'medicalSessions.responses.question'
+    ])
+    ->paginate(10);
 
-        return view('medical-history.answer_index', compact('patients'));
-    }
+    return view('medical-history.answer_index', compact('patients'));
+}
+
 
     /**
      * (OPTIONAL / LEGACY)

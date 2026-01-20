@@ -71,17 +71,21 @@ class CheckupAnswerController extends Controller
     /**
      * Index page — patients + sessions
      */
-    public function checkup_answersIndex()
-    {
-        $patients = Patient::with([
-            'checkupSessions.checkupResults.question'
-        ])->paginate(50);
+   public function checkup_answersIndex()
+{
+    $patients = Patient::whereHas('checkupSessions', function ($q) {
+        $q->whereHas('checkupResults');
+    })
+    ->with([
+        'checkupSessions.checkupResults.question'
+    ])
+    ->paginate(50);
 
-        return view(
-            'check-up.checkup_answer_index',
-            compact('patients')
-        );
-    }
+    return view(
+        'check-up.checkup_answer_index',
+        compact('patients')
+    );
+}
 
     /**
      * (OPTIONAL / LEGACY)

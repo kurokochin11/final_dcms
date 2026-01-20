@@ -38,7 +38,7 @@ class RadiographController extends Controller
         ->paginate(10)
         ->withQueryString();
 
-    $patients = Patient::orderBy('last_name')->get();
+     $patients = Patient::whereHas('radiographs')->orderBy('last_name')->get();
 
     return view('radiographs.index', [
         'radiographs' => $radiographs,

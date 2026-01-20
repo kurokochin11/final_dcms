@@ -91,4 +91,11 @@ public function latestMedicalSession()
 {
     return $this->hasOne(MedicalSession::class)->latestOfMany();
 }
+
+
+public function diagnoses()
+{
+    return $this->hasMany(Diagnosis::class);
+}
+
 }

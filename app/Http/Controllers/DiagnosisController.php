@@ -15,7 +15,8 @@ class DiagnosisController extends Controller
     {
         // Load diagnoses with patient relationship
         $diagnoses = Diagnosis::with('patient')->latest()->paginate(10);
-        $patients = Patient::orderBy('first_name')->get();
+        $patients = Patient::whereHas('diagnoses')->orderBy('first_name')->get();
+
 
         return view('diagnoses.index', compact('diagnoses', 'patients'));
     }
