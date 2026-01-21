@@ -5,81 +5,59 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
     /**
-     * Show calendar + appointments page
+     * Display a listing of the appointments.
      */
     public function index()
     {
         $appointments = Appointment::with('patient')
-            ->latest()
-            ->paginate(10);
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
 
-        $patients = Patient::orderByRaw("CONCAT(first_name, ' ', last_name) ASC")->get();
+        $patients = Patient::orderBy('last_name')->get();
 
         return view('appointments.index', compact('appointments', 'patients'));
     }
 
     /**
-     * Store new appointment
+     * Store a newly created appointment.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id'       => 'required|exists:patients,id',
-            'appointment_date' => 'required|date|after:now',
-            'notes'            => 'nullable|string',
+            'patient_id' => 'required|exists:patients,id',
+            'appointment_date' => 'required|date',
+            'appointment_time' => 'required',
+            'purpose' => 'nullable|string',
+            'status' => 'nullable|in:Scheduled,Completed,Cancelled',
         ]);
 
-        Appointment::create([
-            'patient_id'       => $validated['patient_id'],
-            'appointment_date' => $validated['appointment_date'],
-            'notes'            => $validated['notes'] ?? null,
-            'created_by'       => Auth::id(),
-            'status'           => 'Scheduled',
+        Appointment::create($validated + [
+            'status' => $validated['status'] ?? 'Scheduled',
         ]);
 
         return redirect()
             ->route('appointments.index')
-            ->with('success', 'Appointment scheduled successfully.');
+            ->with('success', 'Appointment created successfully.');
     }
 
     /**
-     * JSON for edit modal
-     */
-    public function edit(Appointment $appointment)
-    {
-        return response()->json([
-            'id'               => $appointment->id,
-            'patient_id'       => $appointment->patient_id,
-            'appointment_date' => $appointment->appointment_date->format('Y-m-d\TH:i'),
-            'status'           => $appointment->status,
-            'notes'            => $appointment->notes,
-        ]);
-    }
-
-    /**
-     * Update appointment (detect reschedule)
+     * Update the specified appointment.
      */
     public function update(Request $request, Appointment $appointment)
     {
         $validated = $request->validate([
-            'patient_id'       => 'required|exists:patients,id',
+            'patient_id' => 'required|exists:patients,id',
             'appointment_date' => 'required|date',
-            'status'           => 'required|in:Scheduled,Completed,Cancelled',
-            'notes'            => 'nullable|string',
+            'appointment_time' => 'required',
+            'purpose' => 'nullable|string',
+            'status' => 'required|in:Scheduled,Completed,Cancelled',
         ]);
 
-        // Detect reschedule
-        if ($appointment->appointment_date->ne(Carbon::parse($validated['appointment_date']))) {
-            $validated['rescheduled_at'] = now();
-        }
-
-        // Update the appointment
         $appointment->update($validated);
 
         return redirect()
@@ -88,7 +66,7 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Delete appointment
+     * Remove the specified appointment.
      */
     public function destroy(Appointment $appointment)
     {
@@ -96,34 +74,6 @@ class AppointmentController extends Controller
 
         return redirect()
             ->route('appointments.index')
-            ->with('success', 'Appointment deleted.');
-    }
-
-    /**
-     * Calendar JSON endpoint
-     */
-    public function calendar()
-    {
-        $appointments = Appointment::with('patient')->get();
-
-        return response()->json(
-            $appointments->map(function ($appointment) {
-                return [
-                    'id'    => $appointment->id,
-                    'title' => $appointment->patient?->first_name . ' ' . $appointment->patient?->last_name,
-                    'start' => $appointment->appointment_date->toIso8601String(),
-
-                    // color logic
-                    'backgroundColor' => match (true) {
-                        $appointment->status === 'Completed'  => '#16a34a', // green
-                        $appointment->status === 'Cancelled'  => '#dc2626', // red
-                        $appointment->rescheduled_at !== null => '#f59e0b', // yellow
-                        default                               => '#2563eb', // blue
-                    },
-
-                    'borderColor' => 'transparent',
-                ];
-            })
-        );
+            ->with('success', 'Appointment deleted successfully.');
     }
 }

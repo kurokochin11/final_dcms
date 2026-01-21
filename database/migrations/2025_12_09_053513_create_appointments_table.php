@@ -1,37 +1,23 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+return new class extends Migration {
+    public function up()
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-
-            // foreignId to patients table (assumes patients.id exists)
-            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
-
-            $table->dateTime('appointment_date');
-            $table->enum('status', ['Scheduled', 'Completed', 'Cancelled'])->default('Scheduled');
-            $table->text('notes')->nullable();
-
-            // foreignId to users table (who created the appointment)
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-
+            $table->foreignId('patient_id')->constrained('patients')->cascadeOnDelete();
+            $table->date('appointment_date');
+            $table->time('appointment_time');
+            $table->string('purpose')->nullable();
+            $table->string('status')->default('Scheduled');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('appointments');
     }

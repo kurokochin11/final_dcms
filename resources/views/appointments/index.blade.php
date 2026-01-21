@@ -1,207 +1,270 @@
+@section('title', 'Appointments')
+
+<!-- ================= CSS ================= -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="../assets/css/plugins.min.css" />
+<link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+
+<!-- ================= JS ================= -->
+<script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Appointments
-            </h2>
-
-            <button onclick="openAddAppointmentModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                New Appointment
-            </button>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            Appointments
+        </h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div x-data="appointments()" x-cloak>
 
-           {{-- CALENDAR --}}
-    <div class="bg-white dark:bg-gray-800 shadow rounded p-4 mb-6">
-        <div id="appointmentCalendar"></div>
-    </div>
-
-            @if(session('success'))
-                <div class="mb-4 px-4 py-2 bg-green-200 text-green-800 rounded">{{ session('success') }}</div>
-            @endif
-
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-4 overflow-x-auto">
-                    <table class="min-w-full table-auto border border-gray-200 dark:border-gray-700">
-                        <thead>
-                            <tr class="bg-gray-100 dark:bg-gray-700">
-                                <th class="border px-4 py-2">#</th>
-                                <th class="border px-4 py-2">Patient</th>
-                                <th class="border px-4 py-2">Date &amp; Time</th>
-                                <th class="border px-4 py-2">Status</th>
-                                <th class="border px-4 py-2">Notes</th>
-                                <th class="border px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($appointments as $appointment)
-                                <tr class="text-gray-800 dark:text-gray-200">
-                                    <td class="border px-4 py-2">{{ $loop->iteration + ($appointments->currentPage()-1) * $appointments->perPage() }}</td>
-                                    <td class="border px-4 py-2">{{ $appointment->patient?->first_name }} {{ $appointment->patient?->middle_name }} {{ $appointment->patient?->last_name }}</td>
-                                    <td class="border px-4 py-2">{{ $appointment->appointment_date->format('M d, Y h:i A') }}</td>
-                                    <td class="border px-4 py-2">{{ $appointment->status }}</td>
-                                    <td class="border px-4 py-2">{{ Str::limit($appointment->notes, 50) }}</td>
-                                    <td class="border px-4 py-2 flex gap-2">
-                                        <button onclick="openEditAppointmentModal({{ $appointment->id }})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
-
-                                        <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('Delete this appointment?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="border px-4 py-2 text-center text-gray-500">No appointments found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-
-                    <div class="mt-4">
-                        {{ $appointments->links('pagination::tailwind') }}
-                    </div>
-                </div>
+            <!-- Header -->
+            <div class="d-flex justify-content-between mb-3">
+                <h3 class="text-lg font-medium">Appointments</h3>
+                <button class="btn btn-primary" @click="openModal('create')">
+                    <i class="fas fa-plus"></i> New Appointment
+                </button>
             </div>
-        </div>
-    </div>
 
-    {{-- ADD APPOINTMENT MODAL --}}
-    <div id="addAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl p-6 relative">
-            <button onclick="closeAddAppointmentModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
-            <h2 class="text-2xl font-semibold mb-4">New Appointment</h2>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($appointments as $appointment)
+                        @php
+                            $record = [
+                                'id' => $appointment->id,
+                                'patient_id' => $appointment->patient_id,
+                                'patient_name' => $appointment->patient->full_name,
+                                'appointment_date' => \Carbon\Carbon::parse($appointment->appointment_date)->format('Y-m-d'),
+                                'appointment_time' => \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i'),
+                                'purpose' => $appointment->purpose,
+                                'status' => $appointment->status,
+                            ];
+                        @endphp
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $appointment->patient->full_name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</td>
+                            <td>{{ $appointment->purpose ?? '-' }}</td>
+                            <td>{{ $appointment->status }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-primary btn-medium"
+                                            @click="openModal('view', @js($record))">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
 
-            <form method="POST" action="{{ route('appointments.store') }}">
-                @csrf
+                                    <button class="btn btn-warning btn-medium text-white"
+                                            @click="openModal('edit', @js($record))">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
 
-                <div class="mb-4">
-                    <label class="block mb-1">Patient</label>
-                    <select name="patient_id" class="w-full border rounded px-2 py-1" required>
-                        <option value="">Select Patient</option>
-                        @foreach($patients as $patient)
-                            <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}</option>
+                                    <button class="btn btn-danger btn-medium"
+                                            @click="openModal('delete', @js($record))">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         @endforeach
-                    </select>
-                </div>
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="mb-4">
-                    <label class="block mb-1">Appointment Date & Time</label>
-                    <input type="datetime-local" name="appointment_date" class="w-full border rounded px-2 py-1" required>
-                </div>
+         <!-- CREATE / EDIT MODAL -->
+<div x-show="showModal && (mode==='create' || mode==='edit')"
+     class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-transparent"
+     @click.stop>
+  <div class="modal-dialog modal-dialog-centered modal-lg shadow-lg">
+    <div class="modal-content bg-white border-0">
 
-                <div class="mb-4">
-                    <label class="block mb-1">Notes</label>
-                    <textarea name="notes" rows="3" class="w-full border rounded px-2 py-1"></textarea>
-                </div>
+      <!-- Header -->
+      <div class="modal-header px-4 py-3"
+           :class="(mode==='create' || mode==='edit') ? 'bg-primary text-white' : ''">
+        <h5 class="modal-title fs-5 fw-bold"
+            x-text="mode==='create' ? 'New Appointment' : 'Edit Appointment'"></h5>
+        <button type="button" class="btn-close text-white" @click="close"></button>
+      </div>
 
-                <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeAddAppointmentModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
-                </div>
-            </form>
+      <!-- Body -->
+      <form :action="formAction" method="POST" class="px-4 py-4">
+        @csrf
+        <template x-if="mode==='edit'">
+          <input type="hidden" name="_method" value="PUT">
+        </template>
+
+        <div class="row g-3">
+          <!-- Patient -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Patient</label>
+            <select name="patient_id" class="form-select" x-model="form.patient_id" required>
+              <option value="">Select Patient</option>
+              @foreach($patients as $patient)
+                <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Date</label>
+            <input type="date" name="appointment_date" class="form-control" x-model="form.appointment_date" required>
+          </div>
+
+          <!-- Time -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Time</label>
+            <input type="time" name="appointment_time" class="form-control" x-model="form.appointment_time" required>
+          </div>
+
+          <!-- Purpose -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Purpose</label>
+            <input type="text" name="purpose" class="form-control" x-model="form.purpose" placeholder="e.g., Checkup">
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Status</label>
+            <select name="status" class="form-select" x-model="form.status">
+              <option>Scheduled</option>
+              <option>Completed</option>
+              <option>Cancelled</option>
+            </select>
+          </div>
         </div>
-    </div>
 
-    {{-- EDIT APPOINTMENT MODAL --}}
-    <div id="editAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl p-6 relative">
-            <button onclick="closeEditAppointmentModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
-            <h2 class="text-2xl font-semibold mb-4">Edit Appointment</h2>
-
-            <form id="editAppointmentForm" method="POST">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="appointment_id" id="edit_appointment_id">
-
-                <div class="mb-4">
-                    <label class="block mb-1">Patient</label>
-                    <select name="patient_id" id="edit_patient_id" class="w-full border rounded px-2 py-1" required>
-                        @foreach($patients as $patient)
-                            <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->middle_name }} {{ $patient->last_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-1">Appointment Date & Time</label>
-                    <input type="datetime-local" name="appointment_date" id="edit_appointment_date" class="w-full border rounded px-2 py-1" required>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-1">Status</label>
-                    <select name="status" id="edit_status" class="w-full border rounded px-2 py-1">
-                        <option value="Scheduled">Scheduled</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-1">Notes</label>
-                    <textarea name="notes" id="edit_notes" rows="3" class="w-full border rounded px-2 py-1"></textarea>
-                </div>
-
-                <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeEditAppointmentModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">Update</button>
-                </div>
-            </form>
+        <!-- Footer -->
+        <div class="modal-footer justify-content-between px-0 py-3 border-top-0">
+          <button type="button" class="btn btn-black btn-sm" @click="close">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" x-text="mode==='create' ? 'Save' : 'Update'"></button>
         </div>
+      </form>
     </div>
+  </div>
+</div>
+<!-- VIEW MODAL -->
+<div x-show="showModal && mode==='view'"
+     class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-transparent"
+     @click.stop>
+  <div class="modal-dialog modal-dialog-centered modal-md shadow-lg">
+    <div class="modal-content bg-white border-0">
 
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white px-4 py-3">
+        <h5 class="modal-title fs-5 fw-bold">Appointment Details</h5>
+        <button class="btn-close text-white" @click="close"></button>
+      </div>
+
+      <div class="modal-body p-4 fs-6">
+        <p><strong>Patient:</strong> <span x-text="form.patient_name"></span></p>
+        <p><strong>Date:</strong> <span x-text="form.appointment_date"></span></p>
+        <p><strong>Time:</strong> <span x-text="form.appointment_time"></span></p>
+        <p><strong>Purpose:</strong> <span x-text="form.purpose || '-'"></span></p>
+        <p><strong>Status:</strong> <span x-text="form.status"></span></p>
+      </div>
+
+      <div class="modal-footer justify-content-center border-top-0 px-0 py-3">
+        <button class="btn btn-dark btn-sm" @click="close">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div x-show="showModal && mode==='delete'"
+     class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-transparent"
+     @click.stop>
+  <div class="modal-dialog modal-dialog-centered modal-md shadow-lg">
+    <div class="modal-content bg-white border-0">
+
+      <!-- Header -->
+      <div class="modal-header bg-danger text-white px-4 py-3">
+        <h5 class="modal-title fs-5 fw-bold">Delete Appointment</h5>
+        <button class="btn-close text-white" @click="close"></button>
+      </div>
+
+      <div class="modal-body text-center p-4 fs-6">
+        Are you sure you want to delete appointment for
+        <strong x-text="form.patient_name"></strong>?
+      </div>
+
+      <div class="modal-footer justify-content-center border-top-0 px-0 py-3">
+        <button class="btn btn-black btn-sm me-2" @click="close">Cancel</button>
+        <form :action="formAction" method="POST">
+          @csrf
+          <input type="hidden" name="_method" value="DELETE">
+          <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Alpine -->
     <script>
-        function openAddAppointmentModal() {
-            document.getElementById('addAppointmentModal').classList.remove('hidden');
+        function appointments() {
+            return {
+                showModal: false,
+                mode: 'create',
+                form: {
+                    id: '',
+                    patient_id: '',
+                    patient_name: '',
+                    appointment_date: '',
+                    appointment_time: '',
+                    purpose: '',
+                    status: 'Scheduled'
+                },
+
+                get formAction() {
+                    if (this.mode === 'create') {
+                        return "{{ route('appointments.store') }}";
+                    }
+                    return "{{ url('appointments') }}/" + this.form.id;
+                },
+
+                openModal(mode, data = null) {
+                    this.mode = mode;
+                    this.showModal = true;
+                    if (data) this.form = { ...this.form, ...data };
+                },
+
+                close() {
+                    this.showModal = false;
+                    this.mode = 'create';
+                    this.form = {
+                        id: '',
+                        patient_id: '',
+                        patient_name: '',
+                        appointment_date: '',
+                        appointment_time: '',
+                        purpose: '',
+                        status: 'Scheduled'
+                    };
+                }
+            }
         }
-
-        function closeAddAppointmentModal() {
-            document.getElementById('addAppointmentModal').classList.add('hidden');
-        }
-
-        function openEditAppointmentModal(id) {
-            const modal = document.getElementById('editAppointmentModal');
-            const form = document.getElementById('editAppointmentForm');
-
-            fetch(`/appointments/${id}/edit`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('edit_appointment_id').value = data.id;
-                    document.getElementById('edit_patient_id').value = data.patient_id;
-                    document.getElementById('edit_appointment_date').value = data.appointment_date;
-                    document.getElementById('edit_status').value = data.status ?? 'Scheduled';
-                    document.getElementById('edit_notes').value = data.notes ?? '';
-                    form.action = `/appointments/${id}`;
-                    modal.classList.remove('hidden');
-                })
-                .catch(() => alert('Could not load appointment for editing.'));
-        }
-
-        function closeEditAppointmentModal() {
-            document.getElementById('editAppointmentModal').classList.add('hidden');
-        }
-
-        //clendar js
-        document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('appointmentCalendar');
-
-    if (!calendarEl) return;
-
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        height: 'auto',
-        events: '/appointments/calendar',
-
-        eventClick: function(info) {
-            openEditAppointmentModal(info.event.id);
-        }
-    });
-
-    calendar.render();
-});
     </script>
 </x-app-layout>

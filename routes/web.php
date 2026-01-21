@@ -98,13 +98,12 @@ Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destro
     Route::delete('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'destroy'])->name('treatment-plans.destroy');
 
     //Appointment route
-     Route::get('/appointments/calendar', [AppointmentController::class, 'calendar'])->name('appointments.calendar');
-    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-    Route::post('/appointments', [AppointmentController::class, 'store']) ->name('appointments.store');
-    Route::get('/appointments/{appointment}/edit', [AppointmentController::class, 'edit'])->name('appointments.edit');
-    Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
-Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
-
+  Route::prefix('appointments')->group(function () {
+    Route::get('/', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::post('/', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::put('/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
+});
 // Diagnosis routes
     Route::get('/diagnoses', [DiagnosisController::class, 'index'])->name('diagnoses.index');
     Route::post('/diagnoses', [DiagnosisController::class, 'store'])->name('diagnoses.store');
