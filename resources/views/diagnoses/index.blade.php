@@ -57,12 +57,12 @@ $(document).ready(function () {
     <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-800">Records</h2>
-        <x-button
+        <button
           type="button"
           id="btnOpenModal"
-           class="btn btn-primary btn-xs" >  <i class="fas fa-plus me-1"></i>
+           class="btn btn-primary btn-medium" >  <i class="fas fa-plus me-1"></i>
       New Diagnosis
-        </x-button>
+        </button>
       </div>
 
       {{-- Table --}}
@@ -123,7 +123,7 @@ $(document).ready(function () {
  <!-- VIEW -->
     <button
       type="button"
-      class="btn btn-primary btn-xs btn-view"
+      class="btn btn-primary btn-medium btn-view"
       title="View"
       data-patient="{{ $diagnosis->patient->first_name }} {{ $diagnosis->patient->last_name }}"
       data-diagnosis-date="{{ $diagnosis->diagnosis_date }}"
@@ -147,17 +147,13 @@ $(document).ready(function () {
                         data-pulpal_periapical="{{ $diagnosis->pulpal_periapical }}"
                         data-occlusal_diagnosis="{{ $diagnosis->occlusal_diagnosis }}"
                         data-other_oral_conditions="{{ $diagnosis->other_oral_conditions }}"
-                        class="btn-edit btn btn-warning btn-xs"title="Edit"><i class="fas fa-edit text-white"></i>
+                        class="btn-edit btn btn-warning btn-medium"title="Edit"><i class="fas fa-edit text-white"></i>
 
                      <!-- DELETE -->
-                      <form action="{{ route('diagnoses.destroy', $diagnosis->id) }}" method="POST" onsubmit="return confirm('Delete this diagnosis?');" class="inline">
-
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-500 text-xs text-white rounded-md"> <i class="fas fa-trash me-1"></i> </button>
-                      </form>
-                    </div>
-                  </td>
+              <button type="button" class="btn btn-danger btn-medium btn-delete" data-id="{{ $diagnosis->id }}"  title="Delete"><i class="fas fa-trash"></i>
+            </button>
+          </div>
+            </td>
                 </tr>
               @empty
                 <tr>
@@ -174,19 +170,23 @@ $(document).ready(function () {
   </div>
 
   <!--ADD/EDIT MODAL-->
-  <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-40">
+  <div id="modalBackdrop" class="fixed inset-0  hidden items-center justify-center z-40">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
-      <div class="p-5 border-b flex items-center justify-between">
-        <h3 id="modalTitle" class="text-lg font-medium text-gray-800">Add Diagnosis</h3>
-        <button type="button" id="modalClose" class="text-gray-500 hover:text-gray-700" aria-label="Close">✕</button>
-      </div>
+     <div class="p-5 flex items-center justify-between bg-blue-600 text-white rounded-t-lg">
+  <h3 id="modalTitle" class="text-lg font-medium">Add Diagnosis</h3>
+  <button type="button" id="modalClose" 
+          class="text-white hover:text-gray-200 bg-transparent border-0 p-0 text-xl" 
+          aria-label="Close">✕</button>
+</div>
+
+
 
       <form id="modalForm" class="p-5" method="POST" action="{{ route('diagnoses.store') }}">
         @csrf
         <input type="hidden" name="_method" id="form_method" value="">
         <input type="hidden" name="edit_id" id="edit_id" value="">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+       <div class="grid grid-cols-1  sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Patient</label>
             <select id="patient_id" name="patient_id" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
@@ -239,7 +239,7 @@ $(document).ready(function () {
   </div>
 
 <!-- VIEW MODAL -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+<div class="modal" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content shadow">
       
@@ -287,13 +287,49 @@ $(document).ready(function () {
       <div class="modal-footer">
         <button type="button" class="btn btn-black btn-sm" data-bs-dismiss="modal">Close</button>
       </div>
-
+      
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">Delete Diagnosis</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this diagnosis?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteForm" method="POST">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 
+
+   
+
   {{-- JS --}}
   <script>
+    
+$(document).ready(function() {
+    $('#myTable').on('click', '.btn-delete', function() {
+        const id = $(this).data('id');
+        const deleteForm = $('#deleteForm');
+        deleteForm.attr('action', '/diagnoses/' + id);
+
+        // Show Bootstrap modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    });
+});
+
+
     document.addEventListener('click', function(e) {
   const viewBtn = e.target.closest('.btn-view');
   if (viewBtn) {
@@ -359,6 +395,7 @@ $(document).ready(function () {
         return;
       }
     });
+    
   })();
   </script>
 </x-app-layout>

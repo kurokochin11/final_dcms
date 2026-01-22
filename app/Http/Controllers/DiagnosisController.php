@@ -11,15 +11,17 @@ class DiagnosisController extends Controller
     /**
      * Display a listing of the diagnoses.
      */
-    public function index()
-    {
-        // Load diagnoses with patient relationship
-        $diagnoses = Diagnosis::with('patient')->latest()->paginate(10);
-        $patients = Patient::whereHas('diagnoses')->orderBy('first_name')->get();
+   public function index()
+{
+    $diagnoses = Diagnosis::with('patient')->latest()->paginate(10);
 
+    // ✅ LOAD ALL PATIENTS FOR ADD MODAL
+    $patients = Patient::orderBy('last_name')
+        ->orderBy('first_name')
+        ->get();
 
-        return view('diagnoses.index', compact('diagnoses', 'patients'));
-    }
+    return view('diagnoses.index', compact('diagnoses', 'patients'));
+}
 
     /**
      * Store a newly created diagnosis in storage.
