@@ -182,12 +182,11 @@ $(document).ready(function() {
                                        <form method="POST" class="d-flex align-items-center m-0 delete-form">
                                       @csrf
                                   @method('DELETE')
-                                    <button type="button"
-                                 class="btn btn-medium btn-danger btn-delete"
-                               data-action="{{ route('radiographs.destroy', $rg->id) }}"
-                              data-patient="{{ optional($rg->patient)->first_name }} {{ optional($rg->patient)->last_name }}">
-                                            <i class="fas fa-trash"></i>
-                                   </button>
+                                   <button type="button"
+        class="btn btn-medium btn-danger btn-delete"
+        data-action="{{ route('radiographs.destroy', $rg->id) }}"
+        data-patient="{{ optional($rg->patient)->first_name }} {{ optional($rg->patient)->last_name }}">
+</button>
                                      </form>
                                     </div>
                                 </td>
@@ -344,51 +343,38 @@ $(document).ready(function() {
         </div>
     </div>
 </div>
-{{-- Delete Confirmation Modal --}}
 <div id="deleteBackdrop"
-     class="fixed inset-0 hidden items-center justify-center z-50 bg-black/40">
+     class="fixed inset-0 hidden items-center justify-center z-[9999] bg-black/40">
 
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
-        <!-- Header -->
-        <div class="p-4 border-b bg-red-600 text-white rounded-t-lg">
-            <h3 class="text-lg font-medium">Confirm Delete</h3>
-        </div>
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 relative">
+    <!-- Header -->
+    <div class="p-4 border-b bg-red-600 text-white rounded-t-lg">
+      <h3 class="text-lg font-medium">Confirm Delete</h3>
+    </div>
 
-        <!-- Body -->
-<div class="p-5 text-sm text-gray-700">
-    <p>
-        Are you sure you want to delete this radiograph record of
-        <span class="font-semibold text-gray-900" id="deletePatientName"></span>?
-    </p>
-</div>
+    <!-- Body -->
+    <div class="p-5 text-sm text-gray-700">
+      Are you sure you want to delete this radiograph record of
+      <span class="font-semibold" id="deletePatientName"></span>?
+    </div>
 
-
-     <!-- Footer -->
-<div class="p-4 d-flex justify-content-end gap-2 border-top">
-
-    <!-- Cancel -->
-    <button type="button"
-        id="btnDeleteCancel"
-        class="btn btn-dark btn-sm">
+    <!-- Footer -->
+    <div class="p-4 flex justify-end gap-2 border-t">
+      <button type="button" id="btnDeleteCancel" class="btn btn-dark btn-sm">
         Cancel
-    </button>
+      </button>
 
-    <!-- Confirm Delete -->
-    <form id="deleteForm" method="POST" class="m-0">
+      <form id="deleteForm" method="POST">
         @csrf
         @method('DELETE')
-
-        <button type="submit"
-            class="btn btn-danger btn-sm">
-            Delete
+        <button type="submit" class="btn btn-danger btn-sm">
+          Delete
         </button>
-    </form>
-
-</div>
-
-
+      </form>
     </div>
+  </div>
 </div>
+
 
     {{-- JS --}}
     <script>

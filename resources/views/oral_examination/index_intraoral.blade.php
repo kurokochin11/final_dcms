@@ -1,3 +1,24 @@
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}">
+
+<!-- JS -->
+<script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+<script src="{{ asset('assets/js/kaiadmin.min.js') }}"></script>
+
+    <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
 @section('title', 'Intraoral Examinations')
 <x-app-layout>
 <x-slot name="header">
@@ -5,9 +26,12 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Intraoral Examinations
         </h2>
-        <button onclick="openCreateModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            New Examination
-        </button>
+   <button onclick="openCreateModal()"
+    class="btn btn-primary btn-md d-inline-flex align-items-center gap-2">
+    <i class="fas fa-plus"></i>
+    New Examination
+</button>
+
     </div>
 </x-slot>
 
@@ -18,8 +42,8 @@
         @endif
 
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-4 overflow-x-auto">
-                <table class="min-w-full table-auto border border-gray-200 dark:border-gray-700">
+             <div class="table-responsive">
+                    <table id="myTable" class="min-w-full table-auto border border-gray-200 dark:border-gray-700">
                     <thead>
                         <tr class="bg-gray-100 dark:bg-gray-700">
                             <th class="border px-4 py-2">Patient</th>
@@ -76,8 +100,8 @@
 
     {{-- Actions --}}
     <td class="border px-4 py-2 flex gap-2">
-         <button onclick="openViewModal({{ $exam->id }})" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">View</button>
-        <button onclick="openEditModal(this)" data-url="{{ route('oral_examination.edit', $exam->id) }}" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
+       <button onclick="openViewModal({{ $exam->id }}, event) " class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">View</button>
+       <button onclick="openEditModal(this, event)" data-url="{{ route('oral_examination.edit', $exam->id) }}" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
         <form action="{{ route('oral_examination.destroy', $exam->id) }}" method="POST" onsubmit="return confirm('Delete this examination?');">
             @csrf
             @method('DELETE')
@@ -92,9 +116,9 @@
 @endforelse
 </tbody>
 
-                </table>
+ </table>
 
-                {{-- Pagination --}}
+        {{-- Pagination --}}
                 <div class="mt-4">
                     {{ $examinations->links('pagination::tailwind') }}
                 </div>
@@ -104,26 +128,52 @@
 </div>
 
 {{-- Create Modal --}}
-<div id="createIntraoralModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
-        <button onclick="closeCreateModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">New Examination</h2>
+<div id="createIntraoralModal" class="fixed inset-0 bg-transparent flex items-center justify-center z-[9999] hidden">
 
-        <form id="createIntraoralForm" action="{{ route('oral_examination.store') }}" method="POST" enctype="multipart/form-data">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl  relative overflow-y-auto max-h-[90vh]">
+       
+    <!-- HEADER -->
+<div class="bg-blue-600 text-white p-4 rounded-t flex justify-between items-center">
+    <h2 class="text-lg font-bold">New Examination</h2>
+    <button type="button"
+        onclick="closeCreateModal()"
+        class="text-white hover:text-gray-200 text-2xl font-extrabold leading-none">
+        &times;
+    </button>
+</div>
+<div class="p-6">
+    <form id="createIntraoralForm" action="{{ route('oral_examination.store') }}" method="POST" enctype="multipart/form-data">
+
             @csrf
-
-            {{-- Tabs --}}
-            <div class="mb-4">
-                <ul class="flex border-b border-gray-200 dark:border-gray-700" id="create-tabs">
-                    <li class="-mb-px mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-soft">Soft Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-gingiva">Gingiva</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-periodontium">Periodontium</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-teeth">Hard Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-occlusion">Occlusion</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-hygiene">Oral Hygiene</button></li>
-                </ul>
-            </div>
-
+{{-- Tabs --}}
+<div class="mb-4">
+    <ul class="flex border-b border-gray-200 dark:border-gray-700" id="create-tabs">
+        <li class="mr-1">
+            <button type="button" class="create-tab-link px-4 py-2 font-semibold rounded-t
+                   bg-blue-600 text-white" data-tab="create-tab-soft">Soft Tissues</button>
+        </li>
+        <li class="mr-1">
+            <button type="button" class="create-tab-link px-4 py-2 font-semibold rounded-t
+                   bg-gray-200 text-gray-700 hover:bg-gray-300" data-tab="create-tab-gingiva">Gingiva</button>
+        </li>
+        <li class="mr-1">
+            <button type="button" class="create-tab-link px-4 py-2 font-semibold rounded-t
+                   bg-gray-200 text-gray-700 hover:bg-gray-300" data-tab="create-tab-periodontium">Periodontium</button>
+        </li>
+        <li class="mr-1">
+            <button type="button" class="create-tab-link px-4 py-2 font-semibold rounded-t
+                   bg-gray-200 text-gray-700 hover:bg-gray-300" data-tab="create-tab-teeth">Hard Tissues</button>
+        </li>
+        <li class="mr-1">
+            <button type="button" class="create-tab-link px-4 py-2 font-semibold rounded-t
+                   bg-gray-200 text-gray-700 hover:bg-gray-300" data-tab="create-tab-occlusion">Occlusion</button>
+        </li>
+        <li class="mr-1">
+            <button type="button" class="create-tab-link px-4 py-2 font-semibold rounded-t
+                   bg-gray-200 text-gray-700 hover:bg-gray-300" data-tab="create-tab-hygiene">Oral Hygiene</button>
+        </li>
+    </ul>
+</div>
             {{-- Tab Contents --}}
             <div>
                 {{-- Soft Tissues --}}
@@ -258,26 +308,56 @@
 </div>
 
 {{-- EDIT MODAL --}}
-<div id="editIntraoralModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="editIntraoralModal"
+     class="fixed inset-0 bg-transparent flex items-center justify-center z-[9999] hidden">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
-        <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Edit Examination</h2>
+  <!-- HEADER -->
+<div class="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
+    <h2 class="text-lg font-semibold">Edit Examination</h2>
+    <button onclick="closeEditModal()" class="text-white text-2xl hover:text-gray-200">
+        &times;
+    </button>
+</div>
 
         <form id="editIntraoralForm" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
-            {{-- Tabs --}}
-            <div class="mb-4">
-                <ul class="flex border-b border-gray-200 dark:border-gray-700" id="edit-tabs">
-                    <li class="-mb-px mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-soft">Soft Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-gingiva">Gingiva</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-periodontium">Periodontium</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-teeth">Hard Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-occlusion">Occlusion</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-hygiene">Oral Hygiene</button></li>
-                </ul>
-            </div>
+        <!-- Tabs -->
+<div class="bg-white px-4 pt-3 border-b">
+    <ul class="flex gap-1" id="edit-tabs">
+        <li>
+            <button type="button"
+                class="edit-tab-link px-4 py-2 rounded-t bg-blue-600 text-white"
+                data-tab="edit-tab-soft">Soft Tissues</button>
+        </li>
+        <li>
+            <button type="button"
+                class="edit-tab-link px-4 py-2 rounded-t bg-gray-200 text-gray-700 hover:bg-gray-300"
+                data-tab="edit-tab-gingiva">Gingiva</button>
+        </li>
+        <li>
+            <button type="button"
+                class="edit-tab-link px-4 py-2 rounded-t bg-gray-200 text-gray-700 hover:bg-gray-300"
+                data-tab="edit-tab-periodontium">Periodontium</button>
+        </li>
+        <li>
+            <button type="button"
+                class="edit-tab-link px-4 py-2 rounded-t bg-gray-200 text-gray-700 hover:bg-gray-300"
+                data-tab="edit-tab-teeth">Hard Tissues</button>
+        </li>
+        <li>
+            <button type="button"
+                class="edit-tab-link px-4 py-2 rounded-t bg-gray-200 text-gray-700 hover:bg-gray-300"
+                data-tab="edit-tab-occlusion">Occlusion</button>
+        </li>
+        <li>
+            <button type="button"
+                class="edit-tab-link px-4 py-2 rounded-t bg-gray-200 text-gray-700 hover:bg-gray-300"
+                data-tab="edit-tab-hygiene">Oral Hygiene</button>
+        </li>
+    </ul>
+</div>
 
             {{-- Tab Contents --}}
             <div>
@@ -415,7 +495,7 @@
 
 {{-- VIEW MODAL --}}
 <div id="viewIntraoralModal"
-     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+     class="fixed inset-0  flex items-center justify-center z-50 hidden">
 
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
 
@@ -438,195 +518,156 @@
         </div>
     </div>
 </div>
-
-
-
 <script>
-    // Create Modal JS
-    function openCreateModal(){
-        document.getElementById('createIntraoralForm').reset();
+/* ================= GLOBAL MODAL CONTROL ================= */
+function closeAllIntraoralModals() {
+    [
+        'createIntraoralModal',
+        'editIntraoralModal',
+        'viewIntraoralModal'
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+}
+
+/* ================= CREATE MODAL ================= */
+function openCreateModal(){
+    closeAllIntraoralModals(); // ✅ important
+
+    document.getElementById('createIntraoralForm').reset();
+    document.querySelectorAll('.create-tab-content').forEach(tc => tc.classList.add('hidden'));
+    document.querySelectorAll('.create-tab-link').forEach(l => l.classList.remove('border-b-2','border-blue-600'));
+
+    document.getElementById('create-tab-soft').classList.remove('hidden');
+    document.querySelector('.create-tab-link').classList.add('border-b-2','border-blue-600');
+
+    document.getElementById('createIntraoralModal').classList.remove('hidden');
+}
+
+function closeCreateModal(){
+    document.getElementById('createIntraoralModal').classList.add('hidden');
+}
+
+/* Create tabs */
+document.querySelectorAll('.create-tab-link').forEach(link => {
+    link.addEventListener('click', () => {
         document.querySelectorAll('.create-tab-content').forEach(tc => tc.classList.add('hidden'));
         document.querySelectorAll('.create-tab-link').forEach(l => l.classList.remove('border-b-2','border-blue-600'));
-        document.getElementById('create-tab-soft').classList.remove('hidden');
-        document.querySelector('.create-tab-link').classList.add('border-b-2','border-blue-600');
-        document.getElementById('createIntraoralModal').classList.remove('hidden');
-    }
 
-    function closeCreateModal(){ 
-        document.getElementById('createIntraoralModal').classList.add('hidden'); 
-    }
-
-    // Tabs for Create Modal
-    document.querySelectorAll('.create-tab-link').forEach(link => {
-        link.addEventListener('click', () => {
-            document.querySelectorAll('.create-tab-content').forEach(tc => tc.classList.add('hidden'));
-            document.querySelectorAll('.create-tab-link').forEach(l => l.classList.remove('border-b-2','border-blue-600'));
-            document.getElementById(link.dataset.tab).classList.remove('hidden');
-            link.classList.add('border-b-2','border-blue-600');
-        });
+        document.getElementById(link.dataset.tab).classList.remove('hidden');
+        link.classList.add('border-b-2','border-blue-600');
     });
+});
 
-    // Edit Modal JS
+/* ================= EDIT MODAL ================= */
 function openEditModal(buttonOrId) {
-  // Determine URL and updateUrl
-  let url = null;
-  let updateUrl = null;
-  let invokingElement = null;
-  if (typeof buttonOrId === 'object' && buttonOrId !== null) {
-    invokingElement = buttonOrId;
-    url = invokingElement.dataset.url || invokingElement.getAttribute('data-url') || null;
-    updateUrl = invokingElement.dataset.updateUrl || invokingElement.getAttribute('data-update-url') || null;
-  } else {
-    // assume id
-    const id = buttonOrId;
-    url = `/oral_examination/${id}/edit`;
-    updateUrl = `/oral_examination/${id}`;
-  }
+    closeAllIntraoralModals(); // ✅ important
 
-  if (!url) {
-    alert('Edit URL missing.');
-    console.error('openEditModal: no URL to fetch (button.dataset.url missing and no id passed).');
-    return;
-  }
-
-  fetch(url, {
-    method: 'GET',
-    headers: { 'Accept': 'application/json' },
-    credentials: 'same-origin'
-  })
-  .then(res => {
-    const ct = res.headers.get('content-type') || '';
-    if (!res.ok) {
-      if (ct.includes('application/json')) return res.json().then(j => Promise.reject(j));
-      return res.text().then(t => Promise.reject({ message: 'Non-JSON response', html: t, status: res.status }));
-    }
-    if (!ct.includes('application/json')) {
-      // server returned HTML (likely login or error page)
-      return res.text().then(t => Promise.reject({ message: 'Expected JSON but got HTML', html: t, status: res.status }));
-    }
-    return res.json();
-  })
-  .then(data => {
-    const form = document.getElementById('editIntraoralForm');
-    if (!form) {
-      console.error('editIntraoralForm not found in DOM.');
-      alert('Edit form not present on page.');
-      return;
-    }
-
-    // Set form action: prefer updateUrl from button if provided, else fallback to conventional route
-    if (updateUrl) {
-      form.action = updateUrl;
-    } else if (data && data.id) {
-      // default fallback — adjust if your route has a prefix
-      form.action = `/oral_examination/${data.id}`;
-    }
-
-    // Helper to set inputs safely (handles radios and selects)
-    const safeSet = (name, value) => {
-      const els = form.querySelectorAll('[name="'+name+'"]');
-      if (!els || els.length === 0) return;
-      // If radios or multiple elements with same name
-      if (els.length > 1) {
-        // try find matching value radio
-        let matched = Array.from(els).find(e => e.type === 'radio' && e.value == (value ?? ''));
-        if (matched) {
-          matched.checked = true;
-          return;
-        }
-        // else uncheck all or set default
-        els.forEach(e => { if (e.type === 'radio') e.checked = false; });
-        return;
-      }
-      const el = els[0];
-      if (!el) return;
-      const t = el.type;
-      if (t === 'checkbox') {
-        el.checked = !!value;
-        return;
-      }
-      if (t === 'radio') {
-        if (el.value == (value ?? '')) el.checked = true;
-        return;
-      }
-      // otherwise set value (select/textarea/text)
-      el.value = value ?? '';
-    };
-
-    // Map expected fields from server JSON to form inputs
-    safeSet('patient_id', data.patient_id ?? '');
-    safeSet('soft_tissues_status', data.soft_tissues_status ?? '');
-    safeSet('soft_tissues', data.soft_tissues ?? '');
-    safeSet('gingiva_color', data.gingiva_color ?? '');
-    safeSet('gingiva_texture', data.gingiva_texture ?? '');
-    safeSet('bleeding', data.bleeding ?? 'No');
-    safeSet('bleeding_area', data.bleeding_area ?? '');
-    safeSet('recession', data.recession ?? 'No');
-    safeSet('recession_area', data.recession_area ?? '');
-    safeSet('teeth_condition', data.teeth_condition ?? '');
-    safeSet('occlusion_class', data.occlusion_class ?? '');
-    safeSet('occlusion_other', data.occlusion_other ?? '');
-    safeSet('premature_contacts', data.premature_contacts ?? '');
-    safeSet('hygiene_status', data.hygiene_status ?? '');
-    safeSet('plaque_index', data.plaque_index ?? '');
-    safeSet('calculus', data.calculus ?? '');
-
-    // If you want to display links/previews for uploaded images, you can read data.probing_depths etc.
-    // e.g. if (data.probing_depths) show a preview element (not implemented here).
-
-    // Reset & show tabs: hide all edit-tab-content then show first
-    document.querySelectorAll('.edit-tab-content').forEach(tc => tc.classList.add('hidden'));
-    document.querySelectorAll('.edit-tab-link').forEach(l => l.classList.remove('border-b-2','border-yellow-500'));
-    const firstTab = document.getElementById('edit-tab-soft');
-    if (firstTab) firstTab.classList.remove('hidden');
-    const firstLink = document.querySelector('.edit-tab-link');
-    if (firstLink) firstLink.classList.add('border-b-2','border-yellow-500');
-
-    // Show modal
     const modal = document.getElementById('editIntraoralModal');
-    if (modal) modal.classList.remove('hidden');
-  })
-  .catch(err => {
-    console.error('openEditModal error:', err);
-    // If err.html exists it's likely HTML content (login or server error). For debugging you can open it in a new tab:
-    if (err && err.html) {
-      console.error('Server returned HTML (first 500 chars):', err.html.slice(0,500));
+    if (modal) modal.classList.remove('hidden'); // ✅ open immediately
+
+    let url = null;
+    let updateUrl = null;
+
+    if (typeof buttonOrId === 'object' && buttonOrId !== null) {
+        url = buttonOrId.dataset.url || buttonOrId.getAttribute('data-url');
+        updateUrl = buttonOrId.dataset.updateUrl || buttonOrId.getAttribute('data-update-url');
+    } else {
+        url = `/oral_examination/${buttonOrId}/edit`;
+        updateUrl = `/oral_examination/${buttonOrId}`;
     }
-    // Friendly message to user
-    alert('Failed to load examination data. See console/Network for details (likely auth redirect, 404, or server error).');
-  });
+
+    if (!url) {
+        alert('Edit URL missing.');
+        return;
+    }
+
+    fetch(url, {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+    })
+    .then(res => res.json())
+    .then(data => {
+        const form = document.getElementById('editIntraoralForm');
+        if (!form) return;
+
+        form.action = updateUrl || `/oral_examination/${data.id}`;
+
+        const safeSet = (name, value) => {
+            const els = form.querySelectorAll(`[name="${name}"]`);
+            if (!els.length) return;
+
+            if (els.length > 1) {
+                els.forEach(e => e.checked = (e.value == value));
+                return;
+            }
+
+            const el = els[0];
+            if (el.type === 'checkbox') el.checked = !!value;
+            else el.value = value ?? '';
+        };
+
+        safeSet('patient_id', data.patient_id);
+        safeSet('soft_tissues_status', data.soft_tissues_status);
+        safeSet('soft_tissues', data.soft_tissues);
+        safeSet('gingiva_color', data.gingiva_color);
+        safeSet('gingiva_texture', data.gingiva_texture);
+        safeSet('bleeding', data.bleeding ?? 'No');
+        safeSet('bleeding_area', data.bleeding_area);
+        safeSet('recession', data.recession ?? 'No');
+        safeSet('recession_area', data.recession_area);
+        safeSet('teeth_condition', data.teeth_condition);
+        safeSet('occlusion_class', data.occlusion_class);
+        safeSet('occlusion_other', data.occlusion_other);
+        safeSet('premature_contacts', data.premature_contacts);
+        safeSet('hygiene_status', data.hygiene_status);
+        safeSet('plaque_index', data.plaque_index);
+        safeSet('calculus', data.calculus);
+
+        document.querySelectorAll('.edit-tab-content').forEach(tc => tc.classList.add('hidden'));
+        document.querySelectorAll('.edit-tab-link').forEach(l => l.classList.remove('border-b-2','border-yellow-500'));
+
+        document.getElementById('edit-tab-soft').classList.remove('hidden');
+        document.querySelector('.edit-tab-link').classList.add('border-b-2','border-yellow-500');
+    })
+    .catch(() => {
+        alert('Failed to load examination data');
+        closeEditModal();
+    });
 }
 
 function closeEditModal(){
-  const modal = document.getElementById('editIntraoralModal');
-  if (modal) modal.classList.add('hidden');
+    document.getElementById('editIntraoralModal').classList.add('hidden');
 }
 
-/* Tabs for edit modal (attach listeners) */
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.edit-tab-link').forEach(link => {
-    link.addEventListener('click', () => {
-      document.querySelectorAll('.edit-tab-content').forEach(tc => tc.classList.add('hidden'));
-      document.querySelectorAll('.edit-tab-link').forEach(l => l.classList.remove('border-b-2','border-yellow-500'));
-      const tgtId = link.dataset.tab;
-      if (tgtId) {
-        const tgt = document.getElementById(tgtId);
-        if (tgt) tgt.classList.remove('hidden');
-      }
-      link.classList.add('border-b-2','border-yellow-500');
-    });
-  });
+/* Edit tabs */
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.edit-tab-link').forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelectorAll('.edit-tab-content').forEach(tc => tc.classList.add('hidden'));
+            document.querySelectorAll('.edit-tab-link').forEach(l => l.classList.remove('border-b-2','border-yellow-500'));
 
-  // Close when clicking outside modal content
-  const editModal = document.getElementById('editIntraoralModal');
-  if (editModal) {
-    editModal.addEventListener('click', function(e) {
-      if (e.target === this) closeEditModal();
+            document.getElementById(link.dataset.tab).classList.remove('hidden');
+            link.classList.add('border-b-2','border-yellow-500');
+        });
     });
-  }
+
+    const editModal = document.getElementById('editIntraoralModal');
+    if (editModal) {
+        editModal.addEventListener('click', e => {
+            if (e.target === editModal) closeEditModal();
+        });
+    }
 });
 
+/* ================= VIEW MODAL ================= */
 function openViewModal(id) {
+    closeAllIntraoralModals(); // ✅ important
+
+    const modal = document.getElementById('viewIntraoralModal');
+    modal.classList.remove('hidden'); // ✅ open immediately
+
     fetch(`/oral_examination/${id}/view`, {
         headers: { 'Accept': 'application/json' }
     })
@@ -634,44 +675,15 @@ function openViewModal(id) {
     .then(data => {
         document.getElementById('viewIntraoralContent').innerHTML = `
             <div class="space-y-2">
-
-                <div>
-                    <span class="font-bold text-lg">Patient:</span>
-                    <span>${data.patient_name ?? '-'}</span>
-                </div>
-
-                <div>
-                    <strong>Soft Tissues Status:</strong>
-                    ${data.soft_tissues_status ?? '-'}
-                </div>
-
-                <div>
-                    <strong>Soft Tissues:</strong>
-                    ${data.soft_tissues ?? '-'}
-                </div>
-
-                <div>
-                    <strong>Gingiva:</strong>
-                    ${data.gingiva_color ?? '-'} /
-                    ${data.gingiva_texture ?? '-'}
-                </div>
-
+                <div><strong>Patient:</strong> ${data.patient_name ?? '-'}</div>
+                <div><strong>Soft Tissues Status:</strong> ${data.soft_tissues_status ?? '-'}</div>
+                <div><strong>Soft Tissues:</strong> ${data.soft_tissues ?? '-'}</div>
+                <div><strong>Gingiva:</strong> ${data.gingiva_color ?? '-'} / ${data.gingiva_texture ?? '-'}</div>
                 <div><strong>Bleeding:</strong> ${data.bleeding ?? 'No'}</div>
                 <div><strong>Recession:</strong> ${data.recession ?? 'No'}</div>
-
-                <div>
-                    <strong>Teeth Condition:</strong>
-                    ${data.teeth_condition ?? '-'}
-                </div>
-
-                <div>
-                    <strong>Occlusion:</strong>
-                    ${data.occlusion_class ?? '-'}
-                    ${data.occlusion_other ? ' - ' + data.occlusion_other : ''}
-                </div>
-
-                <div>
-                    <strong>Oral Hygiene:</strong><br>
+                <div><strong>Teeth Condition:</strong> ${data.teeth_condition ?? '-'}</div>
+                <div><strong>Occlusion:</strong> ${data.occlusion_class ?? '-'} ${data.occlusion_other ?? ''}</div>
+                <div><strong>Oral Hygiene:</strong><br>
                     Status: ${data.hygiene_status ?? '-'}<br>
                     Plaque: ${data.plaque_index ?? '-'}<br>
                     Calculus: ${data.calculus ?? '-'}
@@ -680,26 +692,20 @@ function openViewModal(id) {
                 ${data.odontogram ? `
                     <div>
                         <strong>Odontogram:</strong><br>
-                        <img src="${data.odontogram}"
-                             class="mt-2 max-h-64 border rounded">
-                    </div>
-                ` : ''}
+                        <img src="${data.odontogram}" class="mt-2 max-h-64 border rounded">
+                    </div>` : ''}
             </div>
         `;
-
-        document.getElementById('viewIntraoralModal')
-            .classList.remove('hidden');
     })
-    .catch(() => alert('Failed to load data'));
+    .catch(() => {
+        alert('Failed to load data');
+        closeViewModal();
+    });
 }
 
-function closeViewModal() {
-    document.getElementById('viewIntraoralModal')
-        .classList.add('hidden');
+function closeViewModal(){
+    document.getElementById('viewIntraoralModal').classList.add('hidden');
 }
-
-
-
 </script>
 
 </x-app-layout>
