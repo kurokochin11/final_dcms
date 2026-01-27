@@ -1,7 +1,26 @@
-{{-- resources/views/treatment_plans/index.blade.php --}}
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+ <link rel="stylesheet" href="../assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+  <!-- JS -->
+    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+     <script src="assets/js/kaiadmin.min.js"></script>
+    <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
+@section('title', 'Treatment Plans')
 <x-app-layout>
     <x-slot name="header">
-        {{-- header placeholder (wrapped by x-data root below) --}}
+        <!-- {{-- header placeholder (wrapped by x-data root below) --}} -->
     </x-slot>
 
     <div x-data="treatmentPlanPage()" x-cloak>
@@ -14,7 +33,7 @@
                     </h2>
 
                     <div>
-                        <button @click="openCreate = true; setActiveTab(0)" class="px-4 py-2 bg-blue-600 text-white rounded-md">New Treatment Plan</button>
+                        <button @click="openCreate = true; setActiveTab(0)" class="btn btn-primary btn-md"> <i class="fas fa-plus me-2 text-white"></i>New Treatment Plan</button>
                     </div>
                 </div>
 
@@ -25,8 +44,8 @@
                 @endif
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
+                    <div class="table-responsive">
+                    <table id="myTable"  class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr class="text-left text-sm text-gray-600">
                                     <th class="px-4 py-2">Patient</th>
@@ -51,13 +70,12 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 text-sm">
-                                            <button @click="openView({{ $plan->id }})" class="px-2 py-1 border rounded text-sm mr-2">View</button>
-                                            <button @click="openEdit({{ $plan->id }}); setActiveTab(0)" class="px-2 py-1 border rounded text-sm mr-2">Edit</button>
-
+                                            <button @click="openView({{ $plan->id }})"  class="btn btn-md btn-primary mr-2"> <i class="fas fa-eye text-white"></i></button>
+                                            <button @click="openEdit({{ $plan->id }}); setActiveTab(0)" class="btn btn-md btn-warning mr-2"><i class="fas fa-edit text-white"></i></button>
                                             <form action="{{ route('treatment-plans.destroy', $plan) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this treatment plan?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="px-2 py-1 border rounded text-sm text-red-600">Delete</button>
+                                                <button type="submit" class="btn btn-md btn-danger "><i class="fas fa-trash text-white"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -77,23 +95,25 @@
             </div>
         </div>
 
-        {{-- CREATE MODAL (tabbed) --}}
+        <!-- {{-- CREATE MODAL (tabbed) --}} -->
+
         <div x-show="openCreate" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
-            <div class="fixed inset-0 bg-black bg-opacity-40" @click="openCreate=false"></div>
+            <div class="fixed inset-0 bg-blue" @click="openCreate=false"></div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl z-50 overflow-hidden" @keydown.escape.window="openCreate=false">
-                {{-- modal header --}}
-                <div class="flex items-center justify-between p-4 border-b">
-                    <h3 class="text-lg font-semibold">New Treatment Plan</h3>
-                    <button @click="openCreate=false" class="text-gray-500">✕</button>
+
+                <!-- {{-- modal header --}} -->
+             <div class="modal-header bg-primary text-white d-flex justify-content-between align-items-center py-3 px-4">
+                    <h3 class="card-title mb-0 text-white">New Treatment Plan</h3>
+                    <button @click="openCreate=false" class="text-white">✕</button>
                 </div>
 
-                {{-- tabs --}}
+                <!-- {{-- tabs --}} -->
                 <div class="border-b">
                     <nav class="flex gap-1 p-2 px-4 text-sm" aria-label="Tabs">
                         <template x-for="(t, i) in tabs" :key="i">
                             <button
-                                :class="{'bg-gray-100 dark:bg-gray-700 rounded-md': activeTab === i, 'text-gray-600': activeTab !== i}"
+                                :class="{'bg-gray-100 dark:bg-gray-700 rounded-md': activeTab === i, 'text-blue-600': activeTab !== i}"
                                 class="px-3 py-2"
                                 @click="setActiveTab(i)"
                             ><span x-text="t"></span></button>
@@ -101,13 +121,14 @@
                     </nav>
                 </div>
 
-                {{-- body: scrollable --}}
+                <!-- {{-- body: scrollable --}} -->
                 <div class="p-4 max-h-[70vh] overflow-auto">
                     <form id="createForm" method="POST" action="{{ route('treatment-plans.store') }}">
                         @csrf
 
                         <div x-show="activeTab === 0" x-cloak class="space-y-4">
-                            {{-- Patient selection --}}
+
+                            <!-- {{-- Patient selection --}} -->
                             <div>
                                 <label class="block text-sm">Patient</label>
                                 <select name="patient_id" required class="mt-1 block w-full rounded border-gray-200">
@@ -118,7 +139,7 @@
                                 </select>
                             </div>
 
-                            {{-- Phase I --}}
+                            <!-- {{-- Phase I --}} -->
                             <div>
                                 <label class="block text-sm font-medium">Phase I (Emergency/Pain Relief) — Date</label>
                                 <input type="date" name="phase1_date" class="mt-1 block w-1/2 rounded border-gray-200"/>
@@ -128,7 +149,7 @@
                         </div>
 
                         <div x-show="activeTab === 1" x-cloak class="space-y-4">
-                            {{-- Phase II --}}
+                            <!-- {{-- Phase II --}} -->
                             <div>
                                 <label class="block text-sm font-medium">Phase II (Disease Control/Restorative) — Date</label>
                                 <input type="date" name="phase2_date" class="mt-1 block w-1/2 rounded border-gray-200"/>
@@ -138,7 +159,7 @@
                         </div>
 
                         <div x-show="activeTab === 2" x-cloak class="space-y-4">
-                            {{-- Phase III --}}
+                            <!-- {{-- Phase III --}} -->
                             <div>
                                 <label class="block text-sm font-medium">Phase III (Definitive/Rehabilitative) — Date</label>
                                 <input type="date" name="phase3_date" class="mt-1 block w-1/2 rounded border-gray-200"/>
@@ -148,7 +169,7 @@
                         </div>
 
                         <div x-show="activeTab === 3" x-cloak class="space-y-4">
-                            {{-- Phase IV --}}
+                            <!-- {{-- Phase IV --}} -->
                             <div>
                                 <label class="block text-sm font-medium">Phase IV (Maintenance/Preventive) — Date</label>
                                 <input type="date" name="phase4_date" class="mt-1 block w-1/2 rounded border-gray-200"/>
@@ -158,7 +179,7 @@
                         </div>
 
                         <div x-show="activeTab === 4" x-cloak class="space-y-4">
-                            {{-- Discussion --}}
+                            <!-- {{-- Discussion --}} -->
                             <div>
                                 <label class="block text-sm font-medium">Discussion with Patient</label>
                                 <textarea name="treatment_options" rows="2" class="mt-1 block w-full rounded border-gray-200" placeholder="Treatment options discussed"></textarea>
@@ -173,7 +194,7 @@
                         </div>
 
                         <div x-show="activeTab === 5" x-cloak class="space-y-4">
-                            {{-- Consent --}}
+                            <!-- {{-- Consent --}} -->
                             <div class="flex items-center gap-3">
                                 <input type="hidden" name="consent_given" value="0">
                                 <label class="inline-flex items-center">
@@ -197,15 +218,15 @@
                     </form>
                 </div>
 
-                {{-- sticky footer with actions --}}
+                <!-- {{-- sticky footer with actions --}} -->
                 <div class="p-4 border-t bg-white dark:bg-gray-800 flex items-center justify-end gap-2">
-                    <button type="button" @click="openCreate=false" class="px-4 py-2 border rounded">Cancel</button>
-                    <button type="submit" form="createForm" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+                    <button type="button" @click="openCreate=false"class="px-3 py-1.5 text-sm bg-black text-white rounded hover:bg-gray-800">Cancel</button>
+                    <button type="submit" form="createForm" class="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-gray-800">Submit</button>
                 </div>
             </div>
         </div>
 
-        {{-- EDIT MODAL (tabbed) --}}
+        <!-- {{-- EDIT MODAL (tabbed) --}} -->
         <div x-show="openEditModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
             <div class="fixed inset-0 bg-black bg-opacity-40" @click="openEditModal=false"></div>
 
@@ -317,7 +338,7 @@
             </div>
         </div>
 
-        {{-- VIEW modal --}}
+        <!-- {{-- VIEW modal --}} -->
         <div x-show="openViewModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
             <div class="fixed inset-0 bg-black bg-opacity-40" @click="openViewModal=false"></div>
 
@@ -364,7 +385,7 @@
         </div>
     </div>
 
-    {{-- Alpine logic --}}
+    <!-- {{-- Alpine logic --}} -->
     <script>
         function treatmentPlanPage(){
             return {
