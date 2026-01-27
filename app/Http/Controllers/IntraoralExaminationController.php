@@ -87,14 +87,8 @@ class IntraoralExaminationController extends Controller
 
   public function view(IntraoralExamination $intraoral)
 {
-
-
-
     return response()->json([
-        'id' => $intraoral->id,
-        'patient_id' => $intraoral->patient_id,
-        'patient_name' => $intraoral->patient->full_name ?? '-', // ✅ FIX
-
+        'patient_name' => $intraoral->patient->name ?? 'N/A',
         'soft_tissues_status' => $intraoral->soft_tissues_status,
         'soft_tissues' => $intraoral->soft_tissues,
         'gingiva_color' => $intraoral->gingiva_color,
@@ -107,12 +101,9 @@ class IntraoralExaminationController extends Controller
         'hygiene_status' => $intraoral->hygiene_status,
         'plaque_index' => $intraoral->plaque_index,
         'calculus' => $intraoral->calculus,
-        'odontogram' => $intraoral->odontogram
-            ? asset('storage/'.$intraoral->odontogram)
-            : null,
+        'odontogram' => $intraoral->odontogram ? asset('storage/'.$intraoral->odontogram) : null,
     ]);
 }
-
 
     public function update(Request $request, IntraoralExamination $intraoral)
     {

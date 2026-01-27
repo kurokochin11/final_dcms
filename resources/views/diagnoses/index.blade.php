@@ -282,23 +282,28 @@ $(document).ready(function () {
           </div>
         </div>
       </div>
-
+</div>
+</div>
       <!-- Footer -->
       <div class="modal-footer">
         <button type="button" class="btn btn-black btn-sm" data-bs-dismiss="modal">Close</button>
       </div>
+        </div>
+          </div>
       
 <!-- DELETE CONFIRMATION MODAL -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content shadow">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">Delete Diagnosis</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Delete Diagnosis</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
         Are you sure you want to delete this diagnosis?
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
         <form id="deleteForm" method="POST">
@@ -309,8 +314,7 @@ $(document).ready(function () {
       </div>
     </div>
   </div>
-</div>
-
+</div>  
 
    
 
@@ -319,6 +323,7 @@ $(document).ready(function () {
     
 $(document).ready(function() {
     $('#myTable').on('click', '.btn-delete', function() {
+      
         const id = $(this).data('id');
         const deleteForm = $('#deleteForm');
         deleteForm.attr('action', '/diagnoses/' + id);

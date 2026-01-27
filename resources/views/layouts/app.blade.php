@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-<link rel="icon" type="image/x-icon" href="{{ asset('tooth_logo.ico') }}">
+<!-- <link rel="icon" type="image/x-icon" href="{{ asset('tooth_logo.ico') }}"> -->
       <title>@yield('title', config('app.name'))</title>
         
 <!-- Fonts and icons KaiAdmin Bootstrap -->
@@ -30,8 +30,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <!-- FullCalendar -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js" defer></script>
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js" defer></script> -->
 
         <!-- Styles -->
         @livewireStyles
