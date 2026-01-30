@@ -11,11 +11,53 @@
      <script src="assets/js/kaiadmin.min.js"></script>
     <script>
 $(document).ready(function () {
-    $('#myTable').DataTable({
+
+    // Initialize your table
+    let table = $('#myTable').DataTable({
         responsive: true
     });
+
+    // Populate Patient filter (column 0)
+    let seen = new Set();
+
+table.column(0).data().unique().sort().each(function (d) {
+    if (!d) return;
+
+    // Remove any HTML tags
+    let text = d.replace(/<[^>]*>/g, '');
+
+    // Remove "ID:" and any numbers/extra symbols
+    text = text.replace(/\s*ID\s*:\s*\d+\s*>?\s*/i, '').trim();
+
+    // Convert "Last, First" → "First Last"
+    let parts = text.split(',').map(p => p.trim());
+    let name = parts.length === 2 ? `${parts[1]} ${parts[0]}` : text;
+
+    if (!seen.has(name)) {
+        seen.add(name);
+        $('#patientFilter').append(`<option value="${name}">${name}</option>`);
+    }
+});
+
+$('#patientFilter').on('change', function () {
+    table.column(0).search(this.value).draw();
+});
+
+
+    // Populate Created Date filter (column 1)
+    $('#createdDateFilter').append('<option value="">All dates</option>');
+    table.column(1).data().unique().sort().each(function(d) {
+        $('#createdDateFilter').append(`<option value="${d}">${d}</option>`);
+    });
+
+    // Filter by Created Date
+    $('#createdDateFilter').on('change', function() {
+        table.column(1).search(this.value).draw();
+    });
+
 });
 </script>
+
 
 @section('title', 'Treatment Plans')
 <x-app-layout>
@@ -43,6 +85,23 @@ $(document).ready(function () {
                     </div>
                 @endif
 
+<div class="d-flex gap-2 mb-2">
+    <!-- Patient -->
+    <select id="patientFilter"
+            class="form-select form-select-sm"
+            style="max-width:180px">
+        <option value="">Patient</option>
+    </select>
+
+    <!-- Date -->
+    <select id="createdDateFilter"
+            class="form-select form-select-sm"
+            style="max-width:120px">
+        <option value="">Date</option>
+    </select>
+</div>
+
+
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
                     <div class="table-responsive">
                     <table id="myTable"  class="table table-striped table-bordered table-hover">
@@ -61,7 +120,7 @@ $(document).ready(function () {
                                             {{ $plan->patient->last_name }}, {{ $plan->patient->first_name }}
                                             <div class="text-xs text-gray-500">ID: {{ $plan->patient->id }}</div>
                                         </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $plan->created_at->format('M d, Y') }}</td>
+                                       <td class="px-4 py-3 text-sm text-gray-600">{{ $plan->consent_date ? \Carbon\Carbon::parse($plan->consent_date)->format('M d, Y') : '-' }}
                                         <td class="px-4 py-3 text-sm">
                                             @if($plan->consent_given)
                                                 <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Yes</span>
@@ -228,19 +287,19 @@ $(document).ready(function () {
 
         <!-- {{-- EDIT MODAL (tabbed) --}} -->
         <div x-show="openEditModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
-            <div class="fixed inset-0 bg-black bg-opacity-40" @click="openEditModal=false"></div>
+            <div class="fixed inset-0 bg- transparent" @click="openEditModal=false"></div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl z-50 overflow-hidden" @keydown.escape.window="openEditModal=false">
-                <div class="flex items-center justify-between p-4 border-b">
-                    <h3 class="text-lg font-semibold">Edit Treatment Plan</h3>
-                    <button @click="openEditModal=false" class="text-gray-500">✕</button>
+                <div class="flex items-center justify-between p-4 bg-blue-600 text-white">
+                    <h3 class="text-lg font-semibold text-white">Edit Treatment Plan</h3>
+                    <button @click="openEditModal=false" class="text-white hover:text-gray-200">✕</button>
                 </div>
 
                 <div class="border-b">
                     <nav class="flex gap-1 p-2 px-4 text-sm" aria-label="Tabs">
                         <template x-for="(t, i) in tabs" :key="i">
                             <button
-                                :class="{'bg-gray-100 dark:bg-gray-700 rounded-md': activeTab === i, 'text-gray-600': activeTab !== i}"
+                                :class="{'bg-gray-100 dark:bg-gray-700 rounded-md': activeTab === i, 'text-blue-600': activeTab !== i}"
                                 class="px-3 py-2"
                                 @click="setActiveTab(i)"
                             ><span x-text="t"></span></button>
@@ -332,20 +391,20 @@ $(document).ready(function () {
                 </div>
 
                 <div class="p-4 border-t bg-white dark:bg-gray-800 flex items-center justify-end gap-2">
-                    <button type="button" @click="openEditModal=false" class="px-4 py-2 border rounded">Cancel</button>
-                    <button type="submit" form="editForm" class="px-4 py-2 bg-blue-600 text-white rounded">Save changes</button>
+                    <button type="button" @click="openEditModal=false" class="px-3 py-1.5 text-sm bg-black text-white rounded hover:bg-gray-800">Cancel</button>
+                    <button type="submit" form="editForm" class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Submit</button>
                 </div>
             </div>
         </div>
 
         <!-- {{-- VIEW modal --}} -->
         <div x-show="openViewModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
-            <div class="fixed inset-0 bg-black bg-opacity-40" @click="openViewModal=false"></div>
+            <div class="fixed inset-0 bg-transparent" @click="openViewModal=false"></div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl z-50 overflow-hidden">
-                <div class="p-4 border-b flex justify-between items-center">
-                    <h3 class="text-lg font-semibold">Treatment Plan Details</h3>
-                    <button @click="openViewModal=false" class="text-gray-500">✕</button>
+                <div class="p-4 flex justify-between items-center bg-blue-600 text-white">
+                    <h3 class="text-lg font-semibold text-white">Treatment Plan Details</h3>
+                    <button @click="openViewModal=false" class="text-white hover:text-gray-200 text-xl ">✕</button>
                 </div>
 
                 <div class="p-4 space-y-3 max-h-[70vh] overflow-y-auto">
@@ -356,7 +415,7 @@ $(document).ready(function () {
                     <template x-for="(phase, key) in view.phases" :key="key">
                         <div class="border rounded p-3">
                             <div class="font-semibold" x-text="formatPhaseKey(key)"></div>
-                            <div class="text-sm mt-1"><strong>Date:</strong> <span x-text="phase.date ?? '-'"></span></div>
+                            <div class="text-sm mt-1"><strong>Date:</strong> <span x-text="formatDate(phase.date)"></span></div>
                             <div class="text-sm mt-1"><strong>Procedures:</strong> <div x-html="nl2br(phase.procedures)"></div></div>
                         </div>
                     </template>
@@ -374,11 +433,11 @@ $(document).ready(function () {
                         <div class="text-sm"><strong>Given:</strong> <span x-text="view.consent_given ? 'Yes' : 'No'"></span></div>
                         <div class="text-sm"><strong>Patient signature:</strong> <span x-text="view.patient_signature"></span></div>
                         <div class="text-sm"><strong>Dentist signature:</strong> <span x-text="view.dentist_signature"></span></div>
-                        <div class="text-sm"><strong>Consent date:</strong> <span x-text="view.consent_date"></span></div>
+                        <div class="text-sm"><strong>Consent date:</strong><span x-text="formatDate(view.consent_date)"></span></div>
                     </div>
 
                     <div class="flex justify-end">
-                        <button @click="openViewModal=false" class="px-4 py-2 border rounded">Close</button>
+                        <button @click="openViewModal=false" class="px-3 py-1.5 text-sm bg-black text-white rounded hover:bg-gray-800">Close</button>
                     </div>
                 </div>
             </div>
@@ -508,7 +567,19 @@ $(document).ready(function () {
                 formatPhaseKey(key){
                     const map = { phase1: 'Phase I (Emergency/Pain Relief)', phase2: 'Phase II (Disease Control/Restorative)', phase3: 'Phase III (Definitive/Rehabilitative)', phase4: 'Phase IV (Maintenance/Preventive)' };
                     return map[key] ?? key;
-                }
+                },
+                
+formatDate(date) {
+    if (!date) return '-';
+
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+        month: 'long',
+        day: '2-digit',
+        year: 'numeric'
+    });
+},
+
             }
         }
     </script>
