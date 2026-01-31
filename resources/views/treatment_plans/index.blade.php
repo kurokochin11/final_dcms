@@ -131,11 +131,9 @@ $('#patientFilter').on('change', function () {
                                         <td class="px-4 py-3 text-sm">
                                             <button @click="openView({{ $plan->id }})"  class="btn btn-md btn-primary mr-2"> <i class="fas fa-eye text-white"></i></button>
                                             <button @click="openEdit({{ $plan->id }}); setActiveTab(0)" class="btn btn-md btn-warning mr-2"><i class="fas fa-edit text-white"></i></button>
-                                            <form action="{{ route('treatment-plans.destroy', $plan) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this treatment plan?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-md btn-danger "><i class="fas fa-trash text-white"></i></button>
-                                            </form>
+                                   <button type="button" class="btn btn-danger" @click="openDelete({{ $plan->id }}, @js($plan->patient->last_name . ', ' . $plan->patient->first_name))"><i class="fas fa-trash"></i></button>
+
+     
                                         </td>
                                     </tr>
                                 @empty
@@ -444,6 +442,46 @@ $('#patientFilter').on('change', function () {
         </div>
     </div>
 
+ <div
+    x-show="openDeleteModal"
+    x-cloak
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+>
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+        <!-- Header -->
+        <div class="px-4 py-3 bg-red-600 text-white font-semibold rounded-t-lg">
+            Delete Treatment Plan
+        </div>
+
+        <!-- Body -->
+        <div class="p-4">
+            <p class="text-gray-700">
+                Are you sure you want to delete
+                <span class="font-semibold" x-text="deleteTargetName"></span>?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-2 px-4 py-3 border-t">
+            <button
+                type="button"
+                class="btn btn-secondary"
+                @click="closeDelete()"
+            >
+                Cancel
+            </button>
+
+            <form :action="deleteFormAction" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
     <!-- {{-- Alpine logic --}} -->
     <script>
         function treatmentPlanPage(){
@@ -578,6 +616,21 @@ formatDate(date) {
         day: '2-digit',
         year: 'numeric'
     });
+},
+openDeleteModal: false,
+deleteFormAction: '',
+deleteTargetName: '',
+
+openDelete(id, patientName = ''){
+    this.deleteFormAction = `/treatment-plans/${id}`;
+    this.deleteTargetName = patientName;
+    this.openDeleteModal = true;
+},
+
+closeDelete(){
+    this.openDeleteModal = false;
+    this.deleteFormAction = '';
+    this.deleteTargetName = '';
 },
 
             }
