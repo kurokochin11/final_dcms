@@ -1,6 +1,7 @@
 @section('title', 'Appointments')
 
 <!-- ================= CSS ================= -->
+ <link rel="stylesheet" href="{{ asset('assets/css/calendar.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 <link rel="stylesheet" href="../assets/css/plugins.min.css" />
 <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
@@ -28,11 +29,54 @@
 
             <!-- Header -->
             <div class="d-flex justify-content-between mb-3">
-                <h3 class="text-lg font-medium">Appointments</h3>
+                <h3 class="text-lg font-medium"></h3>
                 <button class="btn btn-primary" @click="openModal('create')">
                     <i class="fas fa-plus"></i> New Appointment
                 </button>
             </div>
+
+<!-- calendar -->
+ <link rel="stylesheet" href="{{ asset('assets/css/calendar.css') }}">
+
+<div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div x-data="calendar()" x-init="init()" class="calendar-container">
+
+        <!-- PRIMARY HEADER -->
+        <div class="calendar-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-light btn-sm" @click="prevMonth()">Prev</button>
+            <h5 x-text="monthYear"></h5>
+            <button class="btn btn-outline-light btn-sm" @click="nextMonth()">Next</button>
+        </div>
+
+        <!-- WEEK DAYS -->
+        <div class="d-flex">
+            <template x-for="day in days" :key="day">
+                <div class="calendar-weekday flex-fill" x-text="day"></div>
+            </template>
+        </div>
+
+        <!-- DAYS GRID -->
+        <div class="d-flex flex-wrap">
+            <!-- Empty slots -->
+            <template x-for="blank in blankDays" :key="'b'+blank">
+                <div class="calendar-day"></div>
+            </template>
+
+            <!-- Days -->
+            <template x-for="day in daysInMonth" :key="'d'+day">
+                <div
+                    class="calendar-day"
+                    :class="[
+                        isToday(day) ? 'today' : '',
+                        getAppointmentClass(day)
+                    ]"
+                    x-text="day">
+                </div>
+            </template>
+        </div>
+
+    </div>
+</div>
 
             <!-- Table -->
             <div class="table-responsive">
@@ -224,6 +268,127 @@
 
     <!-- Alpine -->
     <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('calendar', () => ({
+        month: new Date().getMonth(),
+        year: new Date().getFullYear(),
+
+        days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        daysInMonth: [],
+        blankDays: [],
+
+        appointments: @json(
+            $appointments->map(fn($a) => [
+                'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
+                'status' => $a->status
+            ])
+        ),
+
+        get monthYear() {
+            return new Date(this.year, this.month)
+                .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        },
+
+        init() {
+            this.calculateDays();
+        },
+
+        calculateDays() {
+            const firstDay = new Date(this.year, this.month, 1).getDay();
+            const totalDays = new Date(this.year, this.month + 1, 0).getDate();
+
+            this.blankDays = Array.from({ length: firstDay }, (_, i) => i);
+            this.daysInMonth = Array.from({ length: totalDays }, (_, i) => i + 1);
+        },
+
+        prevMonth() {
+            if (this.month === 0) {
+                this.month = 11;
+                this.year--;
+            } else {
+                this.month--;
+            }
+            this.calculateDays();
+        },
+
+        nextMonth() {
+            if (this.month === 11) {
+                this.month = 0;
+                this.year++;
+            } else {
+                this.month++;
+            }
+            this.calculateDays();
+        },
+
+        isToday(day) {
+            const today = new Date();
+            return (
+                day === today.getDate() &&
+                this.month === today.getMonth() &&
+                this.year === today.getFullYear()
+            );
+        },
+
+        getAppointmentClass(day) {
+            const dateStr = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const appt = this.appointments.find(a => a.date === dateStr);
+
+            if (!appt) return '';
+
+            switch (appt.status) {
+                case 'Completed': return 'appointment success';
+                case 'Cancelled': return 'appointment danger';
+                default: return 'appointment';
+            }
+        }
+    }));
+
+
+    Alpine.data('appointments', () => ({
+        showModal: false,
+        mode: 'create',
+        form: {
+            id: '',
+            patient_id: '',
+            patient_name: '',
+            appointment_date: '',
+            appointment_time: '',
+            purpose: '',
+            status: 'Scheduled'
+        },
+
+        get formAction() {
+            return this.mode === 'create'
+                ? "{{ route('appointments.store') }}"
+                : "{{ url('appointments') }}/" + this.form.id;
+        },
+
+        openModal(mode, data = null) {
+            this.mode = mode;
+            this.showModal = true;
+            if (data) this.form = { ...this.form, ...data };
+        },
+
+        close() {
+            this.showModal = false;
+            this.mode = 'create';
+            this.form = {
+                id: '',
+                patient_id: '',
+                patient_name: '',
+                appointment_date: '',
+                appointment_time: '',
+                purpose: '',
+                status: 'Scheduled'
+            };
+        }
+    }));
+
+});
+
+
+
         function appointments() {
             return {
                 showModal: false,

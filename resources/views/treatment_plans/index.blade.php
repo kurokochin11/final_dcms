@@ -90,14 +90,14 @@ $('#patientFilter').on('change', function () {
     <select id="patientFilter"
             class="form-select form-select-sm"
             style="max-width:180px">
-        <option value="">Patient</option>
+        <option value=""> All Patients</option>
     </select>
 
     <!-- Date -->
     <select id="createdDateFilter"
             class="form-select form-select-sm"
             style="max-width:120px">
-        <option value="">Date</option>
+        <option value=""> All Dates</option>
     </select>
 </div>
 
@@ -131,9 +131,11 @@ $('#patientFilter').on('change', function () {
                                         <td class="px-4 py-3 text-sm">
                                             <button @click="openView({{ $plan->id }})"  class="btn btn-md btn-primary mr-2"> <i class="fas fa-eye text-white"></i></button>
                                             <button @click="openEdit({{ $plan->id }}); setActiveTab(0)" class="btn btn-md btn-warning mr-2"><i class="fas fa-edit text-white"></i></button>
-                                   <button type="button" class="btn btn-danger" @click="openDelete({{ $plan->id }}, @js($plan->patient->last_name . ', ' . $plan->patient->first_name))"><i class="fas fa-trash"></i></button>
+                                <button type="button" class="btn btn-danger btn-md"
+        @click="openDelete({{ $plan->id }}, @js($plan->patient->last_name . ', ' . $plan->patient->first_name))">
+    <i class="fas fa-trash"></i>
+</button>
 
-     
                                         </td>
                                     </tr>
                                 @empty
@@ -189,7 +191,7 @@ $('#patientFilter').on('change', function () {
                             <div>
                                 <label class="block text-sm">Patient</label>
                                 <select name="patient_id" required class="mt-1 block w-full rounded border-gray-200">
-                                    <option value="">— select patient —</option>
+                                    <option value="">select patient </option>
                                     @foreach($patients as $p)
                                         <option value="{{ $p->id }}">{{ $p->last_name }}, {{ $p->first_name }} (ID: {{ $p->id }})</option>
                                     @endforeach
@@ -442,45 +444,53 @@ $('#patientFilter').on('change', function () {
         </div>
     </div>
 
- <div
+ <!-- DELETE MODAL -->
+<div
     x-show="openDeleteModal"
     x-cloak
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+    x-transition
+    class="fixed inset-0 z-50 flex items-center justify-center"
 >
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
-        <!-- Header -->
-        <div class="px-4 py-3 bg-red-600 text-white font-semibold rounded-t-lg">
-            Delete Treatment Plan
-        </div>
+    <!-- Overlay -->
+    <div
+        class="fixed inset-0 bg-black bg-opacity-50"
+        @click="closeDelete()"
+    ></div>
 
-        <!-- Body -->
-        <div class="p-4">
-            <p class="text-gray-700">
-                Are you sure you want to delete
-                <span class="font-semibold" x-text="deleteTargetName"></span>?
-            </p>
-        </div>
+    <!-- Modal -->
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative z-50">
+        <h3 class="text-lg font-semibold mb-2 text-red-600">
+            Confirm Delete
+        </h3>
 
-        <!-- Footer -->
-        <div class="flex justify-end gap-2 px-4 py-3 border-t">
-            <button
-                type="button"
-                class="btn btn-secondary"
-                @click="closeDelete()"
-            >
-                Cancel
-            </button>
+        <p class="mb-4">
+            Are you sure you want to delete
+            <strong x-text="deleteTargetName"></strong>?
+        </p>
 
-            <form :action="deleteFormAction" method="POST">
-                @csrf
-                @method('DELETE')
+        <form :action="deleteFormAction" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <div class="flex justify-end gap-2">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="closeDelete()"
+                >
+                    Cancel
+                </button>
+
                 <button type="submit" class="btn btn-danger">
                     Delete
                 </button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
+
+
+
 
     <!-- {{-- Alpine logic --}} -->
     <script>
@@ -617,21 +627,28 @@ formatDate(date) {
         year: 'numeric'
     });
 },
-openDeleteModal: false,
+
+
+        /* =====================
+           DELETE MODAL 
+        ===================== */
+      openDeleteModal: false,
 deleteFormAction: '',
 deleteTargetName: '',
 
-openDelete(id, patientName = ''){
+openDelete(id, patientName) {
+    console.log('Delete ID:', id, 'Patient:', patientName); // optional debug
     this.deleteFormAction = `/treatment-plans/${id}`;
     this.deleteTargetName = patientName;
     this.openDeleteModal = true;
 },
 
-closeDelete(){
+closeDelete() {
     this.openDeleteModal = false;
     this.deleteFormAction = '';
     this.deleteTargetName = '';
-},
+}
+
 
             }
         }
