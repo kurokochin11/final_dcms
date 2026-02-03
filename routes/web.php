@@ -12,6 +12,7 @@ use App\Http\Controllers\IntraoralExaminationController;
 use App\Http\Controllers\RadiographController;
 use App\Http\Controllers\TreatmentPlanController;
 use App\Http\Controllers\DiagnosisController;
+use App\Http\Controllers\BillingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -104,12 +105,21 @@ Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destro
     Route::put('/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 });
+
 // Diagnosis routes
     Route::get('/diagnoses', [DiagnosisController::class, 'index'])->name('diagnoses.index');
     Route::post('/diagnoses', [DiagnosisController::class, 'store'])->name('diagnoses.store');
     Route::get('/diagnoses/{diagnosis}', [DiagnosisController::class, 'show'])->name('diagnoses.show'); // Optional, for AJAX
     Route::put('/diagnoses/{diagnosis}', [DiagnosisController::class, 'update'])->name('diagnoses.update');
     Route::delete('/diagnoses/{diagnosis}', [DiagnosisController::class, 'destroy'])->name('diagnoses.destroy');
+
+    // Billing routes
+Route::get('/billings', [BillingController::class, 'index'])->name('billings.index');
+Route::post('/billings', [BillingController::class, 'store'])->name('billings.store');
+Route::put('/billings/{billing}', [BillingController::class, 'update'])->name('billings.update');
+Route::delete('/billings/{billing}', [BillingController::class, 'destroy'])->name('billings.destroy');
+
+
 });
 
 
