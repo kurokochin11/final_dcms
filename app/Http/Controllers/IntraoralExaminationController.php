@@ -85,25 +85,56 @@ class IntraoralExaminationController extends Controller
         ]);
     }
 
-  public function view(IntraoralExamination $intraoral)
+ public function view(IntraoralExamination $intraoral)
 {
     return response()->json([
-        'patient_name' => $intraoral->patient->name ?? 'N/A',
+        // Patient
+       'patient_name' => $intraoral->patient->name ?? 'N/A',
+
+
+        // Soft tissues
         'soft_tissues_status' => $intraoral->soft_tissues_status,
         'soft_tissues' => $intraoral->soft_tissues,
+
+        // Gingiva
         'gingiva_color' => $intraoral->gingiva_color,
         'gingiva_texture' => $intraoral->gingiva_texture,
         'bleeding' => $intraoral->bleeding,
+        'bleeding_area' => $intraoral->bleeding_area,
         'recession' => $intraoral->recession,
+        'recession_area' => $intraoral->recession_area,
+
+        // Periodontium (IMAGES)
+        'probing_depths' => $intraoral->probing_depths
+            ? asset('storage/' . $intraoral->probing_depths)
+            : null,
+
+        'mobility' => $intraoral->mobility
+            ? asset('storage/' . $intraoral->mobility)
+            : null,
+
+        'furcation' => $intraoral->furcation
+            ? asset('storage/' . $intraoral->furcation)
+            : null,
+
+        // Teeth & occlusion
         'teeth_condition' => $intraoral->teeth_condition,
         'occlusion_class' => $intraoral->occlusion_class,
         'occlusion_other' => $intraoral->occlusion_other,
+        'premature_contacts' => $intraoral->premature_contacts,
+
+        // Oral hygiene
         'hygiene_status' => $intraoral->hygiene_status,
         'plaque_index' => $intraoral->plaque_index,
         'calculus' => $intraoral->calculus,
-        'odontogram' => $intraoral->odontogram ? asset('storage/'.$intraoral->odontogram) : null,
+
+        // Odontogram
+        'odontogram' => $intraoral->odontogram
+            ? asset('storage/' . $intraoral->odontogram)
+            : null,
     ]);
 }
+
 
     public function update(Request $request, IntraoralExamination $intraoral)
     {

@@ -615,46 +615,92 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // View Modal JS
+
 function openViewModal(id) {
     fetch(`/oral_examination/${id}/view`, {
         headers: { 'Accept': 'application/json' },
         credentials: 'same-origin'
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) throw new Error('Failed request');
+        return res.json();
+    })
     .then(data => {
         const content = document.getElementById('viewIntraoralContent');
+
+        const safe = v => v ?? '-';
+
         content.innerHTML = `
-            <p><strong>Patient:</strong> ${data.first_name}</p>
-            <p><strong>Soft Tissues Status:</strong> ${data.soft_tissues_status}</p>
-            <p><strong>Soft Tissues:</strong> ${data.soft_tissues}</p>
-            <p><strong>Gingiva:</strong> ${data.gingiva_color} / ${data.gingiva_texture}</p>
-            <p><strong>Bleeding:</strong> ${data.bleeding}</p>
-            <p><strong>Recession:</strong> ${data.recession}</p>
-            <p><strong>Teeth:</strong> ${data.teeth_condition}</p>
-            <p><strong>Occlusion:</strong> ${data.occlusion_class}${data.occlusion_other ? ' — ' + data.occlusion_other : ''}</p>
-            <p><strong>Hygiene:</strong> ${data.hygiene_status} — Plaque: ${data.plaque_index} — Calculus: ${data.calculus}</p>
-            ${data.odontogram ? `<div><strong>Odontogram:</strong><br><img src="${data.odontogram}" class="max-h-60 mt-2" /></div>` : ''}
+            <p><strong>Patient:</strong> ${safe(data.patient_name)}</p>
+
+            <hr class="my-2">
+
+            <p><strong>Soft Tissues Status:</strong> ${safe(data.soft_tissues_status)}</p>
+            <p><strong>Soft Tissues Notes:</strong> ${safe(data.soft_tissues)}</p>
+
+            <hr class="my-2">
+
+            <p><strong>Gingiva:</strong> ${safe(data.gingiva_color)} / ${safe(data.gingiva_texture)}</p>
+            <p><strong>Bleeding:</strong> ${safe(data.bleeding)}</p>
+            <p><strong>Bleeding Area:</strong> ${safe(data.bleeding_area)}</p>
+            <p><strong>Recession:</strong> ${safe(data.recession)}</p>
+            <p><strong>Recession Area:</strong> ${safe(data.recession_area)}</p>
+
+            <hr class="my-2">
+
+            <p><strong>Teeth Condition:</strong> ${safe(data.teeth_condition)}</p>
+
+            <p><strong>Occlusion:</strong>
+                ${safe(data.occlusion_class)}
+                ${data.occlusion_other ? ' — ' + data.occlusion_other : ''}
+            </p>
+            <p><strong>Premature Contacts:</strong> ${safe(data.premature_contacts)}</p>
+
+            <hr class="my-2">
+
+            <p><strong>Oral Hygiene:</strong> ${safe(data.hygiene_status)}</p>
+            <p><strong>Plaque Index:</strong> ${safe(data.plaque_index)}</p>
+            <p><strong>Calculus:</strong> ${safe(data.calculus)}</p>
+
+            ${data.probing_depths ? `
+                <div class="mt-3">
+                    <strong>Probing Depths:</strong><br>
+                    <img src="${data.probing_depths}" class="max-h-60 mt-2 rounded border">
+                </div>` : ''}
+
+            ${data.mobility ? `
+                <div class="mt-3">
+                    <strong>Mobility:</strong><br>
+                    <img src="${data.mobility}" class="max-h-60 mt-2 rounded border">
+                </div>` : ''}
+
+            ${data.furcation ? `
+                <div class="mt-3">
+                    <strong>Furcation:</strong><br>
+                    <img src="${data.furcation}" class="max-h-60 mt-2 rounded border">
+                </div>` : ''}
+
+            ${data.odontogram ? `
+                <div class="mt-3">
+                    <strong>Odontogram:</strong><br>
+                    <img src="${data.odontogram}" class="max-h-60 mt-2 rounded border">
+                </div>` : ''}
         `;
+
         document.getElementById('viewIntraoralModal').classList.remove('hidden');
     })
     .catch(err => {
         console.error('View fetch error:', err);
         alert('Failed to fetch examination data.');
+
+        
     });
 }
 
-// Close modal
 function closeViewModal() {
-    document.getElementById('viewIntraoralModal').classList.add('hidden');
+    const modal = document.getElementById('viewIntraoralModal');
+    if (modal) modal.classList.add('hidden');
 }
-
-// Close modal when clicking outside content
-document.getElementById('viewIntraoralModal').addEventListener('click', function(e) {
-    if (e.target.id === 'viewIntraoralModal') {
-        closeViewModal();
-    }
-});
-
 </script>
 
 

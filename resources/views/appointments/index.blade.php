@@ -278,12 +278,22 @@ document.addEventListener('alpine:init', () => {
         daysInMonth: [],
         blankDays: [],
 
-        appointments: @json(
-            $appointments->map(fn($a) => [
-                'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
-                'status' => $a->status
-            ])
-        ),
+      appointments: @json(
+    $appointments->map(fn($a) => [
+        'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
+        'patient_name' => $a->patient->full_name,
+        'time' => \Carbon\Carbon::parse($a->appointment_time)->format('h:i A'),
+        'purpose' => $a->purpose,
+        'status' => $a->status,
+
+        //  appointments: @json(
+        //     $appointments->map(fn($a) => [
+        //         'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
+        //         'status' => $a->status
+            
+    ]),
+   
+),
 
         get monthYear() {
             return new Date(this.year, this.month)
@@ -432,5 +442,10 @@ document.addEventListener('alpine:init', () => {
                 }
             }
         }
+//  ADD THIS       getAppointmentsForDay(day) {
+//     const dateStr = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+//     return this.appointments.filter(a => a.date === dateStr);
+// },
+
     </script>
 </x-app-layout>
