@@ -17,6 +17,7 @@ return new class extends Migration
             // Foreign key to patients table
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
 
+             $table->date('date')->nullable();
             // Soft Tissues
             $table->text('soft_tissues')->nullable();
             $table->string('soft_tissues_status')->nullable();

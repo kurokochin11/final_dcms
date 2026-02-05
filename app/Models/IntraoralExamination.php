@@ -11,6 +11,7 @@ class IntraoralExamination extends Model
 
     protected $fillable = [
         'patient_id',
+        'date',
         'soft_tissues',
         'soft_tissues_status',
         'gingiva_color',
@@ -31,7 +32,11 @@ class IntraoralExamination extends Model
         'plaque_index',
         'calculus',
     ];
-
+     protected $casts = [
+        'date' => 'date',
+    ];
+    
+/////// Relationships/////////////////
     public function patient()
     {
         return $this->belongsTo(Patient::class);

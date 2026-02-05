@@ -21,6 +21,7 @@ class IntraoralExaminationController extends Controller
     {
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
+            'date' => 'nullable|date',
             'soft_tissues' => 'nullable|string',
             'soft_tissues_status' => 'nullable|string',
             'gingiva_color' => 'nullable|string',
@@ -63,6 +64,7 @@ class IntraoralExaminationController extends Controller
         return response()->json([
             'id' => $intraoral->id,
             'patient_id' => $intraoral->patient_id,
+            'date' => $intraoral->date,
             'soft_tissues' => $intraoral->soft_tissues,
             'soft_tissues_status' => $intraoral->soft_tissues_status,
             'gingiva_color' => $intraoral->gingiva_color,
@@ -89,9 +91,11 @@ class IntraoralExaminationController extends Controller
 {
     return response()->json([
         // Patient
-       'patient_name' => $intraoral->patient->name ?? 'N/A',
-
-
+       'patient_name' => optional($intraoral->patient)->full_name ?? 'N/A',
+// Examination Date
+       'date' => $intraoral->date
+            ? $intraoral->date->format('Y-m-d')
+            : null,
         // Soft tissues
         'soft_tissues_status' => $intraoral->soft_tissues_status,
         'soft_tissues' => $intraoral->soft_tissues,
@@ -140,6 +144,7 @@ class IntraoralExaminationController extends Controller
     {
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
+            'date' => 'nullable|date',
             'soft_tissues' => 'nullable|string',
             'soft_tissues_status' => 'nullable|string',
             'gingiva_color' => 'nullable|string',
