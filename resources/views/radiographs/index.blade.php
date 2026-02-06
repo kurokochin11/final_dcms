@@ -23,11 +23,13 @@ $(document).ready(function() {
     <div class="container-fluid py-4">
 
         <!-- Header -->
-        <header class="mb-6">
-            <h1 class="text-2xl font-semibold text-gray-900">Radiograph Section</h1>
+           <x-slot name="header">
+        <header class="h4">
+            <h1 >Radiograph Section</h1>
         </header>
+    </x-slot>
 
-        ,
+        
         <!-- Main Content -->
         <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">

@@ -1,3 +1,22 @@
+<!-- KaiAdmin Main CSS (includes Bootstrap) -->
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+ <link rel="stylesheet" href="../assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
+  <!-- JS -->
+    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+     <script src="assets/js/kaiadmin.min.js"></script>
+    <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
 @section('title', 'Intraoral Examinations')
 <x-app-layout>
 <x-slot name="header">
@@ -18,77 +37,34 @@
         @endif
 
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-4 overflow-x-auto">
-                <table class="min-w-full table-auto border border-gray-200 dark:border-gray-700">
+            <div class="table-responsive">
+                    <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
                     <thead>
                         <tr class="bg-gray-100 dark:bg-gray-700">
                              <th class="border px-4 py-2">Patient No</th>
                             <th class="border px-4 py-2">Patient</th>
                             <th class="border px-4 py-2">Date</th>
-                            <th class="border px-4 py-2">Soft Tissues</th>
-                            <th class="border px-4 py-2">Gingiva</th>
-                            <th class="border px-4 py-2">Teeth</th>
-                            <th class="border px-4 py-2">Occlusion</th>
-                            <th class="border px-4 py-2">Oral Hygiene</th>
                             <th class="border px-4 py-2">Actions</th>
                         </tr>
                     </thead>
                  <tbody>
 @forelse($examinations as $exam)
 <tr class="text-gray-800 dark:text-gray-200">
+    <td class="border px-4 py-2">{{ $exam->patient->id ?? '-' }}</td>
     <td class="border px-4 py-2">{{ $exam->patient->full_name ?? '-' }}
     </td>
 
 <td class="border px-4 py-2">
     {{ $exam->date ? \Carbon\Carbon::parse($exam->date)->format('M d, Y') : '-' }}
 </td>
-    <!-- {{-- Soft Tissues --}} -->
-    <td class="border px-4 py-2">
-        @if($exam->soft_tissues_status)
-            {{ $exam->soft_tissues_status }}
-        @endif
-        @if($exam->soft_tissues)
-            <div class="text-sm text-gray-500 mt-1">{{ Str::limit($exam->soft_tissues, 30) }}</div>
-        @endif
-    </td>
-
-    <!-- {{-- Gingiva --}} -->
-    <td class="border px-4 py-2">
-        Color / Texture: {{ $exam->gingiva_color ?? '-' }} / {{ $exam->gingiva_texture ?? '-' }}<br>
-        Bleeding: {{ $exam->bleeding ?? 'No' }}<br>
-        Recession: {{ $exam->recession ?? 'No' }}
-    </td>
-
-    <!-- {{-- Teeth / Hard Tissues --}} -->
-    <td class="border px-4 py-2">{{ $exam->teeth_condition ?? '-' }}</td>
-
-    <!-- {{-- Occlusion --}} -->
-    <td class="border px-4 py-2">
-        {{ $exam->occlusion_class ?? '-' }}
-        @if($exam->occlusion_other)
-            <br>{{ $exam->occlusion_other }}
-        @endif
-        @if($exam->premature_contacts)
-            <br>Premature: {{ $exam->premature_contacts }}
-        @endif
-    </td>
-
-    <!-- {{-- Oral Hygiene --}} -->
-    <td class="border px-4 py-2">
-        Status: {{ $exam->hygiene_status ?? '-' }}<br>
-        Plaque: {{ $exam->plaque_index ?? '-' }}<br>
-        Calculus: {{ $exam->calculus ?? '-' }}
-    </td>
-
+    
     <!-- {{-- Actions --}} -->
     <td class="border px-4 py-2 flex gap-2">
-         <button onclick="openViewModal({{ $exam->id }})" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">View</button>
-        <button onclick="openEditModal(this)" data-url="{{ route('oral_examination.edit', $exam->id) }}" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
-        <form action="{{ route('oral_examination.destroy', $exam->id) }}" method="POST" onsubmit="return confirm('Delete this examination?');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
-        </form>
+         <button onclick="openViewModal({{ $exam->id }})" class="btn btn-primary btn-md"><i class="fas fa-eye"></i></button>
+        <button onclick="openEditModal(this)" data-url="{{ route('oral_examination.edit', $exam->id) }}" class="btn btn-warning btn-md text-white"><i class="fas fa-edit"></i></button>
+        <button type="button" class="btn btn-danger btn-md" onclick="openDeleteModal({{ $exam->id }}, '{{ $exam->patient->full_name }}')"> <i class="fas fa-trash"></i> </button>
+        <!--  class="m-0 d-flex"> -->
+          
     </td>
 </tr>
 @empty
@@ -437,7 +413,7 @@
 </div>
 
 <!-- {{-- VIEW MODAL --}} -->
-<div id="viewIntraoralModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="viewIntraoralModal" class="fixed inset-0  flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
         <button onclick="closeViewModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">View Examination</h2>
@@ -448,6 +424,41 @@
 
         <div class="flex justify-end mt-4">
             <button type="button" onclick="closeViewModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Close</button>
+        </div>
+    </div>
+</div>
+<!-- DELETE MODAL -->
+<div id="deleteModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+
+                <div class="modal-body">
+                    <p>
+                        Are you sure you want to delete
+                        <strong id="deletePatientName"></strong>?
+                    </p>
+                    <p class="text-muted mb-0">This action cannot be undone.</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-black" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Delete
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>
@@ -725,6 +736,19 @@ function closeViewModal() {
     const modal = document.getElementById('viewIntraoralModal');
     if (modal) modal.classList.add('hidden');
 }
+// Delete Modal JS
+function openDeleteModal(id, patientName) {
+    const form = document.getElementById('deleteForm');
+    const nameHolder = document.getElementById('deletePatientName');
+
+    form.action = `/oral_examination/${id}`;
+    nameHolder.textContent = patientName;
+
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+
+
 </script>
 
 

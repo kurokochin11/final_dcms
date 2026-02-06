@@ -1,0 +1,29 @@
+/* modal-animations.css */
+
+/* Fade + optional zoom effect */
+.modal-fade {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-fade.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+
+/* Backdrop fade */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 40;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+}
