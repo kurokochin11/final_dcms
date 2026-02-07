@@ -86,7 +86,7 @@ $(document).ready(function () {
 </div>
 
 <!-- {{-- Create Modal --}} -->
-<div id="createIntraoralModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="createIntraoralModal" class="fixed inset-0 bg flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
         <button onclick="closeCreateModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">New Examination</h2>
@@ -176,16 +176,21 @@ $(document).ready(function () {
 
                 <!-- {{-- Periodontium --}} -->
                 <div id="create-tab-periodontium" class="create-tab-content mb-4 hidden">
-                    <label>Probing Depths (Upload Periodontal Chart)</label>
-                    <input type="file" name="probing_depths" accept="image/*" class="w-full mt-1">
+                     <!-- Probing Depths -->
+    <div id="preview-probing_depths" class="mb-2"></div>
+    <label>Probing Depths</label>
+    <input type="file" name="probing_depths" accept="image/*" class="w-full mt-1">
 
-                    <label class="mt-2">Mobility (Upload Odontogram)</label>
-                    <input type="file" name="mobility" accept="image/*" class="w-full mt-1">
+    <!-- Mobility -->
+    <div id="preview-mobility" class="mb-2"></div>
+    <label>Mobility</label>
+    <input type="file" name="mobility" accept="image/*" class="w-full mt-1">
 
-                    <label class="mt-2">Furcation Involvement (Upload Odontogram)</label>
-                    <input type="file" name="furcation" accept="image/*" class="w-full mt-1">
-                </div>
-
+    <!-- Furcation Involvement -->
+    <div id="preview-furcation" class="mb-2"></div>
+    <label>Furcation Involvement</label>
+    <input type="file" name="furcation" accept="image/*" class="w-full mt-1">
+</div>
                 <!-- {{-- Hard Tissues --}} -->
                 <div id="create-tab-teeth" class="create-tab-content mb-4 hidden">
                     <label>Teeth Condition</label>
@@ -212,9 +217,20 @@ $(document).ready(function () {
 
                 <!-- {{-- Occlusion --}} -->
                 <div id="create-tab-occlusion" class="create-tab-content mb-4 hidden">
-                    <label>Occlusion Class</label>
-                    <input type="text" name="occlusion_class" class="w-full border rounded px-2 py-1 mb-2" placeholder="Class I / Class II / Class III">
-                    <input type="text" name="occlusion_other" class="w-full border rounded px-2 py-1 mb-2" placeholder="Open Bite / Deep Bite / Overjet / Overbite">
+                    <label>Occlusion Class</label> <select name="occlusion_class"class="w-full border rounded px-2 py-1 mb-2"> <option value="">Select Occlusion Class</option>
+     <option value="Class I">Class I</option>
+    <option value="Class II">Class II</option>
+    <option value="Class III">Class III</option>
+</select>
+
+                    <select name="occlusion_other" class="w-full border rounded px-2 py-1 mb-2"> 
+            <option value="">Select Occlusion Type</option>
+    <option value="Open Bite">Open Bite</option>
+    <option value="Deep Bite">Deep Bite</option>
+    <option value="Overjet">Overjet</option>
+    <option value="Overbite">Overbite</option>
+</select>
+
                     <input type="text" name="premature_contacts" class="w-full border rounded px-2 py-1" placeholder="Premature Contacts / Interferences">
                 </div>
 
@@ -250,7 +266,7 @@ $(document).ready(function () {
 </div>
 
 <!-- {{-- EDIT MODAL --}} -->
-<div id="editIntraoralModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="editIntraoralModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
         <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Edit Examination</h2>
@@ -376,8 +392,25 @@ $(document).ready(function () {
                 <!-- {{-- Occlusion --}} -->
                 <div id="edit-tab-occlusion" class="edit-tab-content mb-4 hidden">
                     <label>Occlusion Class</label>
-                    <input type="text" name="occlusion_class" class="w-full border rounded px-2 py-1 mb-2">
-                    <input type="text" name="occlusion_other" class="w-full border rounded px-2 py-1 mb-2">
+                   <select name="occlusion_class"
+    class="w-full border rounded px-2 py-1 mb-2">
+    <option value="">Select Occlusion Class</option>
+   <option value="Class I">Class I</option>
+<option value="Class II">Class II</option>
+<option value="Class III">Class III</option>
+
+</select>
+
+                   <select name="occlusion_other"
+    class="w-full border rounded px-2 py-1 mb-2">
+    <option value="">Select Occlusion Type</option>
+<option value="Open Bite">Open Bite</option>
+<option value="Deep Bite">Deep Bite</option>
+<option value="Overjet">Overjet</option>
+<option value="Overbite">Overbite</option>
+
+</select>
+
                     <input type="text" name="premature_contacts" class="w-full border rounded px-2 py-1">
                 </div>
 
@@ -413,22 +446,33 @@ $(document).ready(function () {
 </div>
 
 <!-- {{-- VIEW MODAL --}} -->
-<div id="viewIntraoralModal" class="fixed inset-0  flex items-center justify-center z-50 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
-        <button onclick="closeViewModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">View Examination</h2>
+<div id="viewIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl overflow-hidden max-h-[90vh]">
 
-        <div id="viewIntraoralContent" class="space-y-3 text-gray-800 dark:text-gray-200">
-            <!-- {{-- Content will be filled dynamically --}} -->
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-4 bg-blue-600 text-white">
+            <h2 class="text-xl font-semibold">Intraoral Examination Details</h2>
+            <button onclick="closeViewModal()" class="text-white text-2xl leading-none hover:opacity-80">✕</button>
         </div>
 
-        <div class="flex justify-end mt-4">
-            <button type="button" onclick="closeViewModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Close</button>
+        <!-- BODY -->
+        <div class="p-6 overflow-y-auto max-h-[75vh] text-gray-800 dark:text-gray-200 space-y-6">
+
+            <div id="viewIntraoralContent"></div>
+
+            <div class="flex justify-end pt-4">
+                <button onclick="closeViewModal()"
+                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded">
+                    Close
+                </button>
+            </div>
         </div>
+
     </div>
 </div>
+
 <!-- DELETE MODAL -->
-<div id="deleteModal" class="modal fade" tabindex="-1">
+<div id="deleteModal" class="modal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -574,10 +618,17 @@ function openEditModal(buttonOrId) {
       // otherwise set value (select/textarea/text)
       el.value = value ?? '';
     };
+    
+
 
     // Map expected fields from server JSON to form inputs
     safeSet('patient_id', data.patient_id ?? '');
-    safeSet('date', data.date ?? new Date().toISOString().split('T')[0]); 
+    if (data.date) {
+    const d = new Date(data.date);
+    safeSet('date', d.toISOString().split('T')[0]); // YYYY-MM-DD
+} else {
+    safeSet('date', new Date().toISOString().split('T')[0]);
+}
     safeSet('soft_tissues_status', data.soft_tissues_status ?? '');
     safeSet('soft_tissues', data.soft_tissues ?? '');
     safeSet('gingiva_color', data.gingiva_color ?? '');
@@ -665,62 +716,91 @@ function openViewModal(id) {
 
         const safe = v => v ?? '-';
 
-        content.innerHTML = `
-            <p><strong>Patient:</strong> ${safe(data.patient_name)}</p>
-<p><strong>Examination Date:</strong> ${data.date ? new Date(data.date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '-'}</p>
-            <hr class="my-2">
+content.innerHTML = `
+    <!-- BASIC INFO -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p><strong>Patient:</strong> ${safe(data.patient_name)}</p>
+        <p><strong>Date:</strong> ${
+            data.date
+                ? new Date(data.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: '2-digit',
+                    year: 'numeric'
+                })
+                : '-'
+        }</p>
+    </div>
 
-            <p><strong>Soft Tissues Status:</strong> ${safe(data.soft_tissues_status)}</p>
-            <p><strong>Soft Tissues Notes:</strong> ${safe(data.soft_tissues)}</p>
+    <hr>
 
-            <hr class="my-2">
+    <!-- SOFT TISSUES -->
+    <div>
+        <h3 class="font-semibold text-blue-600 mb-2">Soft Tissues</h3>
+        <p><strong>Status:</strong> ${safe(data.soft_tissues_status)}</p>
+        <p><strong>Notes:</strong> ${safe(data.soft_tissues)}</p>
+    </div>
 
-            <p><strong>Gingiva:</strong> ${safe(data.gingiva_color)} / ${safe(data.gingiva_texture)}</p>
+    <!-- GINGIVA -->
+    <div>
+        <h3 class="font-semibold text-blue-600 mb-2">Gingiva</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <p><strong>Color:</strong> ${safe(data.gingiva_color)}</p>
+            <p><strong>Texture:</strong> ${safe(data.gingiva_texture)}</p>
             <p><strong>Bleeding:</strong> ${safe(data.bleeding)}</p>
             <p><strong>Bleeding Area:</strong> ${safe(data.bleeding_area)}</p>
             <p><strong>Recession:</strong> ${safe(data.recession)}</p>
             <p><strong>Recession Area:</strong> ${safe(data.recession_area)}</p>
+        </div>
+    </div>
 
-            <hr class="my-2">
+    <!-- TEETH / OCCLUSION -->
+    <div>
+        <h3 class="font-semibold text-blue-600 mb-2">Teeth & Occlusion</h3>
+        <p><strong>Teeth Condition:</strong> ${safe(data.teeth_condition)}</p>
+        <p><strong>Occlusion:</strong>
+            ${safe(data.occlusion_class)}
+            ${data.occlusion_other ? ' — ' + data.occlusion_other : ''}
+        </p>
+        <p><strong>Premature Contacts:</strong> ${safe(data.premature_contacts)}</p>
+    </div>
 
-            <p><strong>Teeth Condition:</strong> ${safe(data.teeth_condition)}</p>
-
-            <p><strong>Occlusion:</strong>
-                ${safe(data.occlusion_class)}
-                ${data.occlusion_other ? ' — ' + data.occlusion_other : ''}
-            </p>
-            <p><strong>Premature Contacts:</strong> ${safe(data.premature_contacts)}</p>
-
-            <hr class="my-2">
-
-            <p><strong>Oral Hygiene:</strong> ${safe(data.hygiene_status)}</p>
+    <!-- ORAL HYGIENE -->
+    <div>
+        <h3 class="font-semibold text-blue-600 mb-2">Oral Hygiene</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <p><strong>Status:</strong> ${safe(data.hygiene_status)}</p>
             <p><strong>Plaque Index:</strong> ${safe(data.plaque_index)}</p>
             <p><strong>Calculus:</strong> ${safe(data.calculus)}</p>
+        </div>
+    </div>
+<br>
+    <!-- IMAGES -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${data.probing_depths ? `
+            <div>
+                <strong>Probing Depths</strong>
+                <img src="${data.probing_depths}" class="mt-2 rounded border max-h-60">
+            </div>` : ''}
 
-            ${data.probing_depths ? `
-                <div class="mt-3">
-                    <strong>Probing Depths:</strong><br>
-                    <img src="${data.probing_depths}" class="max-h-60 mt-2 rounded border">
-                </div>` : ''}
+        ${data.mobility ? `
+            <div>
+                <strong>Mobility</strong>
+                <img src="${data.mobility}" class="mt-2 rounded border max-h-60">
+            </div>` : ''}
 
-            ${data.mobility ? `
-                <div class="mt-3">
-                    <strong>Mobility:</strong><br>
-                    <img src="${data.mobility}" class="max-h-60 mt-2 rounded border">
-                </div>` : ''}
+        ${data.furcation ? `
+            <div>
+                <strong>Furcation</strong>
+                <img src="${data.furcation}" class="mt-2 rounded border max-h-60">
+            </div>` : ''}
 
-            ${data.furcation ? `
-                <div class="mt-3">
-                    <strong>Furcation:</strong><br>
-                    <img src="${data.furcation}" class="max-h-60 mt-2 rounded border">
-                </div>` : ''}
-
-            ${data.odontogram ? `
-                <div class="mt-3">
-                    <strong>Odontogram:</strong><br>
-                    <img src="${data.odontogram}" class="max-h-60 mt-2 rounded border">
-                </div>` : ''}
-        `;
+        ${data.odontogram ? `
+            <div>
+                <strong>Odontogram</strong>
+                <img src="${data.odontogram}" class="mt-2 rounded border max-h-60">
+            </div>` : ''}
+    </div>
+`;
 
         document.getElementById('viewIntraoralModal').classList.remove('hidden');
     })
