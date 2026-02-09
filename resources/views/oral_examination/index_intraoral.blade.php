@@ -86,11 +86,21 @@ $(document).ready(function () {
 </div>
 
 <!-- {{-- ADD Modal --}} -->
-<div id="createIntraoralModal" class="fixed inset-0 z-50 hidden bg flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
-        <button onclick="closeCreateModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">New Examination</h2>
+<div id="createIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl relative overflow-y-auto max-h-[90vh] p-6">
 
+        <!-- HEADER -->
+        <div class="bg-primary text-white px-6 py-4 rounded-t-lg relative">
+            <h2 class="text-2xl font-semibold">
+                New Examination
+            </h2>
+
+            <button
+                onclick="closeCreateModal()"
+                 class="absolute top-4 right-4 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-primary/90 transition">
+                ✕
+            </button>
+        </div>
         <form id="createIntraoralForm" action="{{ route('oral_examination.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -267,10 +277,21 @@ $(document).ready(function () {
 
 <!-- {{-- EDIT MODAL --}} -->
 <div id="editIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
-        <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">✕</button>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Edit Examination</h2>
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl relative overflow-y-auto max-h-[90vh] p-6">
 
+        <!-- HEADER -->
+        <div class="bg-primary text-white px-6 py-4 rounded-t-lg relative">
+            <h2 class="text-2xl font-semibold">
+                Edit Examination
+            </h2>
+
+            <button
+                onclick="closeEditModal()"
+                 class="absolute top-4 right-4 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-primary/90 transition">
+                ✕
+            </button>
+        </div>
+       
         <form id="editIntraoralForm" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
