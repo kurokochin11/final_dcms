@@ -1,129 +1,169 @@
 <x-app-layout>
-<div class="container mt-5" x-data="{ openAdd:false, openEditId:null, openDeleteId:null }">
+<div class="max-w-7xl mx-auto px-6 py-8"
+     x-data="{
+        openAdd:false,
+        openEdit:false,
+        openDelete:false,
+        selectedBilling:{}
+     }">
 
     <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="text-primary fw-bold">Section 10: Billing and Payments</h3>
-        <button class="btn btn-primary shadow" @click="openAdd = true">
-            <i class="fas fa-plus me-1"></i> Add Billing
-        </button>
-    </div>
+     <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-indigo-600">
+                Section 10: Billing and Payments
+            </h2>
+
+            <button
+                @click="openAdd = true"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                Add Billing
+            </button>
+        </div>
+    </x-slot>
 
     <!-- TABLE -->
-    <div class="table-responsive shadow rounded">
-        <table class="table table-striped table-hover align-middle mb-0">
-            <thead class="bg-dark text-white">
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-800 text-white">
                 <tr>
-                    <th>Date</th>
-                    <th>Service Rendered</th>
-                    <th>Amount (PHP)</th>
-                    <th>Payment Method</th>
-                    <th>Receipt No.</th>
-                    <th>Outstanding (PHP)</th>
-                    <th class="text-center">Actions</th>
+                    <th class="px-4 py-3 text-left">Date</th>
+                    <th class="px-4 py-3 text-left">Service</th>
+                    <th class="px-4 py-3 text-right">Amount</th>
+                    <th class="px-4 py-3 text-left">Payment</th>
+                    <th class="px-4 py-3 text-left">Receipt</th>
+                    <th class="px-4 py-3 text-right">Outstanding</th>
+                    <th class="px-4 py-3 text-center">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+
+            <tbody class="divide-y">
                 @foreach($billings as $billing)
-                <tr>
-                    <td>{{ \Carbon\Carbon::parse($billing->date)->format('M d, Y') }}</td>
-                    <td>{{ $billing->service_rendered }}</td>
-                    <td class="text-end">{{ number_format($billing->amount,2) }}</td>
-                    <td>{{ $billing->payment_method ?? '-' }}</td>
-                    <td>{{ $billing->receipt_no ?? '-' }}</td>
-                    <td class="text-end">{{ number_format($billing->outstanding_balance,2) }}</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-sm me-1 shadow-sm"
-                                @click="openEditId={{ $billing->id }}">
-                            <i class="fas fa-edit"></i> Edit
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">{{ \Carbon\Carbon::parse($billing->date)->format('M d, Y') }}</td>
+                    <td class="px-4 py-3">{{ $billing->service_rendered }}</td>
+                    <td class="px-4 py-3 text-right">{{ number_format($billing->amount,2) }}</td>
+                    <td class="px-4 py-3">{{ $billing->payment_method ?? '-' }}</td>
+                    <td class="px-4 py-3">{{ $billing->receipt_no ?? '-' }}</td>
+                    <td class="px-4 py-3 text-right">{{ number_format($billing->outstanding_balance,2) }}</td>
+
+                    <td class="px-4 py-3 text-center space-x-1">
+                        <!-- EDIT -->
+                        <button
+                            @click="
+                                openEdit=true;
+                                selectedBilling={{ $billing }};
+                            "
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">
+                            <i class="fas fa-edit"></i>
                         </button>
 
-                        <button class="btn btn-danger btn-sm shadow-sm"
-                                @click="openDeleteId={{ $billing->id }}">
-                            <i class="fas fa-trash"></i> Del
+                        <!-- DELETE -->
+                        <button
+                            @click="
+                                openDelete=true;
+                                selectedBilling={{ $billing }};
+                            "
+                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 </tr>
-
-                <!-- EDIT MODAL -->
-                <div x-show="openEditId === {{ $billing->id }}" x-cloak
-                     class="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
-                    <div class="bg-white rounded-lg shadow-lg w-1/3 p-6 relative">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-lg font-bold text-warning">Edit Billing</h2>
-                            <button @click="openEditId = null" class="text-2xl font-bold">&times;</button>
-                        </div>
-
-                        <form method="POST" action="{{ route('billings.update', $billing->id) }}">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="space-y-3">
-                                <input type="date" name="date" value="{{ $billing->date }}" class="w-full border p-2 rounded shadow-sm" required>
-                                <input type="text" name="service_rendered" value="{{ $billing->service_rendered }}" class="w-full border p-2 rounded shadow-sm" placeholder="Service Rendered" required>
-                                <input type="number" name="amount" value="{{ $billing->amount }}" class="w-full border p-2 rounded shadow-sm" placeholder="Amount" required>
-                                <input type="text" name="payment_method" value="{{ $billing->payment_method }}" class="w-full border p-2 rounded shadow-sm" placeholder="Payment Method">
-                                <input type="text" name="receipt_no" value="{{ $billing->receipt_no }}" class="w-full border p-2 rounded shadow-sm" placeholder="Receipt No.">
-                                <input type="number" name="outstanding_balance" value="{{ $billing->outstanding_balance }}" class="w-full border p-2 rounded shadow-sm" placeholder="Outstanding Balance">
-                            </div>
-
-                            <div class="flex justify-end mt-4 gap-2">
-                                <button type="button" @click="openEditId = null" class="btn btn-dark">Cancel</button>
-                                <button type="submit" class="btn btn-warning">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- DELETE MODAL -->
-                <div x-show="openDeleteId === {{ $billing->id }}" x-cloak
-                     class="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
-                    <div class="bg-white rounded-lg shadow-lg w-1/3 p-6">
-                        <h2 class="text-lg font-bold text-danger mb-4">Delete Billing</h2>
-                        <p class="mb-4">Are you sure you want to delete this billing record?</p>
-                        <div class="flex justify-end gap-2">
-                            <button type="button" @click="openDeleteId = null" class="btn btn-dark">Cancel</button>
-                            <form method="POST" action="{{ route('billings.destroy', $billing->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
                 @endforeach
             </tbody>
         </table>
     </div>
 
     <!-- ADD MODAL -->
-    <div x-show="openAdd" x-cloak class="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
-        <div class="bg-white rounded-lg shadow-lg w-1/3 p-6 relative">
+    <div x-show="openAdd" x-cloak
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-primary">Add Billing</h2>
-                <button @click="openAdd = false" class="text-2xl font-bold">&times;</button>
+                <h3 class="font-semibold text-lg text-indigo-600">Add Billing</h3>
+                <button @click="openAdd=false" class="text-2xl">&times;</button>
             </div>
 
-            <form method="POST" action="{{ route('billings.store') }}">
+            <form method="POST" action="{{ route('billings.store') }}" class="space-y-3">
                 @csrf
-                <div class="space-y-3">
-                    <input type="date" name="date" class="w-full border p-2 rounded shadow-sm" required>
-                    <input type="text" name="service_rendered" class="w-full border p-2 rounded shadow-sm" placeholder="Service Rendered" required>
-                    <input type="number" name="amount" class="w-full border p-2 rounded shadow-sm" placeholder="Amount" required>
-                    <input type="text" name="payment_method" class="w-full border p-2 rounded shadow-sm" placeholder="Payment Method">
-                    <input type="text" name="receipt_no" class="w-full border p-2 rounded shadow-sm" placeholder="Receipt No.">
-                    <input type="number" name="outstanding_balance" class="w-full border p-2 rounded shadow-sm" placeholder="Outstanding Balance">
-                </div>
+                <input type="date" name="date" class="w-full border rounded px-3 py-2">
+                <input type="text" name="service_rendered" placeholder="Service Rendered" class="w-full border rounded px-3 py-2">
+                <input type="number" name="amount" placeholder="Amount" class="w-full border rounded px-3 py-2">
+                <input type="text" name="payment_method" placeholder="Payment Method" class="w-full border rounded px-3 py-2">
+                <input type="text" name="receipt_no" placeholder="Receipt No." class="w-full border rounded px-3 py-2">
+                <input type="number" name="outstanding_balance" placeholder="Outstanding Balance" class="w-full border rounded px-3 py-2">
 
-                <div class="flex justify-end mt-4 gap-2">
-                    <button type="button" @click="openAdd = false" class="btn btn-dark">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" @click="openAdd=false"
+                        class="bg-gray-700 text-white px-4 py-2 rounded">
+                        Cancel
+                    </button>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded">
+                        Save
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-</div>
+    <!-- EDIT MODAL -->
+    <div x-show="openEdit" x-cloak
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-lg text-yellow-600">Edit Billing</h3>
+                <button @click="openEdit=false" class="text-2xl">&times;</button>
+            </div>
 
+            <form method="POST"
+                  :action="`/billings/${selectedBilling.id}`"
+                  class="space-y-3">
+                @csrf
+                @method('PUT')
+
+                <input type="date" name="date" :value="selectedBilling.date" class="w-full border rounded px-3 py-2">
+                <input type="text" name="service_rendered" :value="selectedBilling.service_rendered" class="w-full border rounded px-3 py-2">
+                <input type="number" name="amount" :value="selectedBilling.amount" class="w-full border rounded px-3 py-2">
+                <input type="text" name="payment_method" :value="selectedBilling.payment_method" class="w-full border rounded px-3 py-2">
+                <input type="text" name="receipt_no" :value="selectedBilling.receipt_no" class="w-full border rounded px-3 py-2">
+                <input type="number" name="outstanding_balance" :value="selectedBilling.outstanding_balance" class="w-full border rounded px-3 py-2">
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" @click="openEdit=false"
+                        class="bg-gray-700 text-white px-4 py-2 rounded">
+                        Cancel
+                    </button>
+                    <button class="bg-yellow-500 text-white px-4 py-2 rounded">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div x-show="openDelete" x-cloak
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <h3 class="text-lg font-semibold text-red-600 mb-2">Delete Billing</h3>
+            <p class="text-gray-600 mb-6">This action cannot be undone.</p>
+
+            <div class="flex justify-end gap-2">
+                <button @click="openDelete=false"
+                    class="bg-gray-700 text-white px-4 py-2 rounded">
+                    Cancel
+                </button>
+
+                <form method="POST" :action="`/billings/${selectedBilling.id}`">
+                    @csrf
+                    @method('DELETE')
+                    <button class="bg-red-600 text-white px-4 py-2 rounded">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
 </x-app-layout>

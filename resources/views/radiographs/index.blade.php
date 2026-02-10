@@ -242,7 +242,7 @@ $(document).ready(function() {
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Patient</label>
-                    <select id="patient_id" name="patient_id" required
+                  <select id="modal_patient_id" name="patient_id" required>
                         class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
                         <option value="">Select Patient</option>
                         @foreach($patients as $patient)

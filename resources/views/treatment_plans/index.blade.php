@@ -446,7 +446,7 @@ $('#patientFilter').on('change', function () {
 
  <!-- DELETE MODAL -->
 <div
-    x-show="openDeleteModal"
+      x-show="openDeleteModal"
     x-cloak
     x-transition
     class="fixed inset-0 z-50 flex items-center justify-center"
