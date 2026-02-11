@@ -1,0 +1,97 @@
+/* Full page background */
+.welcome-body {
+    height: 100vh;
+    width: 100%;
+    
+    background-color: red !important; /* If the screen turns red, the path to the image is the only problem */
+
+    background: url('/assets/background.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+}
+
+/* Top right auth links */
+.top-right-links {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+}
+
+.top-right-links a {
+    color: white;
+    margin-left: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.top-right-links a:hover {
+    color: #0d6efd;
+}
+
+/* Glassmorphic card */
+.welcome-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    padding: 40px;
+    text-align: center;
+    color: #fff;
+    max-width: 400px;
+    width: 90%;
+}
+
+/* Logo styling */
+.welcome-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Title */
+.welcome-card h1 {
+    color: #0d6efd; /* blue title */
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+/* Buttons */
+.btn-primary-custom {
+    display: inline-block;
+    padding: 10px 25px;
+    margin: 10px 5px;
+    background-color: #0d6efd;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-primary-custom:hover {
+    background-color: #0056b3;
+}
+
+.btn-outline-custom {
+    display: inline-block;
+    padding: 10px 25px;
+    margin: 10px 5px;
+    color: #0d6efd;
+    border: 2px solid #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-outline-custom:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}

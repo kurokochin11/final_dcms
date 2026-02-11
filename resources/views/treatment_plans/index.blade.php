@@ -108,7 +108,7 @@ $('#patientFilter').on('change', function () {
                             <thead>
                                 <tr class="text-left text-sm text-gray-600">
                                     <th class="px-4 py-2">Patient</th>
-                                    <th class="px-4 py-2">Created</th>
+                                    <th class="px-4 py-2">Date</th>
                                     <th class="px-4 py-2">Consent</th>
                                     <th class="px-4 py-2">Actions</th>
                                 </tr>
@@ -121,6 +121,7 @@ $('#patientFilter').on('change', function () {
                                             <div class="text-xs text-gray-500">ID: {{ $plan->patient->id }}</div>
                                         </td>
                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $plan->consent_date ? \Carbon\Carbon::parse($plan->consent_date)->format('M d, Y') : '-' }}
+                                        </td>
                                         <td class="px-4 py-3 text-sm">
                                             @if($plan->consent_given)
                                                 <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Yes</span>
@@ -285,7 +286,7 @@ $('#patientFilter').on('change', function () {
             </div>
         </div>
 
-        <!-- {{-- EDIT MODAL (tabbed) --}} -->
+        <!-- {{-- EDIT MODAL --}} -->
         <div x-show="openEditModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
             <div class="fixed inset-0 bg- transparent" @click="openEditModal=false"></div>
 
@@ -443,27 +444,30 @@ $('#patientFilter').on('change', function () {
             </div>
         </div>
     </div>
-
- <!-- DELETE MODAL -->
+<!-- DELETE MODAL -->
 <div
-      x-show="openDeleteModal"
+    x-show="openDeleteModal"
     x-cloak
-    x-transition
+    x-transition.opacity
     class="fixed inset-0 z-50 flex items-center justify-center"
 >
+
     <!-- Overlay -->
     <div
-        class="fixed inset-0 bg-black bg-opacity-50"
-        @click="closeDelete()"
-    ></div>
+        class="absolute inset-0 bg-black bg-opacity-50"
+        @click="closeDelete()">
+    </div>
 
-    <!-- Modal -->
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative z-50">
-        <h3 class="text-lg font-semibold mb-2 text-red-600">
+    <!-- Modal Box -->
+    <div
+        x-transition.scale
+        class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 z-50"
+    >
+        <h3 class="text-lg font-semibold text-red-600 mb-3">
             Confirm Delete
         </h3>
 
-        <p class="mb-4">
+        <p class="text-gray-700 mb-5">
             Are you sure you want to delete
             <strong x-text="deleteTargetName"></strong>?
         </p>
@@ -472,24 +476,25 @@ $('#patientFilter').on('change', function () {
             @csrf
             @method('DELETE')
 
-            <div class="flex justify-end gap-2">
+            <div class="flex justify-end gap-3">
                 <button
                     type="button"
-                    class="btn btn-secondary"
                     @click="closeDelete()"
+                    class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
                 >
                     Cancel
                 </button>
 
-                <button type="submit" class="btn btn-danger">
+                <button
+                    type="submit"
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
                     Delete
                 </button>
             </div>
         </form>
     </div>
 </div>
-
-
 
 
     <!-- {{-- Alpine logic --}} -->
@@ -570,7 +575,8 @@ $('#patientFilter').on('change', function () {
                             this.form.consent_given = !!data.consent_given;
                             this.form.patient_signature = data.patient_signature ?? '';
                             this.form.dentist_signature = data.dentist_signature ?? '';
-                            this.form.consent_date = data.consent_date ?? '';
+                            this.form.consent_date = data.consent_date
+                                  ? data.consent_date.substring(0, 10): '';
 
                             this.editFormAction = `/treatment-plans/${id}`;
                             this.openEditModal = true;
