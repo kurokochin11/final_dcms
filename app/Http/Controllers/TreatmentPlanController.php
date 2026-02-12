@@ -104,14 +104,12 @@ class TreatmentPlanController extends Controller
         ];
     }
 
-   public function destroy($id)
-{
-    $plan = TreatmentPlan::findOrFail($id);
-    $plan->delete();
-
-    return redirect()->route('treatment-plans.index')
-                     ->with('success', 'Treatment plan deleted successfully.');
-}
+    public function destroy(TreatmentPlan $treatmentPlan)
+    {
+        $treatmentPlan->delete();
+        return redirect()->route('treatment-plans.index')
+            ->with('success', 'Treatment Plan deleted.');
+    }
 
    
 }
