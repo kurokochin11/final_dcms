@@ -87,10 +87,10 @@ $(document).ready(function () {
 
 <!-- {{-- ADD Modal --}} -->
 <div id="createIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl relative overflow-y-auto max-h-[90vh] p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl relative overflow-y-auto max-h-[90vh] flex flex-col">
 
         <!-- HEADER -->
-        <div class="bg-primary text-white px-6 py-4 rounded-t-lg relative">
+        <div class="bg-primary text-white px-6 py-4 rounded-t-lg " >
             <h2 class="text-2xl font-semibold">
                 New Examination
             </h2>

@@ -214,9 +214,9 @@ $(document).ready(function() {
         </div>
     </div>
 
-   {{-- Add/Edit Modal --}}
+   <!-- {{-- Add/Edit Modal --}} -->
 <div id="modalBackdrop"
-     class="fixed inset-0 hidden items-center justify-center z-40 bg-black/40">
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-40 bg-black/40">
 
 
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4

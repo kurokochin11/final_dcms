@@ -41,15 +41,7 @@ class TreatmentPlanController extends Controller
         return redirect()->route('treatment-plans.index')
             ->with('success', 'Treatment Plan updated.');
     }
-
-    public function destroy(TreatmentPlan $treatmentPlan)
-    {
-        $treatmentPlan->delete();
-        return redirect()->route('treatment-plans.index')
-            ->with('success', 'Treatment Plan deleted.');
-    }
-
-    protected function validateRequest(Request $request)
+     protected function validateRequest(Request $request)
     {
         $rules = [
             'patient_id' => ['required','exists:patients,id'],
@@ -111,4 +103,15 @@ class TreatmentPlanController extends Controller
             'consent_date' => $validated['consent_date'] ?? null,
         ];
     }
+
+   public function destroy($id)
+{
+    $plan = TreatmentPlan::findOrFail($id);
+    $plan->delete();
+
+    return redirect()->route('treatment-plans.index')
+                     ->with('success', 'Treatment plan deleted successfully.');
+}
+
+   
 }

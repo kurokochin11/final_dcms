@@ -19,8 +19,33 @@ class AppointmentController extends Controller
             ->get();
 
         $patients = Patient::orderBy('last_name')->get();
-
+      //  dd($appointments);
+ //return response()->json($appointments);
         return view('appointments.index', compact('appointments', 'patients'));
+    }
+    public function sampleCalendar(){
+         $appointments = Appointment::with('patient')
+        ->orderBy('appointment_date')
+        ->orderBy('appointment_time')
+        ->get();
+
+    $events = $appointments->map(function ($a) {
+        // Determine color based on status
+        $color = match($a->status) {
+            'Completed' => '#16a34a',  // green
+            'Cancelled' => '#dc2626',  // red
+            default => '#2563eb',      // blue for Scheduled
+        };
+
+        return [
+            'title' => $a->patient->first_name . ' (' . $a->status . ')',
+            'start' => $a->appointment_date->format('Y-m-d') . 'T' . $a->appointment_time,
+            'end' => $a->appointment_date->format('Y-m-d') . 'T' . $a->appointment_time, // optional if no duration
+            'color' => $color,
+        ];
+    });
+
+    return view('appointments.sampleCalendar', compact('events'));
     }
 
     /**

@@ -270,6 +270,7 @@
      
     <script>
 document.addEventListener('alpine:init', () => {
+    
     Alpine.data('calendar', () => ({
         month: new Date().getMonth(),
         year: new Date().getFullYear(),
@@ -278,18 +279,19 @@ document.addEventListener('alpine:init', () => {
         daysInMonth: [],
         blankDays: [],
 
-      appointments: @json(
-    $appointments->map(fn($a) => [
-        'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
-        'patient_name' => $a->patient->full_name,
-        'time' => \Carbon\Carbon::parse($a->appointment_time)->format('h:i A'),
-        'purpose' => $a->purpose,
-        'status' => $a->status,
-
-        //  appointments: @json(
-        //     $appointments->map(fn($a) => [
-        //         'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
-        //         'status' => $a->status
+     
+    // $appointments->map(fn($a) => [
+    //     'date' => \Carbon\Carbon::parse($a->appointment_date)->format('Y-m-d'),
+    //     'patient_name' => $a->patient->full_name,
+    //     'time' => \Carbon\Carbon::parse($a->appointment_time)->format('h:i A'),
+    //     'purpose' => $a->purpose,
+    //     'status' => $a->status,
+    data: "sample",
+ appointments: @json(
+            $appointments->map(fn($a) => [
+                'date' => $a->appointment_date->format('Y-m-d'),
+                'patient_name' => $a->patient->first_name,
+                'status' => $a->status
             
     ]),
    

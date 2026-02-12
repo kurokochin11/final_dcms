@@ -133,7 +133,10 @@ $('#patientFilter').on('change', function () {
                                             <button @click="openView({{ $plan->id }})"  class="btn btn-md btn-primary mr-2"> <i class="fas fa-eye text-white"></i></button>
                                             <button @click="openEdit({{ $plan->id }}); setActiveTab(0)" class="btn btn-md btn-warning mr-2"><i class="fas fa-edit text-white"></i></button>
                                 <button type="button" class="btn btn-danger btn-md"
-        @click="openDelete({{ $plan->id }}, @js($plan->patient->last_name . ', ' . $plan->patient->first_name))">
+      @click="openDelete(
+        '{{ route('treatment-plans.destroy', $plan) }}',
+        @js($plan->patient->last_name . ', ' . $plan->patient->first_name)
+    )">
     <i class="fas fa-trash"></i>
 </button>
 
@@ -445,9 +448,7 @@ $('#patientFilter').on('change', function () {
         </div>
     </div>
 <!-- DELETE MODAL -->
-<div
-    x-show="openDeleteModal"
-    x-cloak
+<div x-show="openDeleteModal" x-cloak
     x-transition.opacity
     class="fixed inset-0 z-50 flex items-center justify-center"
 >
@@ -642,9 +643,8 @@ formatDate(date) {
 deleteFormAction: '',
 deleteTargetName: '',
 
-openDelete(id, patientName) {
-    console.log('Delete ID:', id, 'Patient:', patientName); // optional debug
-    this.deleteFormAction = `/treatment-plans/${id}`;
+openDelete(routeUrl, patientName) {
+    this.deleteFormAction = routeUrl;  // use full route from Blade
     this.deleteTargetName = patientName;
     this.openDeleteModal = true;
 },

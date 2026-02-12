@@ -104,6 +104,7 @@ Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destro
     Route::post('/', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::put('/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
+    Route::get('/sampleCalendar', [AppointmentController::class, 'sampleCalendar'])->name('appointments.sampleCalendar');
 });
 
 // Diagnosis routes

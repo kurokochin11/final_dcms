@@ -107,8 +107,7 @@ $(document).ready(function () {
 <div
     x-show="openViewId === {{ $patient->id }}"
     x-cloak
-    class="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
->
+    class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
 
     <!-- MODAL BOX -->
     <div
@@ -222,7 +221,7 @@ $(document).ready(function () {
 
 <!-- EDIT MODAL -->
 <div x-show="openEditId === {{ $patient->id }}" x-cloak
-     class="fixed inset-0 flex items-center justify-center z-50">
+     class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
 
     <div class="relative bg-white rounded w-1/2 max-h-[90vh] overflow-y-auto shadow-lg"
          x-data="{ tab: 1 }">
@@ -380,7 +379,7 @@ $(document).ready(function () {
 <!-- DELETE MODAL -->
 <div x-show="openDeleteId === {{ $patient->id }}"
      x-cloak
-     class="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
+     class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
 
     <div class="bg-white rounded-lg shadow-lg w-1/3 overflow-hidden border border-gray-200">
 
@@ -428,7 +427,7 @@ $(document).ready(function () {
                 </div>
                 <!-- ADD MODAL -->
 <div x-show="openAdd" x-cloak
-     class="fixed inset-0 flex items-center justify-center z-50">
+     class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
 
     <div class="relative bg-white rounded-lg w-1/2 max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
 
