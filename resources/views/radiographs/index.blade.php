@@ -242,7 +242,7 @@ $(document).ready(function() {
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Patient</label>
-                  <select id="modal_patient_id" name="patient_id" required>
+                  <select id="modal_patient_id" name="patient_id" required
                         class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
                         <option value="">Select Patient</option>
                         @foreach($patients as $patient)
@@ -494,7 +494,7 @@ document.addEventListener('click', function (e) {
                 methodInput.value = 'PUT';
                 editId.value = id;
 
-                document.getElementById('patient_id').value = patientId;
+                document.getElementById('modal_patient_id').value = patientId;
                 document.getElementById('date_taken').value = date;
                 document.getElementById('type_id').value = type;
                 document.getElementById('findings').value = findings;

@@ -133,10 +133,7 @@ $('#patientFilter').on('change', function () {
                                             <button @click="openView({{ $plan->id }})"  class="btn btn-md btn-primary mr-2"> <i class="fas fa-eye text-white"></i></button>
                                             <button @click="openEdit({{ $plan->id }}); setActiveTab(0)" class="btn btn-md btn-warning mr-2"><i class="fas fa-edit text-white"></i></button>
                                 <button type="button" class="btn btn-danger btn-md"
-      @click="openDelete(
-        '{{ route('treatment-plans.destroy', $plan) }}',
-        @js($plan->patient->last_name . ', ' . $plan->patient->first_name)
-    )">
+        @click="openDelete({{ $plan->id }}, @js($plan->patient->last_name . ', ' . $plan->patient->first_name))">
     <i class="fas fa-trash"></i>
 </button>
 
@@ -158,9 +155,9 @@ $('#patientFilter').on('change', function () {
             </div>
         </div>
 
-        <!-- {{-- CREATE MODAL (tabbed) --}} -->
+        <!-- {{-- ADD MODAL (tabbed) --}} -->
 
-        <div x-show="openCreate" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
+        <div x-show="openCreate" class="fixed inset-0  z-50 bg-black/40 backdrop-blur-sm flex items-start justify-center pt-12 px-4" style="display:none;">
             <div class="fixed inset-0 bg-blue" @click="openCreate=false"></div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl z-50 overflow-hidden" @keydown.escape.window="openCreate=false">
@@ -290,8 +287,8 @@ $('#patientFilter').on('change', function () {
         </div>
 
         <!-- {{-- EDIT MODAL --}} -->
-        <div x-show="openEditModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
-            <div class="fixed inset-0 bg- transparent" @click="openEditModal=false"></div>
+        <div x-show="openEditModal" class="fixed inset-0  z-50 bg-black/40 backdrop-blur-sm flex items-start justify-center pt-12 px-4" style="display:none;">
+            <div class="fixed inset-0 " @click="openEditModal=false"></div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl z-50 overflow-hidden" @keydown.escape.window="openEditModal=false">
                 <div class="flex items-center justify-between p-4 bg-blue-600 text-white">
@@ -402,8 +399,8 @@ $('#patientFilter').on('change', function () {
         </div>
 
         <!-- {{-- VIEW modal --}} -->
-        <div x-show="openViewModal" class="fixed inset-0 z-50 flex items-start justify-center pt-12 px-4" style="display:none;">
-            <div class="fixed inset-0 bg-transparent" @click="openViewModal=false"></div>
+        <div x-show="openViewModal" class="fixed inset-0 z-50 black/40 backdrop-blur-sm flex items-start justify-center pt-12 px-4" style="display:none;">
+            <div class="fixed inset-0 bg-black/40" @click="openViewModal=false"></div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl z-50 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-blue-600 text-white">
@@ -448,9 +445,12 @@ $('#patientFilter').on('change', function () {
         </div>
     </div>
 <!-- DELETE MODAL -->
-<div x-show="openDeleteModal" x-cloak
+<div x-data="treatmentPlanPage()" x-cloak
+
+    x-show="openDeleteModal"
+    
     x-transition.opacity
-    class="fixed inset-0 z-50 flex items-center justify-center"
+    class="fixed inset-0 black/40 backdrop-blur-smz-50 flex items-center justify-center"
 >
 
     <!-- Overlay -->
@@ -643,8 +643,9 @@ formatDate(date) {
 deleteFormAction: '',
 deleteTargetName: '',
 
-openDelete(routeUrl, patientName) {
-    this.deleteFormAction = routeUrl;  // use full route from Blade
+openDelete(id, patientName) {
+    console.log('Delete ID:', id, 'Patient:', patientName); // optional debug
+    this.deleteFormAction = `/treatment-plans/${id}`;
     this.deleteTargetName = patientName;
     this.openDeleteModal = true;
 },
@@ -659,4 +660,4 @@ closeDelete() {
             }
         }
     </script>
-</x-app-layout>
+</x-app-layout>  
