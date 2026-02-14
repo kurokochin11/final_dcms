@@ -188,6 +188,7 @@ $(document).ready(function() {
         class="btn btn-medium btn-danger btn-delete"
         data-action="{{ route('radiographs.destroy', $rg->id) }}"
         data-patient="{{ optional($rg->patient)->first_name }} {{ optional($rg->patient)->last_name }}">
+        <i class="fa fa-trash"></i>
 </button>
                                      </form>
                                     </div>
@@ -345,38 +346,36 @@ $(document).ready(function() {
         </div>
     </div>
 </div>
-<div id="deleteBackdrop"
-     class="fixed inset-0 hidden items-center justify-center z-[9999] bg-black/40">
+<div id="deleteBackdrop" class="fixed inset-0 hidden items-center justify-center z-[9999] bg-black/40">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 relative overflow-hidden">
+        
+        <div class="p-4 bg-red-600 text-white">
+            <h3 class="text-lg font-bold">Confirm Delete</h3>
+        </div>
 
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 relative">
-    <!-- Header -->
-    <div class="p-4 border-b bg-red-600 text-white rounded-t-lg">
-      <h3 class="text-lg font-medium">Confirm Delete</h3>
+        <div class="p-6 text-sm text-gray-700 leading-relaxed">
+            Are you sure you want to delete this radiograph record of 
+            <span class="font-bold text-gray-900" id="deletePatientName"></span>?
+        </div>
+
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="p-4 flex justify-end gap-3 bg-gray-50 border-t">
+                <button type="button" 
+                        id="btnDeleteCancel" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded hover:bg-slate-900 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        id="btnDeleteConfirm" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 transition-colors">
+                    Delete
+                </button>
+            </div>
+        </form>
     </div>
-
-    <!-- Body -->
-    <div class="p-5 text-sm text-gray-700">
-      Are you sure you want to delete this radiograph record of
-      <span class="font-semibold" id="deletePatientName"></span>?
-    </div>
-
-    <!-- Footer -->
-    <div class="p-4 flex justify-end gap-2 border-t">
-      <button type="button" id="btnDeleteCancel" class="btn btn-dark btn-sm">
-        Cancel
-      </button>
-
-      <form id="deleteForm" method="POST">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="btn btn-danger btn-sm">
-          Delete
-        </button>
-      </form>
-    </div>
-  </div>
 </div>
-
 
     {{-- JS --}}
     <script>

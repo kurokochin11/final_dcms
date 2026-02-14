@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PatientResponse;
 use App\Models\MedicalQuestion;
 use App\Models\MedicalSession;
@@ -138,10 +139,8 @@ class MedicalHistoryController extends Controller
             ->with('success', 'Latest medical history updated successfully!');
     }
 
-    /**
-     * ✅ MAIN METHOD FOR EDIT MODAL
-     * Update a SPECIFIC medical session
-     */
+   //PDF Generation
+
     public function updateSession(Request $request, MedicalSession $session)
     {
         $answers = $request->input('medical_questions', []);
@@ -161,4 +160,17 @@ class MedicalHistoryController extends Controller
             ->route('medical-history.answer_index')
             ->with('success', 'Medical session updated successfully!');
     }
+    public function downloadPdf(Patient $patient)
+{
+    // Load all related sessions, responses, questions
+    $patient->load('medicalSessions.responses.question');
+
+ // Get the currently logged-in physician
+    $physician = auth()->user()->name;
+    $pdf = Pdf::loadView('medical-history.medical_pdf', compact('patient', 'physician'))
+     
+    ->setPaper('a4', 'portrait');
+     return $pdf->stream('medical_pdf_' . $patient->first_name . '_' . $patient->last_name . '.pdf');
+    }
 }
+
