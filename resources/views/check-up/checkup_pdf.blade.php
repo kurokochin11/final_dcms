@@ -19,9 +19,9 @@
 
     /* Medical Questions Grid */
     .questions-container { width: 100%; margin-top: 10px; }
-    .question-row { width: 100%; clear: both; margin-bottom: 5px; border-bottom: 1px dotted #ccc; padding: 3px 0; }
-    .question-text { width: 75%; float: left; }
-    .answer-box { width: 22%; float: right; text-align: right; }
+    .question-row { width: 100%; clear: both; margin-bottom: 5px; border-bottom: 1px dotted #ccc; padding: 5px 0; }
+    .question-text { width: 70%; float: left; }
+    .answer-box { width: 28%; float: right; text-align: right; }
     
     /* Checkbox Styling */
     .checkbox {
@@ -48,7 +48,7 @@
 <body>
 
 <div class="header">
-    <h2>Personal Health and Medical Summary</h2>
+    <h2>Patient Check-Up Record Form</h2>
     <p>Recorded on: {{ now()->format('F j, Y') }}</p>
 </div>
 
@@ -68,33 +68,32 @@
     </tr>
 </table>
 
-@foreach($patient->medicalSessions as $session)
-    @php
-        $groupedAnswers = $session->responses->groupBy(fn($ans) => $ans->question->question_set ?? 'General');
-    @endphp
-
-    @foreach($groupedAnswers as $set => $answers)
-    <div class="section-header">Section {{ $set }}</div>
+@foreach($patient->checkupSessions as $session)
+    <div class="section-header">Check-Up Date: {{ $session->created_at->format('F j, Y') }}</div>
+    
     <div class="questions-container">
-        @foreach($answers as $answer)
+        @foreach($session->checkupResults as $result)
             <div class="question-row">
                 <div class="question-text">
-                    {{ $loop->iteration }}. {{ $answer->question->question_text }}
+                    {{ $loop->iteration }}. {{ $result->question->question_text }}
                 </div>
                 <div class="answer-box">
-                    @if($answer->answer_value == 'Yes')
+                    @if($result->answer_value == 'Yes')
                         <span class="checkbox">&#10004;</span> Yes &nbsp; <span class="checkbox"></span> No
-                    @elseif($answer->answer_value == 'No')
+                    @elseif($result->answer_value == 'No')
                         <span class="checkbox"></span> Yes &nbsp; <span class="checkbox">&#10004;</span> No
+                    @elseif(!empty($result->answer_value))
+                        <span style="font-weight:bold; border-bottom: 1px solid #333; padding: 0 5px;">
+                            {{ $result->answer_value }}
+                        </span>
                     @else
-                        <span style="font-weight:bold; border-bottom: 1px solid #333;">{{ $answer->answer_value }}</span>
+                        <span style="color: #ccc;">N/A</span>
                     @endif
                 </div>
                 <div class="clear"></div>
             </div>
         @endforeach
     </div>
-    @endforeach
 @endforeach
 
 <div class="signature-section">

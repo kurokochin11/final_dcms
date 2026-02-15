@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\CheckupResult;
 use App\Models\CheckupQuestion;
 use App\Models\CheckupSession;
@@ -163,4 +164,21 @@ class CheckupAnswerController extends Controller
             ->route('check-up.checkup_answer_index')
             ->with('success', 'Check-up session updated successfully!');
     }
+    public function downloadPdf(Patient $patient)
+{
+    // Load sessions with results + questions
+    $patient->load('checkupSessions.checkupResults.question');
+
+    $physician = auth()->user()->name ?? 'Physician';
+
+    $pdf = Pdf::loadView(
+        'check-up.checkup_pdf',
+        compact('patient', 'physician')
+    )->setPaper('a4', 'portrait');
+
+    return $pdf->stream(
+        'checkup_record_' . $patient->first_name . '_' . $patient->last_name . '.pdf'
+    );
+}
+
 }

@@ -167,8 +167,14 @@ $groupedAnswers = $session->checkupResults->groupBy(
 @endforeach
 
 </div>
-
+ 
 <div class="mt-4 text-right">
+<button type="button"
+        onclick="window.open('{{ route('checkup.download-pdf', $patient->id) }}', '_blank')"
+        class="btn btn-danger btn-md">
+    <i class="fas fa-file-pdf"></i> Download PDF
+</button>
+
 <button class="btn btn-dark btn-medium"
     onclick="closeModal('view', '{{ $patient->id }}')">
     Close

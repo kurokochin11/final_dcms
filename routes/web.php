@@ -52,6 +52,10 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
     Route::get('/check-up/{patient}', [CheckupAnswerController::class, 'index'])
     ->name('check-up.checkup_index');
 
+Route::get('/checkup/{patient}/pdf',
+    [CheckupAnswerController::class, 'downloadPdf']
+)->name('checkup.download-pdf');
+
 Route::post('/check-up/{patient}', [CheckupAnswerController::class, 'store'])
     ->name('check-up.store');
 

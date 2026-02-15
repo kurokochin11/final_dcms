@@ -154,13 +154,14 @@ $groupedAnswers = $session->responses->groupBy(
 @endforeach
 
 </div>
- <a href="{{ route('medical-history.download-pdf', $patient->id) }}"
-       class="btn btn-danger btn-sm"
-       target="_blank">
-        <i class="fas fa-file-pdf"></i> Download PDF
-    </a>
-    
+ 
 <div class="mt-4 text-right">
+   <button type="button" 
+            class="btn btn-danger btn-medium mr-2" 
+            onclick="window.open('{{ route('medical-history.download-pdf', $patient->id) }}', '_blank')">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </button>
+    
 <button class="btn btn-dark btn-medium"
     onclick="closeModal('view', '{{ $patient->id }}')">
     Close
