@@ -96,6 +96,8 @@ Route::get('/{intraoral}/view', [IntraoralExaminationController::class, 'view'])
 Route::post('/radiographs', [RadiographController::class, 'store'])->name('radiographs.store');
 Route::put('/radiographs/{radiograph}', [RadiographController::class, 'update'])->name('radiographs.update');
 Route::delete('/radiographs/{radiograph}', [RadiographController::class, 'destroy'])->name('radiographs.destroy');
+Route::get('/radiographs/{radiograph}/download-pdf', [RadiographController::class, 'downloadPdf'])->name('radiographs.download-pdf');
+
 
 // Treatment Plan routes
 

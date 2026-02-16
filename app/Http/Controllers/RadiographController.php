@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Radiograph;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -119,4 +120,19 @@ class RadiographController extends Controller
 
         return redirect()->back()->with('success', 'Radiograph deleted successfully!');
     }
+    /**
+ * Download radiograph as PDF.
+ */
+public function downloadPdf(Radiograph $radiograph)
+{
+    $radiograph->load('patient');
+
+   $pdf = Pdf::loadView('radiographs.radiograph_pdf', compact('radiograph'))
+        ->setPaper('a4', 'portrait');
+
+    return $pdf->stream(
+        'radiograph-'.$radiograph->id.'.pdf'
+    );
+}
+
 }

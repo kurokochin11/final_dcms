@@ -167,6 +167,7 @@ $(document).ready(function() {
                                             data-date="{{ optional($rg->date_taken) ? \Carbon\Carbon::parse($rg->date_taken)->format('Y-m-d') : '' }}"
                                             data-type="{{ e($rg->type) }}" data-findings="{{ e($rg->findings) }}"
                                             data-imagepath="{{ $rg->image_path ? asset('storage/'.$rg->image_path) : '' }}"
+                                             data-pdf="{{ route('radiographs.download-pdf', $rg->id) }}"
                                             class="btn btn-primary btn-medium btn-view" title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -293,7 +294,7 @@ $(document).ready(function() {
     </div>
 </div>
 
-    {{-- View Modal --}}
+    <!-- {{-- View Modal --}} -->
 <div id="viewBackdrop"
      class="fixed inset-0 hidden items-center justify-center z-50 bg-black/40">
 
@@ -341,11 +342,22 @@ $(document).ready(function() {
                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 inline-flex items-center gap-2">
                         <i class="fas fa-images"></i> See the full Image
                     </a>
+</div>
+  <div class="mt-4">
+         <button type="button"
+    id="pdfDownloadBtn"
+    class="btn btn-danger btn-md d-inline-flex align-items-center gap-2">
+    <i class="fas fa-file-pdf"></i> Download PDF
+</button>
+
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- DELETE MODAL -->
 <div id="deleteBackdrop" class="fixed inset-0 hidden items-center justify-center z-[9999] bg-black/40">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 relative overflow-hidden">
         
@@ -430,7 +442,7 @@ document.addEventListener('click', function (e) {
         const viewImageLarge = document.getElementById('viewImageLarge');
         const viewFindings = document.getElementById('viewFindings');
         const downloadLink = document.getElementById('downloadLink');
-
+        const pdfBtn = document.getElementById('pdfDownloadBtn');
         function openModal() {
             backdrop.classList.remove('hidden');
             backdrop.classList.add('flex');
@@ -516,7 +528,7 @@ document.addEventListener('click', function (e) {
                 const type = viewBtn.dataset.type || '';
                 const findings = viewBtn.dataset.findings || '';
                 const imagepath = viewBtn.dataset.imagepath || '';
-
+                const pdfUrl = viewBtn.dataset.pdf || '';
                 viewPatientName.innerText = patient || '—';
                 if (date) {
     const d = new Date(date);
@@ -541,6 +553,12 @@ document.addEventListener('click', function (e) {
                     downloadLink.href = '#';
                     downloadLink.classList.add('pointer-events-none', 'opacity-50');
                 }
+    // ✅ SET PDF BUTTON
+   if (pdfUrl) {
+    pdfBtn.onclick = function () {
+        window.open(pdfUrl, '_blank');
+    };
+}
 
                 openViewModal();
                 return;
