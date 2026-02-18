@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\IntraoralExamination;
 use App\Models\Patient;
 use Illuminate\Http\Request;
@@ -192,4 +192,18 @@ class IntraoralExaminationController extends Controller
 
         return redirect()->route('oral_examination.index_intraoral')->with('success', 'Examination deleted successfully.');
     }
+    public function downloadPdf(IntraoralExamination $intraoral)
+{
+    $intraoral->load('patient');
+
+    // Get the authenticated user's name
+    $authName = auth()->user()->name ?? '____________________';
+
+    $pdf = Pdf::loadView('oral_examination.intraoral_pdf', [
+        'exam' => $intraoral,
+        'physician' => $authName // Pass the auth name here
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->stream('Intraoral_Report.pdf');
+}
 }

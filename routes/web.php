@@ -80,6 +80,9 @@ Route::get('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminat
 
 Route::delete('/extraoral-examinations/{extraoral_examination}', [ExtraoralExaminationController::class, 'destroy'])
     ->name('extraoral_examinations.destroy');
+
+Route::get('/extraoral-examinations/{extraoral_examination}/pdf', [ExtraoralExaminationController::class, 'downloadPdf'])->name('extraoral_examinations.pdf');
+
     
 //intraoral examination routes "B"
  Route::prefix('oral_examination')->name('oral_examination.')->group(function () {
@@ -89,6 +92,7 @@ Route::delete('/extraoral-examinations/{extraoral_examination}', [ExtraoralExami
     Route::put('/{intraoral}', [IntraoralExaminationController::class, 'update'])->name('update');
     Route::delete('/{intraoral}', [IntraoralExaminationController::class, 'destroy'])->name('destroy');
 Route::get('/{intraoral}/view', [IntraoralExaminationController::class, 'view'])->name('intraoral.view');
+  Route::get('/{intraoral}/pdf', [IntraoralExaminationController::class, 'downloadPdf'])->name('download-pdf');
 
 });
  //radiograph routes
@@ -122,6 +126,8 @@ Route::get('/radiographs/{radiograph}/download-pdf', [RadiographController::clas
     Route::get('/diagnoses/{diagnosis}', [DiagnosisController::class, 'show'])->name('diagnoses.show'); // Optional, for AJAX
     Route::put('/diagnoses/{diagnosis}', [DiagnosisController::class, 'update'])->name('diagnoses.update');
     Route::delete('/diagnoses/{diagnosis}', [DiagnosisController::class, 'destroy'])->name('diagnoses.destroy');
+    Route::get('/diagnoses/{diagnosis}/download-pdf', [DiagnosisController::class, 'downloadPdf']);
+
 
     // Billing routes
 Route::get('/billings', [BillingController::class, 'index'])->name('billings.index');

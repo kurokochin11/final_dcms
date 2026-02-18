@@ -317,6 +317,13 @@ $(document).ready(function() {
 
       <!-- FOOTER -->
       <div class="modal-footer">
+         <button
+        type="button"
+        class="btn btn-danger btn-sm"
+        @click="window.open(`/extraoral-examinations/${record.id}/pdf`, '_blank')">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </button>
+    
         <button class="btn btn-dark btn-sm" @click="close">Close</button>
       </div>
 

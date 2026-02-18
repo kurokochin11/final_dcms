@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Diagnosis;
 use App\Models\Patient;
 use Illuminate\Http\Request;
@@ -91,4 +91,19 @@ class DiagnosisController extends Controller
 
         return redirect()->route('diagnoses.index')->with('success', 'Diagnosis deleted successfully.');
     }
+   public function downloadPdf(Diagnosis $diagnosis)
+{
+    $diagnosis->load('patient'); // Eager load patient
+
+    $pdf = Pdf::loadView('diagnoses.diagnosis_pdf', [
+        'diagnosis' => $diagnosis,
+        'physician' => auth()->user()->name ?? '____________________',
+        'formattedDate' => $diagnosis->diagnosis_date 
+                           ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') 
+                           : '—'
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->stream('Diagnosis_Report_' . $diagnosis->id . '.pdf');
+}
+
 }

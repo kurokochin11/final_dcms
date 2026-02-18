@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\ExtraoralExamination;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 
@@ -78,4 +78,15 @@ public function show(ExtraoralExamination $extraoral_examination)
         $extraoral_examination->delete();
         return redirect()->back()->with('success', 'Record deleted.');
     }
+    public function downloadPdf(ExtraoralExamination $extraoral_examination)
+{
+    $extraoral_examination->load('patient');
+
+    $pdf = Pdf::loadView('oral_examination.extraoral_pdf', [
+        'exam' => $extraoral_examination
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->stream('extraoral-examination.pdf');
+}
+
 }

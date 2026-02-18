@@ -481,6 +481,13 @@ $(document).ready(function () {
             <div id="viewIntraoralContent"></div>
 
             <div class="flex justify-end pt-4">
+               <button
+    type="button"
+    id="downloadPdfBtn"
+    class="btn btn-danger btn-sm">
+    <i class="fas fa-file-pdf"></i> Download PDF
+</button>
+
                 <button onclick="closeViewModal()"
                     class="btn btn-black btn-sm">
                     Close
@@ -821,7 +828,13 @@ content.innerHTML = `
             </div>` : ''}
     </div>
 `;
-
+// ✅ Attach PDF download button dynamically
+        const pdfBtn = document.getElementById('downloadPdfBtn');
+        if (pdfBtn) {
+            pdfBtn.onclick = () => {
+                window.open(`/oral_examination/${id}/pdf`, '_blank');
+            };
+        }
         document.getElementById('viewIntraoralModal').classList.remove('hidden');
     })
     .catch(err => {

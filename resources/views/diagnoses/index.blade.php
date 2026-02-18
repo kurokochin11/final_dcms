@@ -11,6 +11,7 @@
 <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
 
 <script>
+  
 $(document).ready(function () {
     // Initialize DataTable
     var table = $('#myTable').DataTable({
@@ -88,13 +89,13 @@ $(document).ready(function () {
     <label for="filterDate" class="text-xs font-semibold text-gray-600 mb-1">Date Filter</label>
     <select id="filterDate" class="form-control form-control-sm w-48">
       <option value="">All Dates</option>
-      @foreach($diagnoses as $diagnosis)
-        @if($diagnosis->diagnosis_date)
-          <option value="{{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('M d, Y') }}">
-            {{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('M d, Y') }}
-          </option>
-        @endif
-      @endforeach
+     @foreach($diagnoses->unique('diagnosis_date') as $diagnosis)
+    @if($diagnosis->diagnosis_date)
+        <option value="{{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') }}">
+            {{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') }}
+        </option>
+    @endif
+@endforeach
     </select>
   </div>
 
@@ -117,7 +118,9 @@ $(document).ready(function () {
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                     {{ $diagnosis->patient->first_name ?? '—' }} {{ $diagnosis->patient->last_name ?? '' }}
                   </td>
-                   <td class="px-6 py-4 text-sm text-gray-700">{{ $diagnosis->diagnosis_date ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('M d, Y') : '—' }}</td>
+                 <td class="px-6 py-4 text-sm text-gray-700">
+  {{ $diagnosis->diagnosis_date ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') : '—' }}
+</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <div class="flex gap-2 items-center">
  <!-- VIEW -->
@@ -125,6 +128,7 @@ $(document).ready(function () {
       type="button"
       class="btn btn-primary btn-medium btn-view"
       title="View"
+        data-id="{{ $diagnosis->id }}"
       data-patient="{{ $diagnosis->patient->first_name }} {{ $diagnosis->patient->last_name }}"
       data-diagnosis-date="{{ $diagnosis->diagnosis_date }}"
       data-dental_caries="{{ $diagnosis->dental_caries }}"
@@ -282,14 +286,17 @@ $(document).ready(function () {
           </div>
         </div>
       </div>
-</div>
-</div>
-      <!-- Footer -->
+       <!-- Footer -->
       <div class="modal-footer">
+          <button type="button" id="btnDownloadPdf" class="btn btn-danger btn-sm">
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
         <button type="button" class="btn btn-black btn-sm" data-bs-dismiss="modal">Close</button>
       </div>
-        </div>
-          </div>
+</div>
+</div>
+  </div>
+          
       
 <!-- DELETE CONFIRMATION MODAL -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
@@ -318,9 +325,9 @@ $(document).ready(function () {
 
    
 
-  {{-- JS --}}
+  <!-- {{-- JS --}} -->
   <script>
-    
+    let currentDiagnosisId = null;
 $(document).ready(function() {
     $('#myTable').on('click', '.btn-delete', function() {
       
@@ -338,9 +345,18 @@ $(document).ready(function() {
     document.addEventListener('click', function(e) {
   const viewBtn = e.target.closest('.btn-view');
   if (viewBtn) {
+
+  currentDiagnosisId = viewBtn.dataset.id;
+
     // Fill modal content
+function formatFullDate(dateStr) {
+    if (!dateStr) return '—';
+    const date = new Date(dateStr);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
     document.getElementById('view_patient').innerText = viewBtn.dataset.patient || '—';
-    document.getElementById('view_date').innerText = viewBtn.dataset.diagnosisDate || '—';
+    document.getElementById('view_date').innerText = formatFullDate(viewBtn.dataset.diagnosisDate); // <-- change here
     document.getElementById('view_dental_caries').innerText = viewBtn.dataset.dental_caries || '—';
     document.getElementById('view_periodontal_disease').innerText = viewBtn.dataset.periodontal_disease || '—';
     document.getElementById('view_pulpal_periapical').innerText = viewBtn.dataset.pulpal_periapical || '—';
@@ -353,6 +369,14 @@ $(document).ready(function() {
   }
 });
 
+// ✅ Add this after view button logic
+document.getElementById('btnDownloadPdf').addEventListener('click', function() {
+    if (currentDiagnosisId) {
+        window.open('/diagnoses/' + currentDiagnosisId + '/download-pdf', '_blank');
+    } else {
+        alert('No diagnosis selected.');
+    }
+});
 
   (function(){
     const backdrop = document.getElementById('modalBackdrop');
@@ -381,6 +405,7 @@ $(document).ready(function() {
 
     document.addEventListener('click', function(e){
       const editBtn = e.target.closest('.btn-edit');
+      
       if(editBtn){
         const id = editBtn.dataset.id;
         modalTitle.innerText = "Edit Diagnosis";
