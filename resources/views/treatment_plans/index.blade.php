@@ -256,11 +256,26 @@ $('#patientFilter').on('change', function () {
                         <div x-show="activeTab === 5" x-cloak class="space-y-4">
                             <!-- {{-- Consent --}} -->
                             <div class="flex items-center gap-3">
-                                <input type="hidden" name="consent_given" value="0">
-                                <label class="inline-flex items-center">
+                                <!-- <input type="hidden" name="consent_given" value="0"> -->
+                                <!-- <label class="inline-flex items-center">
                                     <input type="checkbox" name="consent_given" value="1" class="rounded"/>
                                     <span class="ml-2 text-sm">Patient gives informed consent</span>
-                                </label>
+                                </label> -->
+
+                                <label class="inline-flex items-center">
+    <input 
+        type="checkbox"
+        name="consent_given"
+        value="1"
+        required
+        class="rounded"
+    >
+    <span class="ml-2 text-sm">
+        Patient gives informed consent 
+        <span class="text-danger">*</span>
+    </span>
+</label>
+
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -270,7 +285,7 @@ $('#patientFilter').on('change', function () {
 
                             <div>
                                 <label class="block text-sm">Consent Date</label>
-                                <input type="date" name="consent_date" class="mt-1 block w-1/2 rounded border-gray-200"/>
+                                <input type="date" name="consent_date" class="mt-1 block w-1/2 rounded border-gray-200"required/>
                             </div>
 
                             <div class="text-xs text-gray-500">By signing, the patient acknowledges they understand the treatment, risks, benefits, and alternatives.</div>
@@ -443,30 +458,35 @@ $('#patientFilter').on('change', function () {
                 </div>
             </div>
         </div>
-    </div>
 <!-- DELETE MODAL -->
-<div x-data="treatmentPlanPage()" x-cloak
-
+<div x-cloak
     x-show="openDeleteModal"
     
     x-transition.opacity
-    class="fixed inset-0 black/40 backdrop-blur-smz-50 flex items-center justify-center"
->
+ class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
+
+
 
     <!-- Overlay -->
     <div
-        class="absolute inset-0 bg-black bg-opacity-50"
+        class="absolute inset-0 "
         @click="closeDelete()">
     </div>
 
     <!-- Modal Box -->
     <div
-        x-transition.scale
-        class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 z-50"
-    >
-        <h3 class="text-lg font-semibold text-red-600 mb-3">
+    x-transition.scale
+    class="relative bg-white rounded-lg shadow-xl w-full max-w-md z-50 overflow-hidden"
+>
+
+    <!-- RED HEADER -->
+    <div class="bg-red-600 text-white px-6 py-3">
+        <h3 class="text-lg font-semibold">
             Confirm Delete
         </h3>
+    </div>
+
+
 
         <p class="text-gray-700 mb-5">
             Are you sure you want to delete
@@ -477,26 +497,25 @@ $('#patientFilter').on('change', function () {
             @csrf
             @method('DELETE')
 
-            <div class="flex justify-end gap-3">
-                <button
-                    type="button"
-                    @click="closeDelete()"
-                    class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                    Cancel
-                </button>
+          <div class="flex justify-end gap-3 p-6 pt-0"> <button
+        type="button"
+        @click="closeDelete()"
+        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+    >
+        Cancel
+    </button>
 
-                <button
-                    type="submit"
-                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                    Delete
-                </button>
-            </div>
+    <button
+        type="submit"
+        class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+    >
+        Delete
+    </button>
+</div>
         </form>
     </div>
 </div>
-
+</div>
 
     <!-- {{-- Alpine logic --}} -->
     <script>

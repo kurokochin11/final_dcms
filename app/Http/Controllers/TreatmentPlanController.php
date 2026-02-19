@@ -61,10 +61,12 @@ class TreatmentPlanController extends Controller
             'estimated_costs' => ['nullable','string'],
             'payment_options' => ['nullable','string'],
 
-            'consent_given' => ['nullable','in:on,1,true'],
+            // 'consent_given' => ['nullable','in:on,1,true'],
+            'consent_given' => ['required', 'accepted'],   
             'patient_signature' => ['nullable','string'],
             'dentist_signature' => ['nullable','string'],
-            'consent_date' => ['nullable','date'],
+            'consent_date' => ['required','date'],
+            // 'consent_date' => ['nullable','date'],
         ];
 
         $validated = $request->validate($rules);

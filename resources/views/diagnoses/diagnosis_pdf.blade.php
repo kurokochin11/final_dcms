@@ -2,122 +2,119 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Diagnosis Report - {{ $diagnosis->patient->last_name ?? 'Report' }}</title>
+    <title>Diagnoses result pdf</title>
     <style>
-        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 13px; line-height: 1.6; color: #333; margin: 0; padding: 0; }
-        .header { background-color: #007BFF; color: #fff; padding: 20px; text-align: center; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+        /* Copied Styles from Personal Health Summary */
+        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; margin: 20px; color: #333; }
         
-        .section-title { background: #f0f0f0; padding: 5px 10px; font-weight: bold; border-left: 4px solid #007BFF; margin-bottom: 10px; text-transform: uppercase; font-size: 12px; }
-        .section { margin-bottom: 25px; padding: 0 20px; }
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .header h2 { margin: 0; text-transform: uppercase; }
         
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed; }
-        td { padding: 10px; border: 1px solid #ddd; vertical-align: top; word-wrap: break-word; }
-        .label { font-weight: bold; width: 30%; background-color: #fafafa; color: #555; }
-        .value { width: 70%; }
+        .section-header { 
+            background: #000; color: #fff; padding: 5px; 
+            font-weight: bold; text-transform: uppercase; margin-top: 15px; 
+            font-size: 11px;
+        }
 
-        .footer { margin-top: 60px; text-align: center; }
-        .signature-line { width: 250px; border-bottom: 1px solid #333; margin: 0 auto 5px auto; }
-        .physician-name { font-weight: bold; font-size: 14px; margin: 0; }
-        .physician-label { font-size: 11px; color: #777; margin: 0; }
+        /* Patient Info Grid Style */
+        .patient-info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .patient-info-table td { padding: 6px 0; border: none; vertical-align: top; }
+        .label { font-weight: bold; text-decoration: underline; }
+
+        /* Clinical Findings Table Style */
+        .findings-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .findings-table td { 
+            padding: 8px 5px; 
+            border-bottom: 1px dotted #ccc; 
+            vertical-align: top; 
+        }
+        .findings-label { width: 30%; font-weight: bold; }
+        .findings-value { width: 70%; }
+
+        .clear { clear: both; }
+
+        /* Footer/Signatures */
+        .signature-section { margin-top: 50px; width: 100%; }
+        .sig-box { width: 45%; float: left; text-align: center; }
+        .sig-box.right { float: right; }
+        .sig-line { border-top: 1px solid #000; margin-top: 40px; padding-top: 5px; font-weight: bold; }
         
-        @page { margin: 0; } /* Ensures header spans full width if needed, or adjust to 0.5in */
+        @page { margin: 0.5in; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <h1>Diagnosis Report</h1>
+        <h2>Diagnosis Report</h2>
+        <p>Generated on: {{ now()->format('F j, Y') }}</p>
     </div>
 
-    <div class="section">
-        <div class="section-title">Patient Information</div>
-        <table>
-            <tr>
-                <td class="label">Patient ID</td>
-                <td class="value">{{ $diagnosis->patient->id ?? '—' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Full Name</td>
-                <td class="value">
-                    {{ $diagnosis->patient->first_name ?? '' }} 
-                    {{ $diagnosis->patient->middle_name ?? '' }} 
-                    {{ $diagnosis->patient->last_name ?? '' }}
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Gender</td>
-                {{-- Fixed: Changed 'gender' to 'sex' based on your PatientController --}}
-                <td class="value">{{ $diagnosis->patient->sex ?? '—' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Date of Birth</td>
-                <td class="value">
-                    {{-- Fixed: Changed 'birth_date' to 'date_of_birth' --}}
-                    @if($diagnosis->patient && $diagnosis->patient->date_of_birth)
-                        {{ \Carbon\Carbon::parse($diagnosis->patient->date_of_birth)->format('F d, Y') }}
-                    @else
-                        —
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Age</td>
-                <td class="value">
-                    {{-- Fixed: Changed 'birth_date' to 'date_of_birth' --}}
-                    @if($diagnosis->patient && $diagnosis->patient->date_of_birth)
-                        {{ \Carbon\Carbon::parse($diagnosis->patient->date_of_birth)->age }} years old
-                    @else
-                        —
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Contact Number</td>
-                {{-- Fixed: Changed 'contact_number' to 'mobile_number' --}}
-                <td class="value">{{ $diagnosis->patient->mobile_number ?? '—' }}</td>
-            </tr>
-        </table>
+    <div class="section-header">Patient Information</div>
+    <table class="patient-info-table">
+        <tr>
+            <td width="35%"><span class="label">Patient ID:</span> {{ $diagnosis->patient->id ?? '—' }}</td>
+            <td width="65%"><span class="label">Full Name:</span> 
+                {{ $diagnosis->patient->first_name ?? '' }} 
+                {{ $diagnosis->patient->middle_name ?? '' }} 
+                {{ $diagnosis->patient->last_name ?? '' }}
+            </td>
+        </tr>
+        <tr>
+            <td><span class="label">Sex:</span> {{ $diagnosis->patient->sex ?? '—' }}</td>
+            <td><span class="label">Date of Birth:</span> 
+                @if($diagnosis->patient && $diagnosis->patient->date_of_birth)
+                    {{ \Carbon\Carbon::parse($diagnosis->patient->date_of_birth)->format('F d, Y') }}
+                @else — @endif
+            </td>
+        </tr>
+        <tr>
+            <td><span class="label">Age:</span> 
+                @if($diagnosis->patient && $diagnosis->patient->date_of_birth)
+                    {{ \Carbon\Carbon::parse($diagnosis->patient->date_of_birth)->age }}
+                @else — @endif
+            </td>
+            <td><span class="label">Contact Number:</span> {{ $diagnosis->patient->mobile_number ?? '—' }}</td>
+        </tr>
+    </table>
+
+    <div class="section-header">Clinical Findings</div>
+    <table class="findings-table">
+        <tr>
+            <td class="findings-label">Date of Diagnosis</td>
+            <td class="findings-value">{{ $diagnosis->diagnosis_date ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') : '—' }}</td>
+        </tr>
+        <tr>
+            <td class="findings-label">Dental Caries</td>
+            <td class="findings-value">{{ $diagnosis->dental_caries ?? 'None noted' }}</td>
+        </tr>
+        <tr>
+            <td class="findings-label">Periodontal Disease</td>
+            <td class="findings-value">{{ $diagnosis->periodontal_disease ?? 'None noted' }}</td>
+        </tr>
+        <tr>
+            <td class="findings-label">Pulpal/Periapical</td>
+            <td class="findings-value">{{ $diagnosis->pulpal_periapical ?? 'None noted' }}</td>
+        </tr>
+        <tr>
+            <td class="findings-label">Occlusal Diagnosis</td>
+            <td class="findings-value">{{ $diagnosis->occlusal_diagnosis ?? 'None noted' }}</td>
+        </tr>
+        <tr>
+            <td class="findings-label">Other Oral Conditions</td>
+            <td class="findings-value">{{ $diagnosis->other_oral_conditions ?? 'None noted' }}</td>
+        </tr>
+    </table>
+
+    <div class="signature-section">
+        <div class="sig-box">
+           
+        </div>
+        <div class="sig-box right">
+            <div class="sig-line">Dr. {{ $physician ?? '____________________' }}</div>
+            <small>Attending Physician / Dentist</small>
+        </div>
+        <div class="clear"></div>
     </div>
 
-    <div class="section">
-        <div class="section-title">Clinical Findings</div>
-        <table>
-            <tr>
-                <td class="label">Date of Diagnosis</td>
-                <td class="value">
-                    {{ $diagnosis->diagnosis_date ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') : '—' }}
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Dental Caries</td>
-                <td class="value">{{ $diagnosis->dental_caries ?? 'None noted' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Periodontal Disease</td>
-                <td class="value">{{ $diagnosis->periodontal_disease ?? 'None noted' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Pulpal/Periapical</td>
-                <td class="value">{{ $diagnosis->pulpal_periapical ?? 'None noted' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Occlusal Diagnosis</td>
-                <td class="value">{{ $diagnosis->occlusal_diagnosis ?? 'None noted' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Other Oral Conditions</td>
-                <td class="value">{{ $diagnosis->other_oral_conditions ?? 'None noted' }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="footer">
-        <div class="signature-line"></div>
-        <p class="physician-name">{{ $physician ?? '____________________' }}</p>
-        <p class="physician-label">Attending Physician / Dentist</p>
-        <p style="font-size: 10px; color: #999; margin-top: 20px;">
-            Report generated via System on {{ now()->format('m/d/Y h:i A') }}
-        </p>
-    </div>
 </body>
 </html>
