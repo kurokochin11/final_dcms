@@ -110,6 +110,7 @@ Route::get('/radiographs/{radiograph}/download-pdf', [RadiographController::clas
     Route::get('/treatment-plans/{treatmentPlan}/edit', [TreatmentPlanController::class, 'edit'])->name('treatment-plans.edit');
     Route::put('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'update'])->name('treatment-plans.update');
     Route::delete('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'destroy'])->name('treatment-plans.destroy');
+Route::get('/treatment-plans/{treatmentPlan}/pdf',[TreatmentPlanController::class, 'downloadPdf'])->name('treatment-plans.download-pdf');
 
     //Appointment route
   Route::prefix('appointments')->group(function () {

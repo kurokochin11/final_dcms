@@ -18,8 +18,6 @@ class TreatmentPlan extends Model
         'estimated_costs',
         'payment_options',
         'consent_given',
-        'patient_signature',
-        'dentist_signature',
         'consent_date',
     ];
 

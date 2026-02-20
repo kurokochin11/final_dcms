@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\TreatmentPlan;
 use App\Models\Patient;
 use Illuminate\Http\Request;
@@ -60,11 +60,8 @@ class TreatmentPlanController extends Controller
             'alternatives' => ['nullable','string'],
             'estimated_costs' => ['nullable','string'],
             'payment_options' => ['nullable','string'],
-
             // 'consent_given' => ['nullable','in:on,1,true'],
             'consent_given' => ['required', 'accepted'],   
-            'patient_signature' => ['nullable','string'],
-            'dentist_signature' => ['nullable','string'],
             'consent_date' => ['required','date'],
             // 'consent_date' => ['nullable','date'],
         ];
@@ -100,8 +97,7 @@ class TreatmentPlanController extends Controller
             'estimated_costs' => $validated['estimated_costs'] ?? null,
             'payment_options' => $validated['payment_options'] ?? null,
             'consent_given' => $request->has('consent_given'),
-            'patient_signature' => $validated['patient_signature'] ?? null,
-            'dentist_signature' => $validated['dentist_signature'] ?? null,
+          
             'consent_date' => $validated['consent_date'] ?? null,
         ];
     }
@@ -113,5 +109,15 @@ class TreatmentPlanController extends Controller
             ->with('success', 'Treatment Plan deleted.');
     }
 
-   
+   public function downloadPdf(TreatmentPlan $treatmentPlan)
+{
+    $treatmentPlan->load('patient');
+
+    $pdf = Pdf::loadView('treatment_plans.treatment_pdf', [
+        'plan' => $treatmentPlan
+    ]);
+
+    return $pdf->stream('treatment-plan-'.$treatmentPlan->id.'.pdf');
+}
+
 }

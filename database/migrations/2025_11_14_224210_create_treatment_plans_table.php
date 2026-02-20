@@ -20,8 +20,6 @@ return new class extends Migration {
             $table->string('payment_options')->nullable();
             // consent
             $table->boolean('consent_given')->default(false);
-            $table->string('patient_signature')->nullable();
-            $table->string('dentist_signature')->nullable();
             $table->date('consent_date')->nullable();
             $table->timestamps();
         });

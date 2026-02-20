@@ -278,17 +278,20 @@ $('#patientFilter').on('change', function () {
 
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <input type="text" name="patient_signature" placeholder="Patient's Signature (text)" class="mt-1 block w-full rounded border-gray-200"/>
                                 <input type="text" name="dentist_signature" placeholder="Dentist's Signature (text)" class="mt-1 block w-full rounded border-gray-200"/>
-                            </div>
+                            </div> -->
 
                             <div>
                                 <label class="block text-sm">Consent Date</label>
                                 <input type="date" name="consent_date" class="mt-1 block w-1/2 rounded border-gray-200"required/>
                             </div>
 
-                            <div class="text-xs text-gray-500">By signing, the patient acknowledges they understand the treatment, risks, benefits, and alternatives.</div>
+                           <div class="text-sm font-bold text-black">
+    I understand the proposed treatment plan, its benefits, risks, and alternatives, and I hereby give my consent for the procedures to be performed.
+</div>
+
                         </div>
                     </form>
                 </div>
@@ -393,10 +396,10 @@ $('#patientFilter').on('change', function () {
                                 </label>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <input type="text" name="patient_signature" placeholder="Patient's Signature" class="mt-1 block w-full rounded border-gray-200" x-model="form.patient_signature"/>
                                 <input type="text" name="dentist_signature" placeholder="Dentist's Signature" class="mt-1 block w-full rounded border-gray-200" x-model="form.dentist_signature"/>
-                            </div>
+                            </div> -->
 
                             <div>
                                 <label class="block text-sm">Consent Date</label>
@@ -447,13 +450,16 @@ $('#patientFilter').on('change', function () {
                     <div>
                         <h4 class="font-semibold">Consent</h4>
                         <div class="text-sm"><strong>Given:</strong> <span x-text="view.consent_given ? 'Yes' : 'No'"></span></div>
-                        <div class="text-sm"><strong>Patient signature:</strong> <span x-text="view.patient_signature"></span></div>
-                        <div class="text-sm"><strong>Dentist signature:</strong> <span x-text="view.dentist_signature"></span></div>
                         <div class="text-sm"><strong>Consent date:</strong><span x-text="formatDate(view.consent_date)"></span></div>
                     </div>
 
                     <div class="flex justify-end">
-                        <button @click="openViewModal=false" class="px-3 py-1.5 text-sm bg-black text-white rounded hover:bg-gray-800">Close</button>
+                        <button type="button"
+    onclick="window.open('{{ route('treatment-plans.download-pdf', $plan->id) }}', '_blank')"
+    class="btn btn-danger btn-md">
+    <i class="fas fa-file-pdf"></i> PDF
+</button>
+                        <button @click="openViewModal=false" class="px-3 py-1.5 text-md bg-black text-white rounded hover:bg-gray-800">Close</button>
                     </div>
                 </div>
             </div>
@@ -500,15 +506,13 @@ $('#patientFilter').on('change', function () {
           <div class="flex justify-end gap-3 p-6 pt-0"> <button
         type="button"
         @click="closeDelete()"
-        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
-    >
+        class="btn btn-black btn-md">
         Cancel
     </button>
 
     <button
         type="submit"
-        class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-    >
+        class="btn btn-danger btn-md">
         Delete
     </button>
 </div>
