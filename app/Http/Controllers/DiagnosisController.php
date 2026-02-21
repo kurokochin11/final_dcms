@@ -1,27 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Diagnosis;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DiagnosisController extends Controller
 {
     /**
      * Display a listing of the diagnoses.
      */
-   public function index()
-{
-    $diagnoses = Diagnosis::with('patient')->latest()->paginate(10);
+    public function index()
+    {
+        // 1. Fetch diagnoses for the table with pagination
+        $diagnoses = Diagnosis::with('patient')->latest()->paginate(10);
 
-    // ✅ LOAD ALL PATIENTS FOR ADD MODAL
-    $patients = Patient::orderBy('last_name')
-        ->orderBy('first_name')
-        ->get();
+        // 2. FILTER LIST: Only patients who HAVE at least one diagnosis record
+        // Note: Ensure your Patient model has the 'diagnoses' relationship defined
+        $patientsWithDiagnoses = Patient::whereHas('diagnoses')
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
 
-    return view('diagnoses.index', compact('diagnoses', 'patients'));
-}
+        // 3. FULL LIST: All patients for the "Add New Diagnosis" selection modal
+        $patients = Patient::orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
+
+        return view('diagnoses.index', compact('diagnoses', 'patients', 'patientsWithDiagnoses'));
+    }
 
     /**
      * Store a newly created diagnosis in storage.
@@ -35,7 +45,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => 'nullable|string|max:255',
             'occlusal_diagnosis' => 'nullable|string|max:255',
             'other_oral_conditions' => 'nullable|string|max:255',
-             'diagnosis_date' => 'nullable|date',
+            'diagnosis_date' => 'nullable|date',
         ]);
 
         Diagnosis::create([
@@ -45,7 +55,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => $request->pulpal_periapical,
             'occlusal_diagnosis' => $request->occlusal_diagnosis,
             'other_oral_conditions' => $request->other_oral_conditions,
-             'diagnosis_date' => $request->diagnosis_date ?? now()->toDateString(), // <-- default to today if null
+            'diagnosis_date' => $request->diagnosis_date ?? now()->toDateString(),
         ]);
 
         return redirect()->route('diagnoses.index')->with('success', 'Diagnosis added successfully.');
@@ -65,7 +75,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => 'nullable|string|max:255',
             'occlusal_diagnosis' => 'nullable|string|max:255',
             'other_oral_conditions' => 'nullable|string|max:255',
-               'diagnosis_date' => 'nullable|date', 
+            'diagnosis_date' => 'nullable|date', 
         ]);
 
         $diagnosis->update([
@@ -75,7 +85,7 @@ class DiagnosisController extends Controller
             'pulpal_periapical' => $request->pulpal_periapical,
             'occlusal_diagnosis' => $request->occlusal_diagnosis,
             'other_oral_conditions' => $request->other_oral_conditions,
-             'diagnosis_date' => $request->diagnosis_date ?? $diagnosis->diagnosis_date ?? now()->toDateString(),
+            'diagnosis_date' => $request->diagnosis_date ?? $diagnosis->diagnosis_date ?? now()->toDateString(),
         ]);
 
         return redirect()->route('diagnoses.index')->with('success', 'Diagnosis updated successfully.');
@@ -91,19 +101,22 @@ class DiagnosisController extends Controller
 
         return redirect()->route('diagnoses.index')->with('success', 'Diagnosis deleted successfully.');
     }
-   public function downloadPdf(Diagnosis $diagnosis)
-{
-    $diagnosis->load('patient'); // Eager load patient
 
-    $pdf = Pdf::loadView('diagnoses.diagnosis_pdf', [
-        'diagnosis' => $diagnosis,
-        'physician' => auth()->user()->name ?? '____________________',
-        'formattedDate' => $diagnosis->diagnosis_date 
-                           ? \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') 
-                           : '—'
-    ])->setPaper('a4', 'portrait');
+    /**
+     * Generate and stream the PDF report.
+     */
+    public function downloadPdf(Diagnosis $diagnosis)
+    {
+        $diagnosis->load('patient');
 
-    return $pdf->stream('Diagnosis_Report_' . $diagnosis->id . '.pdf');
-}
+        $pdf = Pdf::loadView('diagnoses.diagnosis_pdf', [
+            'diagnosis' => $diagnosis,
+            'physician' => auth()->user()->name ?? '____________________',
+            'formattedDate' => $diagnosis->diagnosis_date 
+                               ? Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') 
+                               : '—'
+        ])->setPaper('a4', 'portrait');
 
+        return $pdf->stream('Diagnosis_Report_' . $diagnosis->id . '.pdf');
+    }
 }

@@ -8,49 +8,49 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class RadiographController extends Controller
 {
-    /**
-     * Display a listing of radiographs with optional filtering by type.
-     */
-   public function index(Request $request)
-{
-    $patientId = $request->patient_id;
-    $type = $request->type;
-    $yearRange = $request->year_range;
+    public function index(Request $request)
+    {
+        $patientId = $request->patient_id;
+        $type = $request->type;
+        $yearRange = $request->year_range;
 
-    // Get all types for dropdown
-    $allTypes = Radiograph::select('type')->distinct()->pluck('type');
+        // 1. FOR FILTER: Only patients who HAVE radiographs
+        $filterPatients = Patient::whereHas('radiographs')
+            ->orderBy('last_name')
+            ->get();
 
-    $radiographs = Radiograph::with('patient')
-        ->when($patientId, function ($query) use ($patientId) {
-            $query->where('patient_id', $patientId);
-        })
-        ->when($type, function ($query) use ($type) {
-            $query->where('type', $type);
-        })
-        ->when($yearRange, function ($query) use ($yearRange) {
-            [$from, $to] = explode('-', $yearRange);
-            $query->whereYear('date_taken', '>=', $from)
-                  ->whereYear('date_taken', '<', $to);
-        })
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
+        // 2. FOR MODAL: ALL patients so you can add a new record for anyone
+        $allPatients = Patient::orderBy('last_name')->get();
 
-       $patients = Patient::orderBy('last_name')->get();
-    
-    return view('radiographs.index', [
-        'radiographs' => $radiographs,
-        'patients' => $patients,
-        'types' => $allTypes,
-    ]);
-}
+        // Get distinct types for dropdown
+        $allTypes = Radiograph::select('type')->distinct()->pluck('type');
 
-    /**
-     * Store a newly created radiograph.
-     */
+        $radiographs = Radiograph::with('patient')
+            ->when($patientId, function ($query) use ($patientId) {
+                $query->where('patient_id', $patientId);
+            })
+            ->when($type, function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->when($yearRange, function ($query) use ($yearRange) {
+                [$from, $to] = explode('-', $yearRange);
+                $query->whereYear('date_taken', '>=', $from)
+                      ->whereYear('date_taken', '<', $to);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('radiographs.index', [
+            'radiographs' => $radiographs,
+            'filterPatients' => $filterPatients, // Used for the top filter
+            'allPatients' => $allPatients,       // Used for the Add/Edit Modal
+            'types' => $allTypes,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -61,10 +61,8 @@ class RadiographController extends Controller
             'findings' => 'nullable|string',
         ]);
 
-        // Store uploaded image
         $data['image_path'] = $request->file('image')->store('radiographs', 'public');
 
-        // Create radiograph record
         Radiograph::create([
             'patient_id' => $data['patient_id'],
             'date_taken' => $data['date_taken'],
@@ -76,9 +74,6 @@ class RadiographController extends Controller
         return redirect()->route('radiographs.index')->with('success', 'Radiograph added successfully!');
     }
 
-    /**
-     * Update an existing radiograph.
-     */
     public function update(Request $request, Radiograph $radiograph)
     {
         $data = $request->validate([
@@ -89,13 +84,11 @@ class RadiographController extends Controller
             'findings' => 'nullable|string',
         ]);
 
-        // Replace existing image if uploaded
         if ($request->hasFile('image')) {
             Storage::disk('public')->delete($radiograph->image_path);
             $data['image_path'] = $request->file('image')->store('radiographs', 'public');
         }
 
-        // Update radiograph record
         $radiograph->update([
             'patient_id' => $data['patient_id'],
             'date_taken' => $data['date_taken'],
@@ -107,32 +100,18 @@ class RadiographController extends Controller
         return redirect()->route('radiographs.index')->with('success', 'Radiograph updated successfully!');
     }
 
-    /**
-     * Remove a radiograph.
-     */
     public function destroy(Radiograph $radiograph)
     {
-        // Delete the stored image
         Storage::disk('public')->delete($radiograph->image_path);
-
-        // Delete the radiograph record
         $radiograph->delete();
-
         return redirect()->back()->with('success', 'Radiograph deleted successfully!');
     }
-    /**
- * Download radiograph as PDF.
- */
-public function downloadPdf(Radiograph $radiograph)
-{
-    $radiograph->load('patient');
 
-   $pdf = Pdf::loadView('radiographs.radiograph_pdf', compact('radiograph'))
-        ->setPaper('a4', 'portrait');
-
-    return $pdf->stream(
-        'radiograph-'.$radiograph->id.'.pdf'
-    );
-}
-
+    public function downloadPdf(Radiograph $radiograph)
+    {
+        $radiograph->load('patient');
+        $pdf = Pdf::loadView('radiographs.radiograph_pdf', compact('radiograph'))
+             ->setPaper('a4', 'portrait');
+        return $pdf->stream('radiograph-'.$radiograph->id.'.pdf');
+    }
 }

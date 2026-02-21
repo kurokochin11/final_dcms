@@ -72,33 +72,37 @@ $(document).ready(function () {
               <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
                <div class="mb-4 flex flex-wrap gap-4 items-end p-3 bg-gray-50 rounded shadow-sm">
   <!-- Patient Filter -->
-  <div class="flex flex-col">
-    <label for="filterPatient" class="text-xs font-semibold text-gray-600 mb-1">Patient Filter</label>
-    <select id="filterPatient" class="form-control form-control-sm w-48">
-      <option value="">All Patients</option>
-      @foreach($patients as $patient)
-        <option value="{{ $patient->first_name }} {{ $patient->last_name }}">
-          {{ $patient->first_name }} {{ $patient->last_name }}
-        </option>
-      @endforeach
-    </select>
-  </div>
 
-  <!-- Date Filter -->
-  <div class="flex flex-col">
-    <label for="filterDate" class="text-xs font-semibold text-gray-600 mb-1">Date Filter</label>
-    <select id="filterDate" class="form-control form-control-sm w-48">
-      <option value="">All Dates</option>
-     @foreach($diagnoses->unique('diagnosis_date') as $diagnosis)
-    @if($diagnosis->diagnosis_date)
-        <option value="{{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') }}">
-            {{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') }}
-        </option>
-    @endif
-@endforeach
-    </select>
-  </div>
-
+<div class="mb-4 flex flex-wrap gap-4 items-end p-3 bg-gray-50 rounded shadow-sm">
+    <div class="flex flex-col">
+        <label for="filterPatient" class="text-xs font-semibold text-gray-600 mb-1">Patient Filter</label>
+        <select id="filterPatient" class="form-control form-control-sm w-48">
+            <option value="">All Patients</option>
+            {{-- Use a collection of patients that actually appear in the diagnoses list --}}
+            @foreach($diagnoses->unique('patient_id') as $diag)
+                @if($diag->patient)
+                    <option value="{{ $diag->patient->first_name }} {{ $diag->patient->last_name }}">
+                        {{ $diag->patient->first_name }} {{ $diag->patient->last_name }}
+                    </option>
+                @endif
+            @endforeach
+        </select>
+    </div>
+<!-- Date Filter -->
+    <div class="flex flex-col">
+        <label for="filterDate" class="text-xs font-semibold text-gray-600 mb-1">Date Filter</label>
+        <select id="filterDate" class="form-control form-control-sm w-48">
+            <option value="">All Dates</option>
+            @foreach($diagnoses->unique('diagnosis_date')->sortByDesc('diagnosis_date') as $diagnosis)
+                @if($diagnosis->diagnosis_date)
+                    <option value="{{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') }}">
+                        {{ \Carbon\Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') }}
+                    </option>
+                @endif
+            @endforeach
+        </select>
+    </div>
+</div>
   
 
 
