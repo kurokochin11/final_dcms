@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('billings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->string('service_rendered');
             $table->decimal('amount', 10, 2);

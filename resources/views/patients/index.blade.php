@@ -207,6 +207,7 @@ $(document).ready(function () {
 
         <!-- FOOTER -->
         <div class="px-6 py-3 border-t bg-gray-50 dark:bg-gray-700 flex justify-end">
+        
             <button
                 type="button"
                 @click="openViewId = null"

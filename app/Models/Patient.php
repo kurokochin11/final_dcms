@@ -98,5 +98,7 @@ public function diagnoses()
 {
     return $this->hasMany(Diagnosis::class);
 }
-
+public function billings() {
+    return $this->hasMany(Billing::class);
+}
 }
