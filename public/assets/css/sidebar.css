@@ -1,0 +1,62 @@
+/* Sidebar Setup */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: white;
+    border-right: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+/* Burger Button Positioning */
+.toggle-btn {
+    position: fixed;
+    top: 15px;
+    left: 260px; /* Moves with the sidebar */
+    z-index: 110;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #6495ed;
+    transition: all 0.3s ease;
+}
+
+/* THE SCREEN ADJUSTMENT: Main Content Container */
+.main-content {
+    margin-left: 250px; /* Space for the sidebar */
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+}
+
+/* COLLAPSED STATES */
+.sidebar.collapsed {
+    transform: translateX(-250px); /* Hide sidebar */
+}
+
+.toggle-btn.collapsed {
+    left: 20px; /* Move burger to the corner */
+}
+
+.main-content.collapsed {
+    margin-left: 0; /* Screen adjusts to full width */
+}
+
+/* Link Styles with your requested color #6495ed */
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 5px 15px;
+    border-radius: 8px;
+    background: white;
+    color: #4b5563;
+    text-decoration: none;
+}
+
+.sidebar-menu a.active {
+    background-color: #6495ed !important;
+    color: white !important;
+}

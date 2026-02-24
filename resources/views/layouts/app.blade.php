@@ -27,6 +27,8 @@
   });
 </script>
 
+
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
      
@@ -35,7 +37,11 @@
     </head>
     <body class="font-sans antialiased">
         <x-banner />
-
+<!-- {{-- SIDEBAR --}} -->
+    <!-- @include('components.sidebar') -->
+    <!-- <div class="main-content">
+    @yield('content')
+</div> -->
         <div class="min-h-screen bg-[#bcd4e6]">
             @livewire('navigation-menu')
 
