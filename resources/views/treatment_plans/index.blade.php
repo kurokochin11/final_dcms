@@ -454,11 +454,15 @@ $('#patientFilter').on('change', function () {
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="button"
-    onclick="window.open('{{ route('treatment-plans.download-pdf', $plan->id) }}', '_blank')"
-    class="btn btn-danger btn-md">
-    <i class="fas fa-file-pdf"></i> PDF
-</button>
+@foreach($plans as $plan)
+    <button type="button"
+        onclick="window.open('{{ route('treatment-plans.download-pdf', $plan->id) }}', '_blank')"
+        class="btn btn-danger btn-md">
+        Download PDF
+    </button>
+@endforeach
+
+
                         <button @click="openViewModal=false" class="px-3 py-1.5 text-md bg-black text-white rounded hover:bg-gray-800">Close</button>
                     </div>
                 </div>

@@ -13,6 +13,7 @@ use App\Http\Controllers\RadiographController;
 use App\Http\Controllers\TreatmentPlanController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,10 +24,36 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
+  Route::get('/dashboard', function () {
+        
+        // 1. Gather the "ingredients" (Data)
+        $totalPatients = \App\Models\Patient::count();
+        $totalAppointments = \App\Models\Appointment::count();
+        $todayAppointments = \App\Models\Appointment::whereDate('appointment_date', today())->count();
+        $diagnoses = \App\Models\Diagnosis::count();
+        $treatmentPlans = \App\Models\TreatmentPlan::count();
+        $radiographs = \App\Models\Radiograph::count();
+        $extraoralExaminations = \App\Models\ExtraoralExamination::count();
+        $intraoralExaminations = \App\Models\IntraoralExamination::count();
+        $medicalhistory = \App\Models\MedicalSession::count();
+        $checkup = \App\Models\CheckupSession::count();
+        // 2. Pass them to the view
+        return view('dashboard', compact(
+            'totalPatients', 
+            'totalAppointments', 
+            'todayAppointments', 
+            'diagnoses', 
+            'treatmentPlans',
+            'radiographs',
+            'extraoralExaminations',
+            'intraoralExaminations',
+            'medicalhistory',
+            'checkup'
+        ));
+        
     })->name('dashboard');
-    
+
+
     //patient routes
      Route::resource('patients', PatientController::class);
 

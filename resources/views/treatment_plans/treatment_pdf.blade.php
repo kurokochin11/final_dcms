@@ -94,10 +94,7 @@
         @endforeach
     </tbody>
 </table>
-    <tr>
-        <td colspan="2"><span class="label">Medications</span><div class="value">{{ $plan->medications ?? '-' }}</div></td>
-    </tr>
-</table>
+   
 
 <div class="section-header">Risks, Benefits & Alternatives</div>
 <div class="content-box">

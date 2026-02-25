@@ -16,7 +16,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Total Patients</p>
-                            <h4 class="card-title">1,250</h4>
+                            <h4 class="card-title">{{ number_format($totalPatients) }}</h4>
                         </div>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Total Appointments</p>
-                            <h4 class="card-title">4,820</h4>
+                            <h4 class="card-title">{{ number_format($totalAppointments) }}</h4>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Today's Appointments</p>
-                            <h4 class="card-title">18</h4>
+                            <h4 class="card-title">18k</h4>
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
         <div class="card card-stats card-round">
             <div class="card-body text-center">
                 <p class="card-category mb-1 text-truncate">Radiographs</p>
-                <h4 class="card-title"><i class="fas fa-x-ray text-primary"></i> 85</h4>
+                <h4 class="card-title"><i class="fas fa-x-ray text-primary"></i>{{ $radiographs }}</h4>
             </div>
         </div>
     </div>
@@ -72,7 +72,7 @@
         <div class="card card-stats card-round">
             <div class="card-body text-center">
                 <p class="card-category mb-1 text-truncate">Extra Oral</p>
-                <h4 class="card-title"><i class="fas fa-smile text-info"></i> 42</h4>
+                <h4 class="card-title"><i class="fas fa-smile text-info"></i>{{ $extraoralExaminations }}</h4>
             </div>
         </div>
     </div>
@@ -80,15 +80,23 @@
         <div class="card card-stats card-round">
             <div class="card-body text-center">
                 <p class="card-category mb-1 text-truncate">Intra Oral</p>
-                <h4 class="card-title"><i class="fas fa-tooth text-success"></i> 128</h4>
+                <h4 class="card-title"><i class="fas fa-tooth text-success"></i>{{ $intraoralExaminations }}</h4>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-2">
         <div class="card card-stats card-round">
             <div class="card-body text-center">
-                <p class="card-category mb-1 text-truncate">Med History</p>
-                <h4 class="card-title"><i class="fas fa-file-medical text-danger"></i> 1.1k</h4>
+                <p class="card-category mb-1 text-truncate">Total Medical History</p>
+                <h4 class="card-title"><i class="fas fa-file-medical text-danger"></i>{{ $medicalhistory }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="card card-stats card-round">
+            <div class="card-body text-center">
+                <p class="card-category mb-1 text-truncate">Total Checkups</p>
+                <h4 class="card-title"><i class="fas fa-file-medical text-success"></i>{{ $checkup }}</h4>
             </div>
         </div>
     </div>
@@ -96,7 +104,7 @@
         <div class="card card-stats card-round">
             <div class="card-body text-center">
                 <p class="card-category mb-1 text-truncate">Diagnoses</p>
-                <h4 class="card-title"><i class="fas fa-notes-medical text-warning"></i> 94</h4>
+                <h4 class="card-title"><i class="fas fa-notes-medical text-warning"></i> {{ $diagnoses }}</h4>
             </div>
         </div>
     </div>
@@ -104,14 +112,14 @@
         <div class="card card-stats card-round">
             <div class="card-body text-center">
                 <p class="card-category mb-1 text-truncate">Tx Plans</p>
-                <h4 class="card-title"><i class="fas fa-clipboard-list text-secondary"></i> 67</h4>
+                <h4 class="card-title"><i class="fas fa-clipboard-list text-secondary"></i>{{ $treatmentPlans }}</h4>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-8"> 
         <div class="card card-round">
             <div class="card-header"><div class="card-title">Clinical Activity Trends</div></div>
             <div class="card-body">

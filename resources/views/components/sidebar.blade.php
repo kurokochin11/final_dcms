@@ -7,84 +7,108 @@
         </button>
 
         <div class="sidebar-header">
-            <h1>Admin Panel</h1>
+            <a href="{{ url('/') }}" class="sidebar-logo-link">
+        <img src="{{ asset('tooth_logo.ico') }}" alt="Dr. Phua's Dental Clinic" class="sidebar-logo">
+    </a>
+            <h1>Dental Clinic</h1>
         </div>
-        
-        <nav class="sidebar-menu">
-            <div class="menu-section">
-                <p class="section-title">Academic Structure</p>
-                <ul>
-                    <li>
-                        <a href="{{ route('patients.index') }}" class="{{ request()->routeIs('patients.index') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span>Patients</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('medical-history.answer_index') }}" class="{{ request()->routeIs('medical-history.answer_index') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span>Medical History</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('check-up.checkup_answer_index') }}" class="{{ request()->routeIs('check-up.checkup_answer_index') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                            </svg>
-                            <span>Check-up</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="menu-section">
-                <p class="section-title">Students & Subjects</p>
-                <ul>
-                    <li>
-                        <a href="{{ route('oral_examination.index_extraoral') }}" class="{{ request()->routeIs('oral_examination.index_extraoral') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            <span>Extra Oral Examination</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('oral_examination.index_intraoral') }}" class="{{ request()->routeIs('oral_examination.index_intraoral') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
-                            <span>Intra Oral Examination</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="menu-section">
-                <p class="section-title">Academic Records</p>
-                <ul>
-                    <li>
-                        <a href="{{ route('radiographs.index') }}" class="{{ request()->routeIs('radiographs.index') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                            </svg>
-                            <span>Radiographs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('diagnoses.index') }}" class="{{ request()->routeIs('diagnoses.index') ? 'active' : '' }}">
-                            <svg class="menu-icon" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>Diagnosis</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+<nav class="sidebar-menu">
+    <div class="menu-section">
+        <h2 class="section-title">Main Content</h2>
+        <ul>
+            <li>
+                <a href="{{ route('patients.index') }}" class="{{ request()->routeIs('patients.index') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Patients</span>
+                </a>
+            </li>
+            <li>
+                  <li>
+                <a href="{{ route('appointments.index') }}" class="{{ request()->routeIs('appointments.index') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="8" y1="2" x2="8" y2="6" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="3" y1="10" x2="21" y2="10" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span>Appointments</span>
+                </a>
+            </li>
+             <div class="menu-section">
+        <h2 class="section-title">Physical Examination</h2>
+
+                <li>
+                <a href="{{ route('medical-history.answer_index') }}" class="{{ request()->routeIs('medical-history.answer_index') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Medical History</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('check-up.checkup_answer_index') }}" class="{{ request()->routeIs('check-up.checkup_answer_index') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Check-up</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="menu-section">
+        <h2 class="section-title">Oral Examination</h2>
+        <ul>
+            <li>
+                <a href="{{ route('oral_examination.index_extraoral') }}" class="{{ request()->routeIs('oral_examination.index_extraoral') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Extra Oral Examination</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('oral_examination.index_intraoral') }}" class="{{ request()->routeIs('oral_examination.index_intraoral') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Intra Oral Examination</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="menu-section">
+        <p class="section-title">Other Contents</p>
+        <ul>
+            <li>
+                <a href="{{ route('radiographs.index') }}" class="{{ request()->routeIs('radiographs.index') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5" stroke-width="2"/>
+                        <polyline points="21 15 16 10 5 21" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Radiographs</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('diagnoses.index') }}" class="{{ request()->routeIs('diagnoses.index') ? 'active' : '' }}">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke-width="2"/>
+                    </svg>
+                    <span>Diagnosis</span>
+                </a>
+            </li>
+          
+        </ul>
+    </div>
+</nav>
     </aside>
 </div>
 
@@ -92,6 +116,16 @@
     /* Layout Wrapper */
 .sidebar-wrapper {
     position: relative;
+}
+.section-title {
+    font-size: 14px;       /* Adjust size as needed */
+    font-weight: bold;     /* Makes the text bold */
+    color: #ffffff;        /* A dark professional blue-grey */
+    margin-bottom: 10px;   /* Adds space below the title */
+     /* Optional: adds a thin light blue line below */
+    display: inline-block; /* Ensures the border only goes as far as the text */
+    padding-bottom: 5px;
+    
 }
 
 /* Sidebar Styling */
@@ -101,8 +135,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: #ffffff;
-    color: #4b5563;
+    background: #4169e1;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease-in-out;
@@ -120,9 +154,9 @@
     position: absolute;
     right: -40px; /* Sticks it to the outer edge */
     top: 15px;
-    background: #ffffff;
-    color: #6495ed;
-    border: 1px solid #e5e7eb;
+    background: #4169e1;  
+    color: #ffffff;
+    border: 1px solid #ffffff;
     border-left: none;
     border-radius: 0 6px 6px 0;
     padding: 8px;
@@ -151,17 +185,31 @@
 
 /* Navigation Links */
 .sidebar-header {
-    padding: 20px 15px;
-    border-bottom: 1px solid #f3f4f6;
+    background-color: #4169e1; 
+    padding: 15px 20px;        
+   display: flex;
+    align-items: center;    
+}
+.header-content {
+    display: flex;
+    align-items: center; 
+    gap: 12px;           
+}
+
+.sidebar-logo {
+    width: 40px;               
+    height: auto;
+    filter: brightness(0) invert(1); 
 }
 
 .sidebar-header h1 {
-    color: #6495ed;
+    color: #ffffff;            
     font-size: 18px;
     font-weight: bold;
     margin: 0;
+    line-height: 1;
+    
 }
-
 .sidebar-menu {
     flex: 1;
     overflow-y: auto;
@@ -175,14 +223,14 @@
     align-items: center;
     padding: 10px 12px;
     border-radius: 8px;
-    color: #4b5563;
+    color: #ffffff;
     text-decoration: none;
     transition: all 0.2s;
     margin-bottom: 4px;
 }
 
 .sidebar-menu a:hover {
-    background: #f3f4f6;
+    background: #6495ed;
 }
 
 /* Active color for all routes */
