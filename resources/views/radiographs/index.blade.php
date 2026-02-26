@@ -18,7 +18,7 @@
 </script>
 
 @section('title', 'Radiograph Records')
-<x-sidebar />
+
 <x-app-layout>
     <div class="container-fluid py-4">
 

@@ -20,7 +20,7 @@ $(document).ready(function () {
 </script>
 
 @section('title', 'Patient Management')
-<x-sidebar/>
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="h4">

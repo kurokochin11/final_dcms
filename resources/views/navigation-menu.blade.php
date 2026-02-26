@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-[#6495ed] border-b border-blue-400 shadow-lg">
+<nav x-data="{ open: false }" class="bg-primary border-b border-blue-400 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
@@ -52,13 +52,21 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <span class="inline-flex rounded-md">
-                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-[#6495ed] hover:bg-[#4169e1] focus:outline-none transition ease-in-out duration-150">
-                                    {{ Auth::user()->name }}
-                                    <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                </button>
-                            </span>
+                              <button type="button" 
+        class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary hover:bg-[#3659c7] transition focus:outline-none">
+
+        {{-- Profile Photo --}}
+        <img class="h-8 w-8 rounded-full object-cover border-2 border-white mr-2"
+             src="{{ Auth::user()->profile_photo_url }}"
+             alt="{{ Auth::user()->name }}" />
+
+        {{-- User Name --}}
+        {{ Auth::user()->name }}
+
+        <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+    </button>
                         </x-slot>
 
                         <x-slot name="content">

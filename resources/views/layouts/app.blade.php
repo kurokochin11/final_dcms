@@ -38,11 +38,11 @@
     <body class="font-sans antialiased">
         <x-banner />
 <!-- {{-- SIDEBAR --}} -->
-    <!-- @include('components.sidebar') -->
-    <!-- <div class="main-content">
-    @yield('content')
-</div> -->
-        <div class="min-h-screen bg-[#bcd4e6]">
+    @include('components.sidebar')
+    
+        <div class="min-h-screen bg-gray-100">
+            <x-sidebar />
+            <div class="flex-1 ml-64">
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
@@ -55,7 +55,7 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main class="p-6">
                 {{ $slot }}
             </main>
         </div>

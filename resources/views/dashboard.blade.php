@@ -1,9 +1,15 @@
 <x-sidebar/>
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
+       <div class="welcome-bar">
+    <div class="welcome-track">
+        <span>
+            Welcome, <strong>{{ Auth::user()->name }}</strong>!
+        </span>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     </x-slot>
 
     <div class="py-12">
