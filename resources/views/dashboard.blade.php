@@ -4,7 +4,7 @@
        <div class="welcome-bar">
     <div class="welcome-track">
         <span>
-            Welcome, <strong>{{ Auth::user()->name }}</strong>!
+            Welcome to your Dashboard, <strong>{{ Auth::user()->name }}</strong>!
         </span>
     </div>
 </div>
@@ -18,7 +18,7 @@
                 <x-welcome 
                 :totalPatients="$totalPatients" 
                     :totalAppointments="$totalAppointments"
-                    :todayAppointments="$todayAppointments"
+                    :todayScheduledAppointments="$todayScheduledAppointments"
                     :diagnoses="$diagnoses"
                     :treatmentPlans="$treatmentPlans"
                     :radiographs="$radiographs"

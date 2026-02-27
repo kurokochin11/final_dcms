@@ -14,10 +14,16 @@ use\App\Models\CheckupSession;
 
 Route::get('/dashboard', function () {
 
+
     $totalPatients = Patient::count();
     $radiographs = Radiograph::count();
     $totalAppointments = Appointment::count();
-    $todayAppointments = Appointment::whereDate('appointment_date', today())->count();
+   $todayAppointments = Appointment::whereDate('appointment_date', today())->count();
+    $todayScheduledAppointments = Appointment::with('patient')
+        ->whereDate('appointment_date', today())
+        ->where('status', 'Scheduled')
+        ->get();
+
     $diagnoses = Diagnosis::count();
     $treatmentPlans = TreatmentPlan::count();
     $extraoralExaminations = ExtraoralExamination::count();
@@ -29,8 +35,8 @@ Route::get('/dashboard', function () {
 
     return view('dashboard', compact(
         'totalPatients',
-        'totalAppointments',
-        'todayAppointments',
+        'totalAppointments', 
+    'todayScheduledAppointments',
         'diagnoses',
         'treatmentPlans',
         'radiographs',

@@ -61,6 +61,11 @@
         </div>
 
         @stack('modals')
+        
+<!-- notification -->
+    <script>
+        window.notifications = @json($todayScheduledAppointments ?? []);
+    </script>
 
         @livewireScripts
     </body>

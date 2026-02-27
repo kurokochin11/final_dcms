@@ -122,7 +122,7 @@
                             <template x-for="appt in getAppointmentsForDay(day)" :key="appt.id">
                                 <button class="event-pill" 
                                      :class="getStatusClass(appt.status)"
-                                     @click="openModal('view', appt.full_data)"
+                                     @click="openModal('view', appt.full_record)"
                                      :title="appt.patient_name + ' - ' + appt.purpose">
                                     <span class="fw-bold" x-text="appt.time"></span>
                                     <span x-text="appt.patient_name"></span>
@@ -171,7 +171,7 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-icon btn-link btn-primary" @click="openModal('view', @js($record))"><i class="fa fa-eye"></i></button>
+                                <!-- <button class="btn btn-icon btn-link btn-primary" @click="openModal('view', @js($record))"><i class="fa fa-eye"></i></button> -->
                                 <button class="btn btn-icon btn-link btn-warning" @click="openModal('edit', @js($record))"><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-icon btn-link btn-danger" @click="openModal('delete', @js($record))"><i class="fa fa-trash"></i></button>
                             </td>

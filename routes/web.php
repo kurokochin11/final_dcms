@@ -37,11 +37,12 @@ Route::middleware([
         $intraoralExaminations = \App\Models\IntraoralExamination::count();
         $medicalhistory = \App\Models\MedicalSession::count();
         $checkup = \App\Models\CheckupSession::count();
+        $todayScheduledAppointments = \App\Models\Appointment::whereDate('appointment_date', today())->with('patient')->get();
         // 2. Pass them to the view
         return view('dashboard', compact(
             'totalPatients', 
             'totalAppointments', 
-            'todayAppointments', 
+            'todayScheduledAppointments',
             'diagnoses', 
             'treatmentPlans',
             'radiographs',

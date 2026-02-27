@@ -17,34 +17,57 @@
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
              
-            <div class="ms-3 relative flex items-center">
-                    <x-dropdown align="right" width="60">
-                        <x-slot name="trigger">
-                            <button class="relative p-2 text-white hover:bg-[#3659c7] rounded-full transition focus:outline-none">
-                                <i class="fa fa-bell text-xl"></i>
-                                <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full border-2 border-[#4169e1]">
-                                    4
-                                </span>
-                            </button>
-                        </x-slot>
+          <div class="ms-3 relative flex items-center" x-data="notificationSystem()">
+    <x-dropdown align="right" width="60">
+        <x-slot name="trigger">
+            <button class="relative p-2 text-white hover:bg-[#3659c7] rounded-full transition focus:outline-none">
+                <i class="fa fa-bell text-xl"></i>
 
-                        <x-slot name="content">
-                            <div class="w-64">
-                                <div class="block px-4 py-2 text-sm font-semibold text-gray-700 border-b border-gray-100 text-center">
-                                    {{ __('You have 4 new notifications') }}
-                                </div>
-                                <div class="max-h-60 overflow-y-auto">
-                                    <x-dropdown-link href="#" class="flex items-center space-x-3">
-                                        <div class="bg-blue-500 p-2 rounded-full text-white"><i class="fa fa-user-plus text-xs"></i></div>
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">New user registered</p>
-                                            <p class="text-xs text-gray-500">5 mins ago</p>
-                                        </div>
-                                    </x-dropdown-link>
-                                </div>
-                                <a href="#" class="block py-2 text-sm text-center text-blue-600 font-bold hover:underline border-t border-gray-100">See all</a>
-                            </div>
-                        </x-slot>
+                <!-- Dynamic Badge -->
+                <span x-show="notifications.length > 0"
+                      class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full border-2 border-[#4169e1]">
+                    <span x-text="notifications.length"></span>
+                </span>
+            </button>
+        </x-slot>
+<x-slot name="content">
+    <div class="w-64">
+        <!-- Header showing number of notifications -->
+        <div class="block px-4 py-2 text-sm font-semibold text-gray-700 border-b border-gray-100 text-center">
+            <span x-text="'You have ' + notifications.length + ' appointment(s) today'"></span>
+        </div>
+
+        <div class="max-h-60 overflow-y-auto">
+
+            <!-- If no notifications -->
+            <template x-if="notifications.length === 0">
+                <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                    No appointments today
+                </div>
+            </template>
+
+            <!-- List notifications -->
+            <template x-for="notif in notifications" :key="notif.id">
+                <x-dropdown-link href="#" @click.prevent="openModal('view', notif)">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-blue-500 p-2 rounded-full text-white">
+                            <i class="fa fa-calendar text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900" x-text="notif.patient.full_name"></p>
+                            <p class="text-xs text-gray-500">Appointment Today</p>
+                        </div>
+                    </div>
+                </x-dropdown-link>
+            </template>
+        </div>
+
+        <a href="#" class="block py-2 text-sm text-center text-blue-600 font-bold hover:underline border-t border-gray-100">
+            See all
+        </a>
+    </div>
+</x-slot>
+
                     </x-dropdown>
                 </div>
             
@@ -55,12 +78,12 @@
                               <button type="button" 
         class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary hover:bg-[#3659c7] transition focus:outline-none">
 
-        {{-- Profile Photo --}}
+        <!-- {{-- Profile Photo --}} -->
         <img class="h-8 w-8 rounded-full object-cover border-2 border-white mr-2"
              src="{{ Auth::user()->profile_photo_url }}"
              alt="{{ Auth::user()->name }}" />
 
-        {{-- User Name --}}
+        <!-- {{-- User Name --}} -->
         {{ Auth::user()->name }}
 
         <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -99,3 +122,21 @@
         </div>
     </div>
 </nav>
+
+<script>
+    // Pass PHP notifications to JS
+    window.notifications = @json($todayScheduledAppointments ?? []);
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('notificationSystem', () => ({
+            notifications: window.notifications || [],
+
+            // Optional: function to open appointment modal
+            openModal(mode, data) {
+                if (window.appointmentManager) {
+                    window.appointmentManager.openModal(mode, data);
+                }
+            }
+        }));
+    });
+</script>
