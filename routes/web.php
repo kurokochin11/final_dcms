@@ -29,7 +29,10 @@ Route::middleware([
         // 1. Gather the "ingredients" (Data)
         $totalPatients = \App\Models\Patient::count();
         $totalAppointments = \App\Models\Appointment::count();
-        $todayAppointments = \App\Models\Appointment::whereDate('appointment_date', today())->count();
+    $todayScheduledAppointments = \App\Models\Appointment::with('patient')
+            ->whereDate('appointment_date', now()->format('Y-m-d'))
+            ->where('status', 'Scheduled')
+            ->get();
         $diagnoses = \App\Models\Diagnosis::count();
         $treatmentPlans = \App\Models\TreatmentPlan::count();
         $radiographs = \App\Models\Radiograph::count();
@@ -37,7 +40,7 @@ Route::middleware([
         $intraoralExaminations = \App\Models\IntraoralExamination::count();
         $medicalhistory = \App\Models\MedicalSession::count();
         $checkup = \App\Models\CheckupSession::count();
-        $todayScheduledAppointments = \App\Models\Appointment::whereDate('appointment_date', today())->with('patient')->get();
+        
         // 2. Pass them to the view
         return view('dashboard', compact(
             'totalPatients', 
@@ -50,10 +53,18 @@ Route::middleware([
             'intraoralExaminations',
             'medicalhistory',
             'checkup'
+            
         ));
-        
     })->name('dashboard');
 
+Route::get('/api/notifications/updates', function () {
+        return response()->json(
+            \App\Models\Appointment::with('patient')
+                ->whereDate('appointment_date', now()->format('Y-m-d'))
+                ->where('status', 'Scheduled')
+                ->get()
+        );
+    });
 
     //patient routes
      Route::resource('patients', PatientController::class);

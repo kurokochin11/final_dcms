@@ -47,19 +47,20 @@
             </template>
 
             <!-- List notifications -->
-            <template x-for="notif in notifications" :key="notif.id">
-                <x-dropdown-link href="#" @click.prevent="openModal('view', notif)">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-blue-500 p-2 rounded-full text-white">
-                            <i class="fa fa-calendar text-xs"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900" x-text="notif.patient.full_name"></p>
-                            <p class="text-xs text-gray-500">Appointment Today</p>
-                        </div>
-                    </div>
-                </x-dropdown-link>
-            </template>
+          <template x-for="notif in notifications" :key="notif.id">
+    <x-dropdown-link href="#" @click.prevent="openModal('view', notif)">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-500 p-2 rounded-full text-white">
+                <i class="fa fa-calendar text-xs"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-900" 
+                   x-text="notif.patient.first_name + ' ' + notif.patient.last_name"></p>
+                <p class="text-xs text-gray-500" x-text="'Scheduled for ' + notif.appointment_time"></p>
+            </div>
+        </div>
+    </x-dropdown-link>
+</template>
         </div>
 
         <a href="#" class="block py-2 text-sm text-center text-blue-600 font-bold hover:underline border-t border-gray-100">
@@ -68,7 +69,7 @@
     </div>
 </x-slot>
 
-                    </x-dropdown>
+</x-dropdown>
                 </div>
             
             <div class="ms-3 relative">
@@ -124,17 +125,43 @@
 </nav>
 
 <script>
-    // Pass PHP notifications to JS
-    window.notifications = @json($todayScheduledAppointments ?? []);
-
     document.addEventListener('alpine:init', () => {
         Alpine.data('notificationSystem', () => ({
-            notifications: window.notifications || [],
+            // 1. Initial data from page load
+            notifications: @json($todayScheduledAppointments ?? []),
 
-            // Optional: function to open appointment modal
+            init() {
+                console.log('Notifications initialized:', this.notifications);
+
+                // 2. THE HEARTBEAT: Check for new appointments every 30 seconds
+                setInterval(() => {
+                    this.fetchUpdates();
+                }, 30000); 
+            },
+
+            // 3. The function that talks to your web.php route
+            async fetchUpdates() {
+                try {
+                    let response = await fetch('/api/notifications/updates');
+                    if (response.ok) {
+                        let newData = await response.json();
+                        
+                        // Only update the UI if the data has actually changed
+                        if (JSON.stringify(newData) !== JSON.stringify(this.notifications)) {
+                            this.notifications = newData;
+                            console.log('Real-time update: New appointments found!');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Real-time sync failed:', error);
+                }
+            },
+
             openModal(mode, data) {
                 if (window.appointmentManager) {
                     window.appointmentManager.openModal(mode, data);
+                } else {
+                    console.error('appointmentManager is not defined on this page.');
                 }
             }
         }));
