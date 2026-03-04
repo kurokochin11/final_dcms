@@ -234,26 +234,58 @@
         </div>
 
 <!-- VIEW MODAL -->
-        <div x-show="showModal && mode==='view'" class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50" style="background: rgba(0,0,0,0.5)">
-            <div class="modal-dialog modal-md w-full">
-                <div class="modal-content bg-white shadow-2xl">
-                    <div class="modal-header bg-info text-white">
-                        <h5 class="modal-title">Appointment Details</h5>
-                        <button class="btn-close btn-close-white" @click="closeModal()"></button>
+      <div x-show="showModal && mode==='view'" class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50" style="background: rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-md w-full">
+        <div class="modal-content bg-white shadow-2xl border-0">
+            <div class="modal-header bg-primary text-white py-2 px-3 d-flex justify-content-between align-items-center">
+                <h6 class="modal-title mb-0"><i class="fas fa-calendar-check me-2"></i>Appointment Details</h6>
+                <button type="button" class="btn-close btn-close-white shadow-none" @click="closeModal()"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="text-muted small mb-1 uppercase fw-bold">Patient Name</label>
+                        <p class="fs-5 fw-bold mb-0 text-dark" x-text="form.patient_name"></p>
                     </div>
-                    <div class="modal-body p-4">
-                        <div class="mb-2"><strong>Patient:</strong> <span x-text="form.patient_name"></span></div>
-                        <div class="mb-2"><strong>Date:</strong> <span x-text="form.appointment_date"></span></div>
-                        <div class="mb-2"><strong>Time:</strong> <span x-text="form.appointment_time"></span></div>
-                        <div class="mb-2"><strong>Purpose:</strong> <span x-text="form.purpose || 'N/A'"></span></div>
-                        <div><strong>Status:</strong> <span class="badge bg-primary" x-text="form.status"></span></div>
+                    <div class="col-6">
+                        <label class="text-muted small mb-1 uppercase fw-bold">Status</label>
+                        <div>
+                            <span class="badge px-3 py-2" :class="getStatusClass(form.status)" x-text="form.status"></span>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-dark" @click="closeModal()">Close</button>
+                    <div class="col-6">
+                        <label class="text-muted small mb-1 uppercase fw-bold">Purpose</label>
+                        <p class="mb-0 text-dark" x-text="form.purpose || 'General Checkup'"></p>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-muted small mb-1 uppercase fw-bold">Appointment Date</label>
+                        <p class="mb-0 text-dark"><i class="far fa-calendar me-2 text-info"></i><span x-text="form.appointment_date"></span></p>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-muted small mb-1 uppercase fw-bold">Scheduled Time</label>
+                        <p class="mb-0 text-dark"><i class="far fa-clock me-2 text-info"></i><span x-text="form.appointment_time"></span></p>
                     </div>
                 </div>
             </div>
+
+            <div class="modal-footer bg-light py-3 px-4 d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-sm btn-secondary px-3" @click="closeModal()">
+                    Back to Calendar
+                </button>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-warning text-white px-3" @click="openModal('edit', form)">
+                        <i class="fa fa-edit me-1"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger px-3" @click="openModal('delete', form)">
+                        <i class="fa fa-trash me-1"></i> Delete
+                    </button>
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
     
      <!-- DELETE CONFIRMATION MODAL -->
