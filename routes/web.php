@@ -95,6 +95,7 @@ Route::get('/checkup/{patient}/pdf',
     [CheckupAnswerController::class, 'downloadPdf']
 )->name('checkup.download-pdf');
 
+
 Route::post('/check-up/{patient}', [CheckupAnswerController::class, 'store'])
     ->name('check-up.store');
 
