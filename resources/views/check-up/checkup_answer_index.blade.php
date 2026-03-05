@@ -132,6 +132,11 @@ function closeModal(type, id) {
         {{ $date ? \Carbon\Carbon::parse($date)->format('F j, Y') : 'N/A' }}
     </h4>
 
+            <button type="button" 
+                    class="btn btn-danger btn-xs" 
+                    onclick="window.open('{{ route('checkup.download-pdf', $session->id) }}', '_blank')">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
     <x-button class="btn btn-warning btn-xs"
         onclick="openModal('editSession', '{{ $session->id }}')">
         <i class="fas fa-edit"></i> Edit
@@ -169,11 +174,11 @@ $groupedAnswers = $session->checkupResults->groupBy(
 </div>
  
 <div class="mt-4 text-right">
-<button type="button"
+<!-- <button type="button"
         onclick="window.open('{{ route('checkup.download-pdf', $patient->id) }}', '_blank')"
         class="btn btn-danger btn-md">
     <i class="fas fa-file-pdf"></i> Download PDF
-</button>
+</button> -->
 
 <button class="btn btn-dark btn-medium"
     onclick="closeModal('view', '{{ $patient->id }}')">

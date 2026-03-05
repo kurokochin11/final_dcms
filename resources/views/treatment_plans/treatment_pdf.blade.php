@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <title>Treatment Plan #{{ $plan->id }}</title>
     <style>
+        
+ .tooth-logo {
+    float: left;
+    width: 60px; /* Normal logo size */
+    height: 60px;
+    background-image: url("{{ public_path('tooth.png') }}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.header-text {
+    float: left;
+    margin-left: 15px; /* Space between logo and the 'E' */
+    text-align: left;
+}
+
+.clear {
+    clear: both;
+}
+
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; margin: 20px; color: #333; line-height: 1.4; }
         .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
         .header h2 { margin: 0; text-transform: uppercase; letter-spacing: 1px; }
@@ -48,6 +69,7 @@
 <body>
 
 <div class="header">
+    <div class="tooth-logo"></div>
     <h2>Treatment Plan</h2>
     <p>Issued on: {{ \Carbon\Carbon::parse($plan->consent_date)->format('F d, Y') }}</p>
 </div>

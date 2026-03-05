@@ -3,6 +3,26 @@
 <head>
 <meta charset="utf-8">
 <style>
+    .tooth-logo {
+    float: left;
+    width: 60px; /* Normal logo size */
+    height: 60px;
+    background-image: url("{{ public_path('tooth.png') }}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.header-text {
+    float: left;
+    margin-left: 15px; /* Space between logo and the 'E' */
+    text-align: left;
+}
+
+.clear {
+    clear: both;
+}
+
     body { font-family: DejaVu Sans, sans-serif; font-size: 10px; margin: 15px; color: #333; }
     .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 15px; }
     .header h2 { margin: 0; text-transform: uppercase; font-size: 16px; }
@@ -49,6 +69,7 @@
 <body>
 
 <div class="header">
+     <div class="tooth-logo"></div>
     <h2>Intraoral Examination Report</h2>
     <p>Exam Date: {{ $exam->date ? \Carbon\Carbon::parse($exam->date)->format('F d, Y') : now()->format('F d, Y') }}</p>
 </div>

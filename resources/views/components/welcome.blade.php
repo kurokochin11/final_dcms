@@ -103,7 +103,7 @@
     <div class="col-6 col-md-2">
         <div class="card card-stats card-round">
             <div class="card-body text-center">
-                <p class="card-category mb-1 text-truncate">Diagnoses</p>
+                <p class="card-category mb-1 text-truncate">Diagnosis</p>
                 <h4 class="card-title"><i class="fas fa-notes-medical text-warning"></i> {{ $diagnoses }}</h4>
             </div>
         </div>

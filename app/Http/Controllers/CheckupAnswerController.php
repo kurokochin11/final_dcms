@@ -164,20 +164,22 @@ class CheckupAnswerController extends Controller
             ->route('check-up.checkup_answer_index')
             ->with('success', 'Check-up session updated successfully!');
     }
-    public function downloadPdf(Patient $patient)
+   public function downloadPdf(CheckupSession $session)
 {
-    // Load sessions with results + questions
-    $patient->load('checkupSessions.checkupResults.question');
-
+    // Load the specific session with its results, questions, and the owner (patient)
+    $session->load(['checkupResults.question', 'patient']);
+    
+    $patient = $session->patient;
     $physician = auth()->user()->name ?? 'Physician';
 
+    // We pass the $session to the view instead of the whole patient object
     $pdf = Pdf::loadView(
-        'check-up.checkup_pdf',
-        compact('patient', 'physician')
+        'check-up.checkup_pdf', 
+        compact('session', 'patient', 'physician')
     )->setPaper('a4', 'portrait');
 
     return $pdf->stream(
-        'checkup_record_' . $patient->first_name . '_' . $patient->last_name . '.pdf'
+        'checkup_' . $patient->last_name . '_' . $session->created_at->format('Y-m-d') . '.pdf'
     );
 }
 

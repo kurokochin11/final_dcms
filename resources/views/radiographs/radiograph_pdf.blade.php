@@ -3,11 +3,38 @@
 <head>
     <meta charset="utf-8">
     <style>
+      
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 11px; margin: 20px; color: #333; line-height: 1.4; }
         
         /* Header & Logo Section */
-        .header-top { width: 100%; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
-        .hospital-name { font-size: 22px; font-weight: bold; color: #004a99; text-transform: uppercase; }
+.header-top { 
+    width: 100%; 
+    border-bottom: 2px solid #2c3e50; 
+    padding-bottom: 10px; 
+    margin-bottom: 15px; 
+}
+
+.tooth-logo {
+    float: left;
+    width: 60px; /* Normal logo size */
+    height: 60px;
+    background-image: url("{{ public_path('tooth.png') }}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.hospital-name { 
+    font-size: 22px; 
+    font-weight: bold; 
+    color: #004a99; 
+    text-transform: uppercase; 
+    text-align: center;
+}
+
+.clear {
+    clear: both;
+}
         
         /* Patient Info Grid (Matches the Image Layout) */
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
@@ -40,6 +67,7 @@
 <body>
 
     <div class="header-top">
+         <div class="tooth-logo"></div>
         <table width="100%">
             <tr>
                 <td width="60%">

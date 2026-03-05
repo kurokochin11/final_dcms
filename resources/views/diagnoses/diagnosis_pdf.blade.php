@@ -4,6 +4,25 @@
     <meta charset="utf-8">
     <title>Diagnoses result pdf</title>
     <style>
+        .tooth-logo {
+    float: left;
+    width: 60px; /* Normal logo size */
+    height: 60px;
+    background-image: url("{{ public_path('tooth.png') }}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.header-text {
+    float: left;
+    margin-left: 15px; /* Space between logo and the 'E' */
+    text-align: left;
+}
+
+.clear {
+    clear: both;
+}
         /* Copied Styles from Personal Health Summary */
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; margin: 20px; color: #333; }
         
@@ -45,6 +64,7 @@
 <body>
 
     <div class="header">
+        <div class="tooth-logo"></div>
         <h2>Diagnosis Report</h2>
         <p>Generated on: {{ now()->format('F j, Y') }}</p>
     </div>

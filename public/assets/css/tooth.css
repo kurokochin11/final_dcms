@@ -1,0 +1,10 @@
+.tooth-logo {
+    display: inline-block;
+    width: 80px;  /* Standard logo size */
+    height: 80px; 
+    /* This path assumes your CSS is in public/assets/css/ */
+    background-image: url('../../tooth_logo.ico'); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
