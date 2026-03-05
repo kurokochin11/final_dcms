@@ -68,7 +68,7 @@
     </tr>
 </table>
 
-@foreach($patient->checkupSessions as $session)
+
     <div class="section-header">Check-Up Date: {{ $session->created_at->format('F j, Y') }}</div>
     
     <div class="questions-container">
@@ -94,7 +94,7 @@
             </div>
         @endforeach
     </div>
-@endforeach
+
 
 <div class="signature-section">
     <div class="sig-box">
