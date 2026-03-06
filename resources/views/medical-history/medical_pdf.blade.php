@@ -89,7 +89,7 @@
     </tr>
 </table>
 
-@foreach($patient->medicalSessions as $session)
+
     @php
         $groupedAnswers = $session->responses->groupBy(fn($ans) => $ans->question->question_set ?? 'General');
     @endphp
@@ -116,7 +116,7 @@
         @endforeach
     </div>
     @endforeach
-@endforeach
+
 
 <div class="signature-section">
     <div class="sig-box">
