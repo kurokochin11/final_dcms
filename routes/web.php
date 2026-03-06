@@ -81,8 +81,8 @@ Route::post('/medical-history/{patient}', [MedicalHistoryController::class, 'sto
         ->name('medical-history.answer_index');
 
         // Download medical history as PDF
- Route::get('/medical-history/{patient}/pdf', [MedicalHistoryController::class, 'downloadPdf'])->name('medical-history.download-pdf');
-
+ Route::get('/medical-history/session/{session}/pdf', [MedicalHistoryController::class, 'downloadMedicalPdf'])
+    ->name('medical-history.medical_pdf');
         // Edit existing medical history answers
       Route::put( '/medical-history/session/{session}',[MedicalHistoryController::class, 'updateSession'])->name('medical-history.update-session');
 

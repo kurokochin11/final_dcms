@@ -160,17 +160,17 @@ class MedicalHistoryController extends Controller
             ->route('medical-history.answer_index')
             ->with('success', 'Medical session updated successfully!');
     }
-    public function downloadPdf(Patient $patient)
+  public function downloadMedicalPdf(MedicalSession $session)
 {
-    // Load all related sessions, responses, questions
-    $patient->load('medicalSessions.responses.question');
+    // Load the specific session with its specific responses and questions
+    $session->load(['patient', 'responses.question']);
+    
+    $patient = $session->patient;
+    $physician = auth()->user()->name ?? 'Physician';
 
- // Get the currently logged-in physician
-    $physician = auth()->user()->name;
-    $pdf = Pdf::loadView('medical-history.medical_pdf', compact('patient', 'physician'))
-     
-    ->setPaper('a4', 'portrait');
-     return $pdf->stream('medical_pdf_' . $patient->first_name . '_' . $patient->last_name . '.pdf');
-    }
+    $pdf = Pdf::loadView('medical-history.medical_pdf', compact('patient', 'session', 'physician'))
+              ->setPaper('a4', 'portrait');
+
+    return $pdf->stream('medical_record_' . $patient->last_name . '_' . $session->id . '.pdf');
 }
-
+}

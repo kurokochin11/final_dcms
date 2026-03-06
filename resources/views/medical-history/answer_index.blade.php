@@ -118,13 +118,19 @@ function closeModal(type, id) {
     <h4 class="font-semibold">
         Medical Date: {{ $session->created_at->format('F j, Y') }}
     </h4>
+<div class="flex gap-2">
+        <button type="button" 
+                class="btn btn-danger btn-xs" 
+                onclick="window.open('{{ route('medical-history.medical_pdf', $session->id) }}', '_blank')">
+            <i class="fas fa-file-pdf"></i> PDF
+        </button>
 
     <x-button class="btn btn-warning btn-xs"
         onclick="openModal('editSession', '{{ $session->id }}')">
         <i class="fas fa-edit"></i> Edit
     </x-button>
 </div>
-
+</div>
 @php
 $groupedAnswers = $session->responses->groupBy(
     fn($ans) => $ans->question->question_set ?? 'Uncategorized'
@@ -156,12 +162,6 @@ $groupedAnswers = $session->responses->groupBy(
 </div>
  
 <div class="mt-4 text-right">
-   <button type="button" 
-            class="btn btn-danger btn-medium mr-2" 
-            onclick="window.open('{{ route('medical-history.download-pdf', $patient->id) }}', '_blank')">
-        <i class="fas fa-file-pdf"></i> Download PDF
-    </button>
-    
 <button class="btn btn-dark btn-medium"
     onclick="closeModal('view', '{{ $patient->id }}')">
     Close
