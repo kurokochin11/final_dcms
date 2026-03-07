@@ -124,7 +124,6 @@ function closeModal(type, id) {
                 onclick="window.open('{{ route('medical-history.medical_pdf', $session->id) }}', '_blank')">
             <i class="fas fa-file-pdf"></i> PDF
         </button>
-
     <x-button class="btn btn-warning btn-xs"
         onclick="openModal('editSession', '{{ $session->id }}')">
         <i class="fas fa-edit"></i> Edit

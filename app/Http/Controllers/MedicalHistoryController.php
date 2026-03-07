@@ -160,7 +160,7 @@ class MedicalHistoryController extends Controller
             ->route('medical-history.answer_index')
             ->with('success', 'Medical session updated successfully!');
     }
-  public function downloadMedicalPdf(MedicalSession $session)
+   public function downloadMedicalPdf(MedicalSession $session)
 {
     // Load the specific session with its specific responses and questions
     $session->load(['patient', 'responses.question']);
