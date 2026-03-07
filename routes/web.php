@@ -14,6 +14,7 @@ use App\Http\Controllers\TreatmentPlanController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DentalChartController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -175,6 +176,10 @@ Route::post('/billings', [BillingController::class, 'store'])->name('billings.st
 Route::put('/billings/{billing}', [BillingController::class, 'update'])->name('billings.update');
 Route::delete('/billings/{billing}', [BillingController::class, 'destroy'])->name('billings.destroy');
 
+// Dental Chart routes
+
+Route::get('/patients/{patient}/dental-chart', [DentalChartController::class, 'index'])->name('dental-chart.index');
+Route::post('/patients/{patient}/dental-chart', [DentalChartController::class, 'store'])->name('dental-chart.store');
 
 });
 

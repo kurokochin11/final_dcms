@@ -101,4 +101,9 @@ public function diagnoses()
 public function billings() {
     return $this->hasMany(Billing::class);
 }
+public function dentalExamination()
+{
+   
+    return $this->hasOne(DentalExamination::class);
+}
 }
