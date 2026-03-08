@@ -4,32 +4,27 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
-        Schema::create('dental_examinations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
-            
-            // Side Credentials (Text Inputs)
-            $table->string('occlusion')->nullable();
-            $table->string('periodontal_condition')->nullable();
-            $table->string('oral_hygiene')->nullable();
-            $table->text('abnormalities')->nullable();
-            $table->text('general_condition')->nullable();
-            $table->string('physician')->nullable();
-            $table->string('nature_of_treatment')->nullable();
-            $table->string('allergies')->nullable();
-            $table->string('previous_bleeding')->nullable();
-            $table->string('chronic_ailments')->nullable();
-            $table->string('blood_pressure')->nullable();
-            $table->string('drugs_taken')->nullable();
+public function up()
+{
+    Schema::create('dental_charts', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+        
+        // The tooth grid data (JSON)
+        $table->json('tooth_data')->nullable();
 
-            // Tooth Data (Stored as JSON: { "18": "check", "17": "wrong" })
-            $table->json('tooth_data')->nullable(); 
-            $table->timestamps();
-        });
-    }
+        // Clinical History fields (Matching your image)
+        $table->string('occlusion')->nullable();
+        $table->string('periodontal_condition')->nullable();
+        $table->string('oral_hygiene')->nullable();
+        $table->text('abnormalities')->nullable();
+        $table->text('general_condition')->nullable();
+        $table->string('nature_of_treatment')->nullable();
+        $table->text('allergies')->nullable();
+        $table->string('blood_pressure')->nullable();
+        $table->text('drugs_taken')->nullable();
 
-    public function down(): void {
-        Schema::dropIfExists('dental_examinations');
-    }
+        $table->timestamps();
+    });
+}
 };

@@ -101,9 +101,16 @@ public function diagnoses()
 public function billings() {
     return $this->hasMany(Billing::class);
 }
-public function dentalExamination()
-{
-   
-    return $this->hasOne(DentalExamination::class);
-}
+public function dentalCharts()
+    {
+        return $this->hasMany(DentalChart::class)->latest();
+    }
+
+    /**
+     * Helper to get the very latest session data.
+     */
+    public function latestChart()
+    {
+        return $this->hasOne(DentalChart::class)->latestOfMany();
+    }
 }

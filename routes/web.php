@@ -177,10 +177,11 @@ Route::put('/billings/{billing}', [BillingController::class, 'update'])->name('b
 Route::delete('/billings/{billing}', [BillingController::class, 'destroy'])->name('billings.destroy');
 
 // Dental Chart routes
-
-Route::get('/patients/{patient}/dental-chart', [DentalChartController::class, 'index'])->name('dental-chart.index');
-Route::post('/patients/{patient}/dental-chart', [DentalChartController::class, 'store'])->name('dental-chart.store');
-
+Route::get('patients/{patient}/dental-chart/create', [DentalChartController::class, 'create'])->name('dental-chart.create');
+    Route::post('patients/{patient}/dental-chart', [DentalChartController::class, 'store'])->name('dental-chart.store');
+    Route::get('patients/{patient}/dental-chart/{dentalChart}', [DentalChartController::class, 'show'])->name('dental-chart.show');
+    Route::put('dental-chart/{dentalChart}', [DentalChartController::class, 'update'])->name('dental-chart.update');
+    Route::delete('dental-chart/{dentalChart}', [DentalChartController::class, 'destroy'])->name('dental-chart.destroy');
 });
 
 
