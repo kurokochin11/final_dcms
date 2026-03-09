@@ -57,6 +57,7 @@
     .status-scheduled { background-color: #0d6efd; } /* Blue */
     .status-completed { background-color: #198754; } /* Green */
     .status-cancelled { background-color: #dc3545; } /* Red */
+    .status-rescheduled { background-color: #fd7e14; } /* Orange */
     .status-default { background-color: #6c757d; }   /* Gray */
 
     .today { background-color: #fff9db !important; }
@@ -166,7 +167,7 @@
                             <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</td>
                             <td>{{ $appointment->purpose ?? '-' }}</td>
                             <td>
-                                <span class="badge {{ $appointment->status === 'Completed' ? 'bg-success' : ($appointment->status === 'Cancelled' ? 'bg-danger' : 'bg-primary') }}">
+                                <span class="badge {{ $appointment->status === 'Completed' ? 'bg-success' : ($appointment->status === 'Cancelled' ? 'bg-danger' : ($appointment->status === 'Rescheduled' ? 'bg-warning' : 'bg-primary')) }}">
                                     {{ $appointment->status }}
                                 </span>
                             </td>
@@ -182,59 +183,80 @@
             </div>
         </div>
         
-<!-- ADD/EDIT MODAL -->
-        <div x-show="showModal && (mode==='create' || mode==='edit')" class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50" style="background: rgba(0,0,0,0.5)">
-            <div class="modal-dialog modal-lg w-full">
-                <div class="modal-content shadow-2xl">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" x-text="mode==='create' ? 'New Appointment' : 'Edit Appointment'"></h5>
-                        <button type="button" class="btn-close btn-close-white" @click="closeModal()"></button>
-                    </div>
-                    <form :action="formAction" method="POST" class="p-4 bg-white">
-                        @csrf
-                        <template x-if="mode==='edit'"><input type="hidden" name="_method" value="PUT"></template>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Patient</label>
-                                <select name="patient_id" class="form-select" x-model="form.patient_id" required>
-                                    <option value="">Select Patient</option>
-                                    @foreach($patients as $patient)
-                                        <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Date</label>
-                                <input type="date" name="appointment_date" class="form-control" x-model="form.appointment_date" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Time</label>
-                                <input type="time" name="appointment_time" class="form-control" x-model="form.appointment_time" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Purpose</label>
-                                <input type="text" name="purpose" class="form-control" x-model="form.purpose">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">Status</label>
-                                <select name="status" class="form-select" x-model="form.status">
-                                    <option>Scheduled</option>
-                                    <option>Completed</option>
-                                    <option>Cancelled</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer mt-3 px-0 pb-0">
-                            <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
-                            <button type="submit" class="btn btn-primary" x-text="mode==='create' ? 'Save Appointment' : 'Update Appointment'"></button>
-                        </div>
-                    </form>
-                </div>
+<div x-show="showModal && (mode==='create' || mode==='edit')" 
+     class="fixed inset-0 flex items-center justify-center z-50 p-4"
+     :class="isSubmitting ? 'invisible' : 'bg-black/50'"
+     style="background: rgba(0,0,0,0.5)"
+     x-cloak>
+    
+    <div class="modal-dialog modal-lg w-full" x-show="!isSubmitting">
+        <div class="modal-content shadow-2xl border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>
+                    <span x-text="mode==='create' ? 'New Appointment' : 'Edit Appointment'"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" @click="closeModal()"></button>
             </div>
-        </div>
+            
+            <form :action="formAction" method="POST" x-ref="editForm" class="p-4 bg-white">
+                @csrf
+                <template x-if="mode==='edit' || isSubmitting">
+                    <input type="hidden" name="_method" value="PUT">
+                </template>
 
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Patient</label>
+                        <select name="patient_id" class="form-select shadow-none" x-model="form.patient_id" required>
+                            <option value="">Select Patient</option>
+                            @foreach($patients as $patient)
+                                <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Date</label>
+                        <input type="date" name="appointment_date" class="form-control shadow-none" x-model="form.appointment_date" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Time</label>
+                        <input type="time" name="appointment_time" class="form-control shadow-none" x-model="form.appointment_time" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Purpose</label>
+                        <input type="text" name="purpose" class="form-control shadow-none" x-model="form.purpose" placeholder="e.g., Cleaning">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold small">Status</label>
+                        <select name="status" class="form-select shadow-none" x-model="form.status">
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Rescheduled">Rescheduled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer mt-4 px-0 pb-0 pt-3 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light px-4" @click="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <span x-text="mode==='create' ? 'Save Appointment' : 'Update Appointment'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div x-show="isSubmitting" class="fixed inset-0 z-[60] flex items-center justify-center bg-white/50 backdrop-blur-sm">
+    <div class="text-center">
+        <div class="spinner-border text-primary mb-2" role="status"></div>
+        <p class="fw-bold text-primary">Updating Appointment...</p>
+    </div>
+</div>
 <!-- VIEW MODAL -->
-      <div x-show="showModal && mode==='view'" class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50" style="background: rgba(0,0,0,0.5)">
+  <div x-show="showModal && mode==='view'" class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50" style="background: rgba(0,0,0,0.5)">
     <div class="modal-dialog modal-md w-full">
         <div class="modal-content bg-white shadow-2xl border-0">
             <div class="modal-header bg-primary text-white py-2 px-3 d-flex justify-content-between align-items-center">
@@ -244,19 +266,19 @@
 
             <div class="modal-body p-4">
                 <div class="row g-4">
-                    <div class="col-12">
+                    <div class="col-12 border-bottom pb-2">
                         <label class="text-muted small mb-1 uppercase fw-bold">Patient Name</label>
                         <p class="fs-5 fw-bold mb-0 text-dark" x-text="form.patient_name"></p>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small mb-1 uppercase fw-bold">Status</label>
+                        <label class="text-muted small mb-1 uppercase fw-bold">Current Status</label>
                         <div>
                             <span class="badge px-3 py-2" :class="getStatusClass(form.status)" x-text="form.status"></span>
                         </div>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small mb-1 uppercase fw-bold">Purpose</label>
-                        <p class="mb-0 text-dark" x-text="form.purpose || 'General Checkup'"></p>
+                        <label class="text-muted small mb-1 uppercase fw-bold">Purpose of Visit</label>
+                        <p class="mb-0 text-dark fw-semibold" x-text="form.purpose || 'General Checkup'"></p>
                     </div>
                     <div class="col-6">
                         <label class="text-muted small mb-1 uppercase fw-bold">Appointment Date</label>
@@ -271,13 +293,24 @@
 
             <div class="modal-footer bg-light py-3 px-4 d-flex justify-content-between align-items-center">
                 <button type="button" class="btn btn-sm btn-secondary px-3" @click="closeModal()">
-                    Back to Calendar
+                    Close
                 </button>
                 
                 <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-warning text-white px-3" @click="openModal('edit', form)">
-                        <i class="fa fa-edit me-1"></i> Edit
-                    </button>
+                    <template x-if="form.status === 'Scheduled'">
+                        <div class="d-flex gap-2 me-2 border-end pe-2">
+                            <button type="button" class="btn btn-sm btn-success px-3" @click="directUpdateStatus('Completed')">
+                                <i class="fa fa-check me-1"></i> Complete
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger px-3" @click="directUpdateStatus('Cancelled')">
+                                <i class="fa fa-times me-1"></i> Cancel
+                            </button>
+                        </div>
+                    </template>
+
+<button class="btn btn-sm btn-warning text-white px-3" @click="directUpdateStatus('Rescheduled')">
+    <i class="fa fa-clock me-1"></i> Rescheduled
+</button>
                     <button class="btn btn-sm btn-danger px-3" @click="openModal('delete', form)">
                         <i class="fa fa-trash me-1"></i> Delete
                     </button>
@@ -325,7 +358,7 @@
             
             showModal: false,
             mode: 'create', // Modes: 'create', 'edit', 'view', 'delete'
-            
+            isSubmitting: false, // ADD THIS LINE
             // This object holds the data for whatever appointment is being interacted with
             form: {
                 id: '',
@@ -465,8 +498,28 @@
                     purpose: '',
                     status: 'Scheduled'
                 };
-            }
+            },
+           directUpdateStatus(newStatus) {
+    // 1. Prepare data
+    this.form.status = newStatus;
+    this.mode = 'edit';
+    
+    // 2. Set submitting to TRUE (this triggers the UI changes)
+    this.isSubmitting = true;
+
+    // 3. Submit the form
+    this.$nextTick(() => {
+        if (this.$refs.editForm) {
+            this.$refs.editForm.submit();
+        } else {
+            // Fallback if ref is still missing
+            const fallbackForm = document.querySelector('form[x-ref="editForm"]');
+            if(fallbackForm) fallbackForm.submit();
+        }
+    });
+}
         }));
     });
+       
 </script>
 </x-app-layout>
