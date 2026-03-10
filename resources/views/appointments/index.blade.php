@@ -4,6 +4,21 @@
 <link rel="stylesheet" href="../assets/css/plugins.min.css" />
 <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
 
+<!-- JS -->
+    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
+     <script src="assets/js/kaiadmin.min.js"></script>
+    <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        responsive: true
+    });
+});
+</script>
+
 <style>
     [x-cloak] { display: none !important; }
 
@@ -57,7 +72,7 @@
     .status-scheduled { background-color: #0d6efd; } /* Blue */
     .status-completed { background-color: #198754; } /* Green */
     .status-cancelled { background-color: #dc3545; } /* Red */
-    .status-rescheduled { background-color: #fd7e14; } /* Orange */
+    
     .status-default { background-color: #6c757d; }   /* Gray */
 
     .today { background-color: #fff9db !important; }
@@ -137,7 +152,7 @@
 
         <div class="card shadow-sm p-4">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+               <table id="myTable"  class="table table-striped table-bordered table-hover">
                     <thead class="table-light">
                         <tr>
                             <th>Patient</th>
@@ -167,13 +182,11 @@
                             <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</td>
                             <td>{{ $appointment->purpose ?? '-' }}</td>
                             <td>
-                                <span class="badge {{ $appointment->status === 'Completed' ? 'bg-success' : ($appointment->status === 'Cancelled' ? 'bg-danger' : ($appointment->status === 'Rescheduled' ? 'bg-warning' : 'bg-primary')) }}">
-                                    {{ $appointment->status }}
-                                </span>
+                                <span class="badge {{ $appointment->status === 'Completed' ? 'bg-success' : ($appointment->status === 'Cancelled' ? 'bg-danger' : 'bg-primary') }}">
+                         {{ $appointment->status }}
+                           </span>
                             </td>
                             <td class="text-end">
-                                <!-- <button class="btn btn-icon btn-link btn-primary" @click="openModal('view', @js($record))"><i class="fa fa-eye"></i></button> -->
-                                <button class="btn btn-icon btn-link btn-warning" @click="openModal('edit', @js($record))"><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-icon btn-link btn-danger" @click="openModal('delete', @js($record))"><i class="fa fa-trash"></i></button>
                             </td>
                         </tr>
@@ -233,7 +246,7 @@
                             <option value="Scheduled">Scheduled</option>
                             <option value="Completed">Completed</option>
                             <option value="Cancelled">Cancelled</option>
-                            <option value="Rescheduled">Rescheduled</option>
+                            
                         </select>
                     </div>
                 </div>
@@ -308,12 +321,9 @@
                         </div>
                     </template>
 
-<button class="btn btn-sm btn-warning text-white px-3" @click="directUpdateStatus('Rescheduled')">
-    <i class="fa fa-clock me-1"></i> Rescheduled
+<button class="btn btn-sm btn-warning text-white px-3" @click="openModal('edit', form)">
+    <i class="fa fa-calendar-alt me-1"></i> Edit Details
 </button>
-                    <button class="btn btn-sm btn-danger px-3" @click="openModal('delete', form)">
-                        <i class="fa fa-trash me-1"></i> Delete
-                    </button>
                 </div>
             </div>
         </div>

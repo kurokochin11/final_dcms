@@ -56,7 +56,7 @@ class DentalChartController extends Controller
             'drugs_taken' => $validated['drugs_taken'],
         ]);
 
-        return redirect()->route('patients.show', $patient->id)
+        return redirect()->route('dental-chart.dental-chart', $patient->id)
             ->with('success', 'New dental session recorded successfully.');
     }
 
@@ -118,7 +118,7 @@ class DentalChartController extends Controller
         $patientId = $dentalChart->patient_id;
         $dentalChart->delete();
 
-        return redirect()->route('patients.show', $patientId)
+        return redirect()->route('dental-chart.dental-chart', $patientId)
             ->with('success', 'Session deleted successfully.');
     }
 }
