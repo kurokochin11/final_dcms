@@ -112,13 +112,27 @@ $(document).ready(function () {
                     <div class="btn-group">
                         <button class="btn btn-outline-light btn-sm" @click="prevMonth()"><i class="fas fa-chevron-left"></i></button>
                         <button class="btn btn-outline-light btn-sm" @click="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                        
                     </div>
                 </div>
                 <button class="btn btn-primary" @click="openModal('create')">
                     <i class="fas fa-plus"></i> New Appointment
                 </button>
             </div>
-
+<div class="bg-white border-bottom px-3 py-2 d-flex gap-4">
+        <div class="d-flex align-items-center">
+            <span class="rounded-circle me-2" style="width: 10px; height: 10px; background-color: #0d6efd;"></span>
+            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10px;">Scheduled</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="rounded-circle me-2" style="width: 10px; height: 10px; background-color: #198754;"></span>
+            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10px;">Completed</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="rounded-circle me-2" style="width: 10px; height: 10px; background-color: #dc3545;"></span>
+            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10px;">Cancelled</span>
+        </div>
+    </div>
             <div class="calendar-grid">
                 <template x-for="dayName in daysOfWeek" :key="dayName">
                     <div class="calendar-weekday" x-text="dayName"></div>
@@ -187,6 +201,7 @@ $(document).ready(function () {
                            </span>
                             </td>
                             <td class="text-end">
+                               
                                 <button class="btn btn-icon btn-link btn-danger" @click="openModal('delete', @js($record))"><i class="fa fa-trash"></i></button>
                             </td>
                         </tr>

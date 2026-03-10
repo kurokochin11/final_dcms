@@ -5,33 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\Patient;
 use App\Models\DentalChart;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DentalChartController extends Controller
 {
-    
     /**
-     * Show the form for creating a new session for a specific patient.
+     * INDEX: Display a list of all past sessions for a specific patient.
+     * This acts as the "Landing Page" before entering a specific session.
      */
-    public function create(Patient $patient)
+    public function index(Patient $patient)
     {
-        // Load existing sessions to show in the sidebar history
-        $patient->load(['dentalCharts' => function($query) {
-            $query->latest();
-        }]);
+        // Fetch all sessions for this patient, latest first
+        $sessions = $patient->dentalCharts()->latest()->get();
 
-        return view('dental-chart.dental-chart', [
+        return view('dental-chart.index', [
             'patient' => $patient,
-            'currentSession' => null // Null because we are in "Create" mode
+            'sessions' => $sessions
         ]);
     }
 
     /**
-     * Store a newly created session in the database.
+     * CREATE: Show the blank charting form for a new session.
+     * Triggered when the user clicks "+ NEW SESSION" from the index.
+     */
+    public function create(Patient $patient)
+    {
+        return view('dental-chart.chart-form', [
+            'patient' => $patient,
+            'currentSession' => null // Null indicates "New Session" mode
+        ]);
+    }
+
+    /**
+     * STORE: Save the new session data to the database.
      */
     public function store(Request $request, Patient $patient)
     {
         $validated = $request->validate([
-            'tooth_data' => 'required|string', // JSON string from Alpine.js
+            'tooth_data' => 'required|json', 
             'occlusion' => 'nullable|string|max:255',
             'periodontal_condition' => 'nullable|string|max:255',
             'oral_hygiene' => 'nullable|string|max:255',
@@ -56,33 +67,29 @@ class DentalChartController extends Controller
             'drugs_taken' => $validated['drugs_taken'],
         ]);
 
-        return redirect()->route('dental-chart.dental-chart', $patient->id)
+        // Redirect back to the session history list
+        return redirect()->route('dental-chart.index', $patient->id)
             ->with('success', 'New dental session recorded successfully.');
     }
 
     /**
-     * Display a specific past session.
+     * SHOW: Display and allow editing of a specific past session.
      */
     public function show(Patient $patient, DentalChart $dentalChart)
     {
-        // Load history for the sidebar even when viewing one
-        $patient->load(['dentalCharts' => function($query) {
-            $query->latest();
-        }]);
-
-        return view('dental-chart.dental-chart', [
+        return view('dental-chart.chart-form', [
             'patient' => $patient,
             'currentSession' => $dentalChart
         ]);
     }
 
     /**
-     * Update an existing session.
+     * UPDATE: Save changes to an existing session.
      */
     public function update(Request $request, DentalChart $dentalChart)
     {
         $validated = $request->validate([
-            'tooth_data' => 'required|string',
+            'tooth_data' => 'required|json',
             'occlusion' => 'nullable|string|max:255',
             'periodontal_condition' => 'nullable|string|max:255',
             'oral_hygiene' => 'nullable|string|max:255',
@@ -111,14 +118,14 @@ class DentalChartController extends Controller
     }
 
     /**
-     * Delete a specific session.
+     * DESTROY: Remove a session record.
      */
     public function destroy(DentalChart $dentalChart)
     {
         $patientId = $dentalChart->patient_id;
         $dentalChart->delete();
 
-        return redirect()->route('dental-chart.dental-chart', $patientId)
+        return redirect()->route('dental-chart.index', $patientId)
             ->with('success', 'Session deleted successfully.');
     }
 }
