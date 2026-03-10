@@ -13,7 +13,10 @@ export default {
 
     theme: {
         extend: {
-            fontFamily: {
+colors: {
+        'primary': '#1d72e8', // Adjust hex to match your screenshot blue
+      },            
+      fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
