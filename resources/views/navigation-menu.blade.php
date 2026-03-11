@@ -48,7 +48,7 @@
 
             <!-- List notifications -->
           <template x-for="notif in notifications" :key="notif.id">
-    <x-dropdown-link href="#" @click.prevent="openModal('view', notif)">
+    <x-dropdown-link href="{{ route('appointments.index') }}" @click="markAsRead(notif.id)">
         <div class="flex items-center space-x-3">
             <div class="bg-blue-500 p-2 rounded-full text-white">
                 <i class="fa fa-calendar text-xs"></i>
@@ -63,9 +63,9 @@
 </template>
         </div>
 
-        <a href="#" class="block py-2 text-sm text-center text-blue-600 font-bold hover:underline border-t border-gray-100">
-            See all
-        </a>
+     <button @click="markAllAsRead()" class="w-full block py-2 text-sm text-center text-blue-600 font-bold hover:underline border-t border-gray-100 focus:outline-none">
+    Mark all as read
+</button>
     </div>
 </x-slot>
 
@@ -157,9 +157,46 @@
                 }
             },
 
+            // 4. Mark a single notification as read
+            markAsRead(id) {
+                // Remove from the local UI list immediately for a snappy feel
+                this.notifications = this.notifications.filter(notif => notif.id !== id);
+
+                // Send request to server so it stays read after refresh
+                fetch(`/api/notifications/mark-read/${id}`, { 
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }).catch(err => console.error('Failed to update server:', err));
+
+                console.log('Notification ' + id + ' removed from view.');
+            },
+
+            // 5. Mark everything as read
+            markAllAsRead() {
+                // Clear the local UI
+                this.notifications = [];
+
+                // Send request to server
+                fetch('/api/notifications/mark-all-read', { 
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }).catch(err => console.error('Failed to clear notifications:', err));
+            },
+
             openModal(mode, data) {
                 if (window.appointmentManager) {
                     window.appointmentManager.openModal(mode, data);
+                    
+                    // Mark as read automatically when the modal opens
+                    this.markAsRead(data.id);
                 } else {
                     console.error('appointmentManager is not defined on this page.');
                 }

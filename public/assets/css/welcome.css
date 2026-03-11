@@ -1,75 +1,47 @@
-/* Full Page Background */
-.welcome-body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
+/* public/css/landing.css */
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    scroll-behavior: smooth;
+    background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), 
+                url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2070&auto=format&fit=crop');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Logo Ring Styles */
+.logo-ring {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Ensure the path to your image is correct based on public folder */
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
-                url('/tooth_welcome.jfif') no-repeat center center fixed;
-    background-size: cover;
-    overflow: hidden;
+    width: 100px; 
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6 0%, #fbbf24 100%);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
 }
 
-
-
-/* Glassmorphic Container */
-.welcome-card {
-    background: rgba(255, 255, 255, 0.15); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 3.5rem;
-    border-radius: 25px;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    max-width: 550px;
-    width: 90%;
+.logo-ring::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    background: white;
+    border-radius: 50%;
+    z-index: 0;
 }
 
-.welcome-card h1 {
-    color: white;
-    margin-bottom: 2.5rem;
-    font-size: 2.4rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-}
-
-/* Button Logic */
-.btn-primary-custom, .btn-outline-custom {
-    display: inline-block;
-    padding: 14px 35px;
-    margin: 10px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.1rem;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    
-    /* Default: Blue background, White text */
-    background-color: #007bff;
-    color: white;
-    border: 2px solid #007bff;
-}
-
-/* Click State: Swaps to White background and Blue text */
-.btn-primary-custom:active, 
-.btn-outline-custom:active {
-    background-color: white !important;
-    color: #007bff !important;
-    border-color: white !important;
-    transform: scale(0.96); /* Visual click effect */
-}
-
-/* Hover State (Optional but recommended for Desktop) */
-.btn-primary-custom:hover, 
-.btn-outline-custom:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.logo-img {
+    z-index: 10;
+    width: 70%; 
+    height: 70%;
+    object-fit: contain;
 }

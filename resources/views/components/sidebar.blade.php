@@ -41,6 +41,16 @@
             <span class="ms-2">Appointments</span>
         </a>
 
+        <!-- Treatment Plans -->
+        <a href="{{ route('treatment-plans.index') }}"
+   class="flex items-center p-2 mb-2 rounded transition-colors duration-200
+   {{ request()->routeIs('treatment-plans.index') 
+        ? 'bg-white/30 font-bold text-white' 
+        : 'font-semibold text-white hover:bg-white/20' }}">
+    <i class="fas fa-clipboard-list w-5"></i>
+    <span class="ms-2">Treatment Plan</span>
+</a>
+        
         <!-- Examinations Header -->
         <div class="mt-4 mb-2 text-white font-bold uppercase tracking-wide text-xs px-2">Examinations</div>
 
@@ -64,6 +74,7 @@
             <span class="ms-2">Check-up</span>
         </a>
 
+       
         <!-- Oral Examination Collapse -->
         <div x-data="{ open: {{ request()->routeIs('oral_examination.*') ? 'true' : 'false' }} }">
             <button @click="open = !open"

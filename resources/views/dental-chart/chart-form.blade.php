@@ -122,7 +122,8 @@
                                     <span class="font-black text-gray-400 uppercase text-[9px] tracking-widest mr-2">Tools:</span>
                                     <button type="button" @click="selectedTool = 'check'" :class="selectedTool === 'check' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-1.5 rounded-md text-[9px] font-black transition-all uppercase tracking-widest">✓ Check</button>
                                     <button type="button" @click="selectedTool = 'wrong'" :class="selectedTool === 'wrong' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-1.5 rounded-md text-[9px] font-black transition-all uppercase tracking-widest">✗ Wrong</button>
-                                    <button type="button" @click="selectedTool = ''" :class="selectedTool === '' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-1.5 rounded-md text-[9px] font-black transition-all uppercase tracking-widest">Clear</button>
+                                    
+                                    <button type="button" @click="teeth = {}; selectedTool = 'check'" :class="selectedTool === '' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-1.5 rounded-md text-[9px] font-black transition-all uppercase tracking-widest">Clear All</button>
                                 </div>
                             </div>
 
@@ -137,7 +138,7 @@
                             <div class="bg-white border border-gray-100 rounded-xl p-4 mb-8 shadow-sm">
                                 <div class="grid grid-cols-16 gap-1 mb-6">
                                     @foreach($upperAdult as $num)
-                                        <div @click="teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
+                                        <div @click="teeth['{{ $num }}'] === selectedTool ? teeth['{{ $num }}'] = '' : teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
                                             <span class="text-[8px] font-black text-gray-400 mb-1">{{ $num }}</span>
                                             <div class="w-full aspect-square border-2 rounded-t-lg flex items-center justify-center relative bg-gray-50 group-hover:bg-blue-50" :class="teeth['{{ $num }}'] ? 'border-blue-400 bg-blue-50' : 'border-gray-200'">
                                                 <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2C10,2 7,3 6,5C5,7 5,10 6,14C7,18 9,22 12,22C15,22 17,18 18,14C19,10 19,7 18,5C17,3 14,2 12,2Z"/></svg>
@@ -151,7 +152,7 @@
                                 </div>
                                 <div class="grid grid-cols-16 gap-1">
                                     @foreach($lowerAdult as $num)
-                                        <div @click="teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
+                                        <div @click="teeth['{{ $num }}'] === selectedTool ? teeth['{{ $num }}'] = '' : teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
                                             <div class="w-full aspect-square border-2 rounded-b-lg flex items-center justify-center relative bg-gray-50 group-hover:bg-blue-50" :class="teeth['{{ $num }}'] ? 'border-blue-400 bg-blue-50' : 'border-gray-200'">
                                                 <svg class="w-4 h-4 text-gray-300 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2C10,2 7,3 6,5C5,7 5,10 6,14C7,18 9,22 12,22C15,22 17,18 18,14C19,10 19,7 18,5C17,3 14,2 12,2Z"/></svg>
                                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -169,7 +170,7 @@
                             <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm max-w-2xl mx-auto">
                                 <div class="grid grid-cols-10 gap-2 mb-6">
                                     @foreach($upperDeciduous as $num)
-                                        <div @click="teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
+                                        <div @click="teeth['{{ $num }}'] === selectedTool ? teeth['{{ $num }}'] = '' : teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
                                             <span class="text-[8px] font-black text-gray-400 mb-1">{{ $num }}</span>
                                             <div class="w-10 h-10 border-2 rounded-t-lg flex items-center justify-center relative bg-gray-50" :class="teeth['{{ $num }}'] ? 'border-blue-400 bg-blue-50' : 'border-gray-200'">
                                                 <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2C10,2 7,3 6,5C5,7 5,10 6,14C7,18 9,22 12,22C15,22 17,18 18,14C19,10 19,7 18,5C17,3 14,2 12,2Z"/></svg>
@@ -183,7 +184,7 @@
                                 </div>
                                 <div class="grid grid-cols-10 gap-2">
                                     @foreach($lowerDeciduous as $num)
-                                        <div @click="teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
+                                        <div @click="teeth['{{ $num }}'] === selectedTool ? teeth['{{ $num }}'] = '' : teeth['{{ $num }}'] = selectedTool" class="flex flex-col items-center group cursor-pointer">
                                             <div class="w-10 h-10 border-2 rounded-b-lg flex items-center justify-center relative bg-gray-50" :class="teeth['{{ $num }}'] ? 'border-blue-400 bg-blue-50' : 'border-gray-200'">
                                                 <svg class="w-3 h-3 text-gray-300 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2C10,2 7,3 6,5C5,7 5,10 6,14C7,18 9,22 12,22C15,22 17,18 18,14C19,10 19,7 18,5C17,3 14,2 12,2Z"/></svg>
                                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -201,7 +202,6 @@
 
                             <div class="mt-10 flex justify-between items-center border-t border-gray-100 pt-6">
                                 @if(isset($currentSession))
-                                 
                                     <div></div>
                                 @endif
                                 <button type="submit" class="bg-blue-900 text-white px-8 py-3 rounded-lg font-black hover:bg-black transition-all shadow-lg uppercase tracking-widest text-[10px]">

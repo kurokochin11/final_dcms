@@ -81,22 +81,27 @@ $(document).ready(function () {
             <button class="btn btn-primary btn-medium" @click="openViewId={{ $patient->id }}"> <i class="fas fa-eye"></i></button>
             <button class="btn btn-warning text-white btn-medium" @click="openEditId={{ $patient->id }}"> <i class="fas fa-edit"></i></button>
             <button class="btn btn-danger btn-medium" @click="openDeleteId={{ $patient->id }}"> <i class="fas fa-trash"></i></button>
-             <div class="dropdown">
+<div class="dropup">
     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ $patient->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-        Interview
+        <i class="fas fa-stethoscope"></i>
     </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $patient->id }}">
+    <ul class="dropdown-menu shadow-sm" aria-labelledby="dropdownMenuButton{{ $patient->id }}">
         <li>
             <a class="dropdown-item" href="{{ route('medical-history.index', $patient->id) }}">
                 Medical Check Up
             </a>
         </li>
+        <li><hr class="dropdown-divider"></li>
         <li>
             <a class="dropdown-item" href="{{ route('check-up.checkup_index', $patient->id) }}">
                 Dental Check Up
             </a>
         </li>
-        
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item" href="{{ route('dental-chart.index', $patient->id) }}">
+                Dental Chart
+            </a>
         </li>
     </ul>
 </div>
