@@ -1,22 +1,20 @@
-document.addEventListener('DOMContentLoaded', () => {
-
-    // Smooth transition when switching steps
-    const stepContainers = document.querySelectorAll('[x-show]');
-
-    stepContainers.forEach(container => {
-        container.style.transition = 'opacity 0.25s ease-in-out';
-    });
-
-    // Optional: scroll to top when step changes
-    document.addEventListener('click', (e) => {
-        if (e.target.matches('button')) {
-            setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            }, 100);
+document.addEventListener('change', (e) => {
+    // Check if the change happened on a radio button
+    if (e.target.type === 'radio' && e.target.value === 'No') {
+        const parent = e.target.closest('.mb-4');
+        const textField = parent ? parent.querySelector('input[type="text"], textarea') : null;
+        
+        if (textField) {
+            // Functional fix: Disable the field and clear value
+            textField.disabled = true;
+            textField.value = ''; 
         }
-    });
-
+    } else if (e.target.type === 'radio' && e.target.value === 'Yes') {
+        const parent = e.target.closest('.mb-4');
+        const textField = parent ? parent.querySelector('input[type="text"], textarea') : null;
+        
+        if (textField) {
+            textField.disabled = false;
+        }
+    }
 });

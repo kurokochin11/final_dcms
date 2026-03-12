@@ -34,7 +34,6 @@ class AppointmentController extends Controller
         $color = match($a->status) {
             'Completed' => '#16a34a',  // green
             'Cancelled' => '#dc2626',  // red
-            'Rescheduled' => '#ea580c',  // Orange (Amber-600)
             default => '#2563eb',      // blue for Scheduled
         };
 
@@ -59,7 +58,7 @@ class AppointmentController extends Controller
             'appointment_date' => 'required|date',
             'appointment_time' => 'required',
             'purpose' => 'nullable|string',
-            'status' => 'nullable|in:Scheduled,Completed,Cancelled,Rescheduled',
+            'status' => 'nullable|in:Scheduled,Completed,Cancelled',
         ]);
 
         Appointment::create($validated + [

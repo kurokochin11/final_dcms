@@ -48,7 +48,7 @@
             justify-content: center;
             /* Updated background logic */
             background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), 
-                              url('{{ asset('dental_bg.jpg') }}'); 
+                              url('{{ asset('auth_logo.jfif') }}'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -122,7 +122,7 @@
                                  :value="old('email')"
                                  required
                                  autofocus
-                                 placeholder="admin@clinic.com"/>
+                                 placeholder="Email"/>
                     </div>
                 </div>
 
@@ -136,7 +136,7 @@
                                  name="password"
                                  required
                                  autocomplete="current-password"
-                                 placeholder="••••••••"/>
+                                 placeholder="Password"/>
                         <i id="toggleIcon" data-lucide="eye" class="input-icon" onclick="togglePassword()"></i>
                     </div>
                 </div>
