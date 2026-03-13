@@ -363,16 +363,22 @@ $(document).ready(function () {
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Contact Person Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="emergency_full_name" value="{{ $patient->emergency_full_name }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                        <input type="text" name="emergency_full_name" value="{{ $patient->emergencyContact->full_name ?? '' }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Relationship</label>
-                            <input type="text" name="emergency_relationship" value="{{ $patient->emergency_relationship }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                            <input type="text" name="emergency_relationship"  value="{{ $patient->emergencyContact->relationship ?? '' }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Emergency Mobile <span class="text-red-500">*</span></label>
-                            <input type="text" name="emergency_mobile" value="{{ $patient->emergency_mobile }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                            <input type="text" name="emergency_mobile" value="{{ $patient->emergencyContact->mobile_number ?? '' }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+
+                        </div>
+                          <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Emergency Landline <span class="text-red-500">*</span></label>
+                            <input type="text" name="emergency_landline"  value="{{ $patient->emergencyContact->landline_number ?? '' }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                            
                         </div>
                     </div>
                 </div>
