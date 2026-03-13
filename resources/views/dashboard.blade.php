@@ -18,7 +18,7 @@
                 <x-welcome 
                 :totalPatients="$totalPatients" 
                     :totalAppointments="$totalAppointments"
-                    :todayScheduledAppointments="$todayScheduledAppointments"
+                    :todayScheduledAppointments="$todayAppointments"
                     :diagnoses="$diagnoses"
                     :treatmentPlans="$treatmentPlans"
                     :radiographs="$radiographs"

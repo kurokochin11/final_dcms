@@ -23,6 +23,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // 3. Insert the SuperAdmin account
+        DB::table('users')->insert([
+            'name' => 'Super Admin',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('admin2026'), // Change this to a secure password
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

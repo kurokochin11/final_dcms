@@ -32,6 +32,7 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact(
         'totalPatients',
         'totalAppointments', 
+        'todayAppointments',
         'diagnoses',
         'treatmentPlans',
         'radiographs',

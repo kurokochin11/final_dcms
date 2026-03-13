@@ -30,7 +30,7 @@ Route::middleware([
         // 1. Gather the "ingredients" (Data)
         $totalPatients = \App\Models\Patient::count();
         $totalAppointments = \App\Models\Appointment::count();
-    $todayScheduledAppointments = \App\Models\Appointment::with('patient')
+    $todayAppointments = \App\Models\Appointment::with('patient')
             ->whereDate('appointment_date', now()->format('Y-m-d'))
             ->where('status', 'Scheduled')
             ->get();
@@ -46,7 +46,7 @@ Route::middleware([
         return view('dashboard', compact(
             'totalPatients', 
             'totalAppointments', 
-            'todayScheduledAppointments',
+            'todayAppointments',
             'diagnoses', 
             'treatmentPlans',
             'radiographs',
@@ -145,7 +145,7 @@ Route::get('/radiographs/{radiograph}/download-pdf', [RadiographController::clas
 
 // Treatment Plan routes
 
-    Route::get('/treatment-plans', [TreatmentPlanController::class, 'index'])->name('treatment-plans.index');
+   Route::get('/treatment-plans',  [TreatmentPlanController::class, 'index'])->name('treatment-plans.index');
     Route::post('/treatment-plans', [TreatmentPlanController::class, 'store'])->name('treatment-plans.store');
     Route::get('/treatment-plans/{treatmentPlan}/edit', [TreatmentPlanController::class, 'edit'])->name('treatment-plans.edit');
     Route::put('/treatment-plans/{treatmentPlan}', [TreatmentPlanController::class, 'update'])->name('treatment-plans.update');

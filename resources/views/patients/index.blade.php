@@ -225,161 +225,181 @@ $(document).ready(function () {
     </div>
 </div>
 
-<!-- EDIT MODAL -->
 <div x-show="openEditId === {{ $patient->id }}" x-cloak
-     class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
+     {{-- Initializing data here ensures "editTab" and "totalEditTabs" are defined for all child elements --}}
+     x-data="{ editTab: 1, totalEditTabs: 4 }" 
+     class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-    <div class="relative bg-white rounded w-1/2 max-h-[90vh] overflow-y-auto shadow-lg"
-         x-data="{ tab: 1 }">
+    <div class="relative bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 flex flex-col">
 
-        <!-- HEADER -->
-        <div class="px-6 py-4 flex justify-between items-center bg-blue-600 rounded-t-xl shadow">
-            <h2 class="text-lg font-bold text-white">Edit Patient</h2>
-            <button type="button"
-                class="text-white hover:text-gray-200 text-2xl font-bold leading-none"
-                @click="openEditId = null">
-                &times;
-            </button>
+        <div class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md">
+            <div>
+                <h2 class="text-xl font-bold">Edit Patient Record</h2>
+                <p class="text-xs text-blue-100 opacity-80">Updating: {{ $patient->first_name }} {{ $patient->last_name }}</p>
+            </div>
+            <button type="button" class="text-white hover:rotate-90 transition-transform text-3xl font-light leading-none" @click="openEditId = null">&times;</button>
         </div>
 
-        <form method="POST" action="{{ route('patients.update', $patient->id) }}">
+        <form method="POST" action="{{ route('patients.update', $patient->id) }}" class="flex flex-col flex-1 overflow-hidden">
             @csrf
             @method('PUT')
 
-            <!-- TAB BUTTONS -->
-            <div class="flex border-b mb-4 bg-blue-500 rounded-t">
-                <button type="button" @click="tab = 1"
-                    :class="tab === 1 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
-                    class="px-4 py-2 rounded-t transition-colors">
-                    Basic Info
-                </button>
-
-                <button type="button" @click="tab = 2"
-                    :class="tab === 2 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
-                    class="px-4 py-2 rounded-t transition-colors">
-                    Address
-                </button>
-
-                <button type="button" @click="tab = 3"
-                    :class="tab === 3 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
-                    class="px-4 py-2 rounded-t transition-colors">
-                    Contact
-                </button>
-
-                <button type="button" @click="tab = 4"
-                    :class="tab === 4 ? 'bg-blue-700 text-white font-semibold' : 'text-white hover:bg-blue-400 hover:text-white'"
-                    class="px-4 py-2 rounded-t transition-colors">
-                    Emergency
-                </button>
+            <div class="px-8 pt-6 pb-2 bg-gray-50 border-b">
+                <div class="flex items-center justify-between mb-2">
+                    <template x-for="i in totalEditTabs">
+                        <div class="flex-1 flex items-center">
+                            <div class="h-2 flex-1 rounded-full transition-colors duration-500" 
+                                 :class="editTab >= i ? 'bg-blue-600' : 'bg-gray-200'"></div>
+                            <div x-show="i < totalEditTabs" class="w-2"></div>
+                        </div>
+                    </template>
+                </div>
+                <div class="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    <span :class="editTab === 1 ? 'text-blue-600' : ''">Basic Info</span>
+                    <span :class="editTab === 2 ? 'text-blue-600' : ''">Address</span>
+                    <span :class="editTab === 3 ? 'text-blue-600' : ''">Contact</span>
+                    <span :class="editTab === 4 ? 'text-blue-600' : ''">Emergency</span>
+                </div>
             </div>
 
-            <!-- TAB CONTENT -->
-            <div class="relative border rounded bg-white p-4 mb-4" style="min-height:520px">
-
-                <!-- TAB 1: BASIC INFO -->
-                <div x-show="tab === 1" class="space-y-2">
-                    <label class="font-medium">Last Name</label>
-                    <input type="text" name="last_name" value="{{ $patient->last_name }}" class="w-full border p-2" required>
-
-                    <label class="font-medium">First Name</label>
-                    <input type="text" name="first_name" value="{{ $patient->first_name }}" class="w-full border p-2" required>
-
-                    <label class="font-medium">Middle Name</label>
-                    <input type="text" name="middle_name" value="{{ $patient->middle_name }}" class="w-full border p-2">
-
-                    <label class="font-medium">Date of Birth</label>
-                    <input type="date" name="date_of_birth" value="{{ $patient->date_of_birth->format('Y-m-d') }}" class="w-full border p-2" required>
-
-                    <label class="font-medium">Age</label>
-                    <input type="text" name="age" value="{{ $patient->age }}" class="w-full border p-2" required>
-
-                    <label class="font-medium">Nationality</label>
-                    <input type="text" name="nationality" value="{{ $patient->nationality }}" class="w-full border p-2">
-
-                    <label class="font-medium">Religion</label>
-                    <input type="text" name="religion" value="{{ $patient->religion }}" class="w-full border p-2">
-
-                    <label class="font-medium">Occupation</label>
-                    <input type="text" name="occupation" value="{{ $patient->occupation }}" class="w-full border p-2">
-
-                    <label class="font-medium">Sex</label>
-                    <select name="sex" class="w-full border p-2" required>
-                        <option value="Male" {{ $patient->sex == 'Male' ? 'selected' : '' }}>Male</option>
-                        <option value="Female" {{ $patient->sex == 'Female' ? 'selected' : '' }}>Female</option>
-                        <option value="Prefer not to say" {{ $patient->sex == 'Prefer not to say' ? 'selected' : '' }}>
-                            Prefer not to say
-                        </option>
-                    </select>
-
-                    <label class="font-medium">Civil Status</label>
-                    <select name="civil_status" class="w-full border p-2">
-                        @foreach (['Single','Married','Widowed','Separated','Divorced','Annulled','Common-Law'] as $status)
-                            <option value="{{ $status }}" {{ $patient->civil_status == $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <label class="font-medium">Date Registered</label>
-                    <input type="date" name="date_registered" value="{{ $patient->date_registered->format('Y-m-d') }}" class="w-full border p-2">
+            <div class="flex-1 overflow-y-auto p-8 bg-white">
+                
+                <div x-show="editTab === 1" x-transition.opacity class="grid grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" value="{{ $patient->last_name }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 border" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" value="{{ $patient->first_name }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 border" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
+                        <input type="text" name="middle_name" value="{{ $patient->middle_name }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Date of Birth</label>
+                        <input type="date" name="date_of_birth" value="{{ $patient->date_of_birth }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Age <span class="text-red-500">*</span></label>
+                        <input type="number" name="age" value="{{ $patient->age }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Sex <span class="text-red-500">*</span></label>
+                        <select name="sex" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                            <option value="Male" {{ $patient->sex == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ $patient->sex == 'Female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Civil Status</label>
+                        <select name="civil_status" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                            <option value="Single" {{ $patient->civil_status == 'Single' ? 'selected' : '' }}>Single</option>
+                            <option value="Married" {{ $patient->civil_status == 'Married' ? 'selected' : '' }}>Married</option>
+                            <option value="Widowed" {{ $patient->civil_status == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                            <option value="Separated" {{ $patient->civil_status == 'Separated' ? 'selected' : '' }}>Separated</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nationality</label>
+                        <input type="text" name="nationality" value="{{ $patient->nationality }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Occupation</label>
+                        <input type="text" name="occupation" value="{{ $patient->occupation }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Religion</label>
+                        <input type="text" name="religion" value="{{ $patient->religion }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
                 </div>
 
-                <!-- TAB 2: ADDRESS -->
-                <div x-show="tab === 2" class="space-y-2">
-                    <label class="font-medium">Address</label>
-                    <textarea name="address" class="w-full border p-2" rows="2">{{ $patient->address }}</textarea>
-
-                    <label class="font-medium">City</label>
-                    <input type="text" name="city" value="{{ $patient->city }}" class="w-full border p-2">
-
-                    <label class="font-medium">Province</label>
-                    <input type="text" name="province" value="{{ $patient->province }}" class="w-full border p-2">
-
-                    <label class="font-medium">Zip Code</label>
-                    <input type="text" name="zip_code" value="{{ $patient->zip_code }}" class="w-full border p-2">
+                <div x-show="editTab === 2" x-transition.opacity class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Street Address <span class="text-red-500">*</span></label>
+                        <input type="text" name="address" value="{{ $patient->address }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">City</label>
+                            <input type="text" name="city" value="{{ $patient->city }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Province</label>
+                            <input type="text" name="province" value="{{ $patient->province }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                        </div>
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Zip Code</label>
+                        <input type="text" name="zip_code" value="{{ $patient->zip_code }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
                 </div>
 
-                <!-- TAB 3: CONTACT -->
-                <div x-show="tab === 3" class="space-y-2">
-                    <label class="font-medium">Mobile Number</label>
-                    <input type="text" name="mobile_number" value="{{ $patient->mobile_number }}" class="w-full border p-2">
-
-                    <label class="font-medium">Landline Number</label>
-                    <input type="text" name="landline_number" value="{{ $patient->landline_number }}" class="w-full border p-2">
-
-                    <label class="font-medium">Email</label>
-                    <input type="email" name="email" value="{{ $patient->email }}" class="w-full border p-2">
+                <div x-show="editTab === 3" x-transition.opacity class="space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Mobile Number <span class="text-red-500">*</span></label>
+                            <input type="text" name="mobile_number" value="{{ $patient->mobile_number }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Landline (Optional)</label>
+                            <input type="text" name="landline_number" value="{{ $patient->landline_number }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" value="{{ $patient->email }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500" required>
+                    </div>
                 </div>
 
-                <!-- TAB 4: EMERGENCY -->
-                <div x-show="tab === 4" class="space-y-2">
-                    <label class="font-medium">Referred By</label>
-                    <input type="text" name="referred_by" value="{{ $patient->referred_by }}" class="w-full border p-2">
-
-                    <label class="font-medium">Emergency Contact Name</label>
-                    <input type="text" name="emergency_full_name" value="{{ $patient->emergencyContact->full_name ?? '' }}" class="w-full border p-2" required>
-
-                    <label class="font-medium">Relationship</label>
-                    <input type="text" name="emergency_relationship" value="{{ $patient->emergencyContact->relationship ?? '' }}" class="w-full border p-2">
-
-                    <label class="font-medium">Emergency Mobile</label>
-                    <input type="text" name="emergency_mobile" value="{{ $patient->emergencyContact->mobile_number ?? '' }}" class="w-full border p-2">
-
-                    <label class="font-medium">Emergency Landline</label>
-                    <input type="text" name="emergency_landline" value="{{ $patient->emergencyContact->landline_number ?? '' }}" class="w-full border p-2">
+                <div x-show="editTab === 4" x-transition.opacity class="space-y-5">
+                    <div class="p-0 mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Referred By</label>
+                        <input type="text" name="referred_by" value="{{ $patient->referred_by }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="p-3 bg-blue-50 rounded-md border border-blue-100">
+                        <p class="text-xs text-blue-700 font-semibold">Who should we contact in case of an emergency?</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Contact Person Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="emergency_full_name" value="{{ $patient->emergency_full_name }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Relationship</label>
+                            <input type="text" name="emergency_relationship" value="{{ $patient->emergency_relationship }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Emergency Mobile <span class="text-red-500">*</span></label>
+                            <input type="text" name="emergency_mobile" value="{{ $patient->emergency_mobile }}" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
-            <!-- FIXED BUTTONS INSIDE MODAL -->
-            <div class="flex justify-end space-x-2 mt-4">
-                <button type="button" @click="openEditId = null"
-                    class="btn btn-dark btn-sm">Cancel</button>
-                <button type="submit"
-                    class="btn btn-primary btn-sm">Update</button>
+            <div class="p-6 bg-gray-50 border-t flex justify-between items-center">
+                <div class="w-1/4">
+                    <button type="button" x-show="editTab > 1" @click="editTab--" class="flex items-center text-gray-600 hover:text-gray-900 font-bold transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </button>
+                </div>
+
+                <div class="text-sm font-bold text-gray-400">
+                    Step <span x-text="editTab" class="text-blue-600"></span> of 4
+                </div>
+
+                <div class="w-1/4 flex justify-end">
+                    <button type="button" x-show="editTab < totalEditTabs" @click="editTab++" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition shadow-md flex items-center">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+
+                    <button type="submit" x-show="editTab === totalEditTabs" class="px-8 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold transition shadow-md flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i> Update Patient
+                    </button>
+                </div>
             </div>
         </form>
-
     </div>
 </div>
 <!-- DELETE MODAL -->
@@ -423,168 +443,257 @@ $(document).ready(function () {
 
     </div>
 </div>
+@endforeach
+     </tbody>
+   </table>
+     </div>
+        <div class="mt-4">
+        {{ $patients->links() }}
+            </div>
+            
+<!-- ADD MODAL -->
+               <div x-show="openAdd" x-cloak
+     class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4">
-                    {{ $patients->links() }}
-                </div>
-                <!-- ADD MODAL -->
-<div x-show="openAdd" x-cloak
-     class="fixed inset-0 black/40 backdrop-blur-sm flex items-center justify-center z-50 bg-black/40">
+    <div class="relative bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 flex flex-col">
 
-    <div class="relative bg-white rounded-lg w-1/2 max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
-
-        <!-- HEADER -->
-        <div class="bg-blue-600 text-white p-4 rounded-t flex justify-between items-center">
-            <h2 class="text-lg font-bold">Add Patient</h2>
-            <button type="button"
-                class="text-white hover:text-gray-200 text-2xl font-extrabold leading-none"
-                @click="openAdd = false">&times;</button>
+        <div class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md">
+            <div>
+                <h2 class="text-xl font-bold">Registration</h2>
+                <p class="text-xs text-blue-100 opacity-80">Fill in all required fields to add a new patient record.</p>
+            </div>
+            <button type="button" class="text-white hover:rotate-90 transition-transform text-3xl font-light leading-none" @click="openAdd = false">&times;</button>
         </div>
 
-        <!-- FORM -->
-        <form method="POST" action="{{ route('patients.store') }}" x-data="{ tab: 1 }" class="p-6">
+        <form method="POST" action="{{ route('patients.store') }}" x-data="{ tab: 1, totalTabs: 4 }" class="flex flex-col flex-1 overflow-hidden">
             @csrf
 
-            <!-- TAB HEADERS -->
-            <div class="flex border-b mb-4">
-                <button type="button" @click="tab = 1"
-                    :class="tab === 1 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
-                    class="px-4 py-2 font-semibold rounded-t mr-1">
-                    Basic Info
-                </button>
-
-                <button type="button" @click="tab = 2"
-                    :class="tab === 2 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
-                    class="px-4 py-2 font-semibold rounded-t mr-1">
-                    Address
-                </button>
-
-                <button type="button" @click="tab = 3"
-                    :class="tab === 3 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
-                    class="px-4 py-2 font-semibold rounded-t mr-1">
-                    Contact
-                </button>
-
-                <button type="button" @click="tab = 4"
-                    :class="tab === 4 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'"
-                    class="px-4 py-2 font-semibold rounded-t">
-                    Emergency
-                </button>
+            <div class="px-8 pt-6 pb-2 bg-gray-50 border-b">
+                <div class="flex items-center justify-between mb-2">
+                    <template x-for="i in totalTabs">
+                        <div class="flex-1 flex items-center">
+                            <div class="h-2 flex-1 rounded-full transition-colors duration-500" 
+                                 :class="tab >= i ? 'bg-blue-600' : 'bg-gray-200'"></div>
+                            <div x-show="i < totalTabs" class="w-2"></div>
+                        </div>
+                    </template>
+                </div>
+                <div class="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    <span :class="tab === 1 ? 'text-blue-600' : ''">Basic Info</span>
+                    <span :class="tab === 2 ? 'text-blue-600' : ''">Address</span>
+                    <span :class="tab === 3 ? 'text-blue-600' : ''">Contact</span>
+                    <span :class="tab === 4 ? 'text-blue-600' : ''">Emergency</span>
+                </div>
             </div>
 
-            <!-- TAB CONTENT -->
-            <div class="border rounded bg-white p-4 mb-4" style="min-height:520px">
+            <div class="flex-1 overflow-y-auto p-8 bg-white">
                 
-                <!-- Step 1: Basic Info -->
-                <div x-show="tab === 1" class="space-y-2">
-                    <label class="block font-medium">Last Name</label>
-                    <input type="text" name="last_name" class="w-full border p-2" placeholder="Enter Last Name" required>
+                <div x-show="tab === 1" x-transition.opacity class="grid grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 border" placeholder="Enter Last Name" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 border" placeholder="Enter First Name" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
+                        <input type="text" name="middle_name" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="Enter Middle Name">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Date of Birth</label>
+                        <input type="date" name="date_of_birth" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Age <span class="text-red-500">*</span></label>
+                        <input type="number" name="age" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="0" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Sex <span class="text-red-500">*</span></label>
+                        <select name="sex" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                             <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Civil Status</label>
+                        <select name="civil_status" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border">
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Separated">Separated</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nationality</label>
+                        <input type="text" name="nationality" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="Filipino">
+                    </div>
 
-                    <label class="block font-medium">First Name</label>
-                    <input type="text" name="first_name" class="w-full border p-2" placeholder="Enter First Name" required>
-
-                    <label class="block font-medium">Middle Name</label>
-                    <input type="text" name="middle_name" class="w-full border p-2" placeholder="Enter Middle Name">
-
-                    <label class="block font-medium">Date of Birth</label>
-                    <input type="date" name="date_of_birth" class="w-full border p-2">
-
-                    <label class="block font-medium">Age</label>
-                    <input type="text" name="age" class="w-full border p-2" placeholder="Enter Age" required>
-
-                    <label class="block font-medium">Nationality</label>
-                    <input type="text" name="nationality" class="w-full border p-2" placeholder="Enter Nationality">
-
-                    <label class="block font-medium">Religion</label>
-                    <input type="text" name="religion" class="w-full border p-2" placeholder="Enter Religion">
-
-                    <label class="block font-medium">Occupation</label>
-                    <input type="text" name="occupation" class="w-full border p-2" placeholder="Enter Occupation">
-
-                    <label class="block font-medium">Sex</label>
-                    <select name="sex" class="w-full border p-2" required>
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-
-                    <label class="block font-medium">Civil Status</label>
-                    <select name="civil_status" class="w-full border p-2">
-                        <option value="">Select Civil Status</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Widowed">Widowed</option>
-                        <option value="Separated">Separated</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Annulled">Annulled</option>
-                        <option value="Commonlaw">Common-Law / Live-in</option>
-                    </select>
-
-                    <label class="block font-medium">Date Registered</label>
-                    <input type="date" name="date_registered" class="w-full border p-2">
+                    <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Occupation</label>
+                        <input type="text" name="occupation" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="e.g. Engineer">
+                    </div>
+                   <div class="col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Religion</label>
+                        <input type="text" name="religion" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="Religion">
+                    </div>
                 </div>
 
-                <!-- Step 2: Address -->
-                <div x-show="tab === 2" class="space-y-2">
-                    <label class="block font-medium">Address</label>
-                    <textarea name="address" class="w-full border p-2" rows="2" placeholder="Enter Address" required></textarea>
 
-                    <label class="block font-medium">City</label>
-                    <input type="text" name="city" class="w-full border p-2" placeholder="Enter City">
-
-                    <label class="block font-medium">Province</label>
-                    <input type="text" name="province" class="w-full border p-2" placeholder="Enter Province">
-
-                    <label class="block font-medium">Zip Code</label>
-                    <input type="text" name="zip_code" class="w-full border p-2" placeholder="Enter Zip Code">
+                <div x-show="tab === 2" x-transition.opacity class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Street Address <span class="text-red-500">*</span></label>
+                        <input type="text" name="address" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="House No. / Street Name" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">City</label>
+                            <input type="text" name="city" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="Cebu City">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Province</label>
+                            <input type="text" name="province" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="Cebu">
+                        </div>
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Zip Code</label>
+                        <input type="text" name="zip_code" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="6000">
+                    </div>
                 </div>
 
-                <!-- Step 3: Contact -->
-                <div x-show="tab === 3" class="space-y-2">
-                    <label class="block font-medium">Mobile Number</label>
-                    <input type="text" name="mobile_number" class="w-full border p-2" placeholder="Enter Mobile Number" required>
+              <div x-show="tab === 3" x-transition.opacity class="space-y-5" x-data="{ 
+    mobile: '', 
+    email: '',
+    isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    },
+    isValidMobile(num) {
+        return /^09\d{9}$/.test(num); // Validates 09 + 9 digits
+    }
+}">
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">
+                Mobile Number <span class="text-red-500">*</span>
+            </label>
+            <input type="text" 
+                   name="mobile_number" 
+                   x-model="mobile"
+                   @input="mobile = mobile.replace(/[^0-9]/g, '').slice(0, 11)"
+                   class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500" 
+                   placeholder="09123456789" 
+                   pattern="09[0-9]{9}"
+                   title="Please enter a valid 11-digit mobile number starting with 09"
+                   required>
+            <p x-show="mobile.length > 0 && !isValidMobile(mobile)" class="text-xs text-red-500 mt-1">Must be 11 digits starting with 09</p>
+        </div>
 
-                    <label class="block font-medium">Landline Number</label>
-                    <input type="text" name="landline_number" class="w-full border p-2" placeholder="Enter Landline Number">
+        <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Landline (Optional)</label>
+            <input type="text" 
+                   name="landline_number" 
+                   class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border"
+                   @input="$el.value = $el.value.replace(/[^0-9-]/g, '')"
+                   placeholder="032-1234567">
+        </div>
+    </div>
 
-                    <label class="block font-medium">Email</label>
-                    <input type="email" name="email" class="w-full border p-2" placeholder="Enter Email Address" required>
-                </div>
+    <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+            Email Address <span class="text-red-500">*</span>
+        </label>
+        <input type="email" 
+               name="email" 
+               x-model="email"
+               class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500" 
+               placeholder="patient@example.com" 
+               required>
+        <p x-show="email.length > 0 && !isValidEmail(email)" class="text-xs text-red-500 mt-1">Please enter a valid email address</p>
+    </div>
+</div>
+                <div x-show="tab === 4" x-transition.opacity class="space-y-5">
+                <div class="p-0 mb-4">
+    <label class="block text-sm font-bold text-gray-700 mb-1">Referred By</label>
+    <input type="text" name="referred_by" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500" placeholder="Name of Doctor or Patient who referred">
+</div>
+                    <div class="p-3 bg-blue-50 rounded-md border border-blue-100">
+                        <p class="text-xs text-blue-700 font-semibold">Who should we contact in case of an emergency?</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Contact Person Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="emergency_full_name" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="Full Name" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Relationship</label>
+                            <input type="text" name="emergency_relationship" class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border" placeholder="e.g. Spouse" required>
+                        </div>
+                       <div x-data="{ 
+    eMobile: '', 
+    isValidEMobile(num) {
+        return /^09\d{9}$/.test(num);
+    }
+}">
+    <label class="block text-sm font-bold text-gray-700 mb-1">
+        Emergency Mobile <span class="text-red-500">*</span>
+    </label>
+    
+    <input type="text" 
+           name="emergency_mobile" 
+           x-model="eMobile"
+           @input="eMobile = eMobile.replace(/[^0-9]/g, '').slice(0, 11)"
+           class="w-full border-gray-300 rounded-md shadow-sm p-2.5 border transition focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+           :class="eMobile.length > 0 && !isValidEMobile(eMobile) ? 'border-red-500 bg-red-50' : 'border-gray-300'"
+           placeholder="09XXXXXXXXX" 
+           maxlength="11"
+           required>
 
-                <!-- Step 4: Emergency -->
-                <div x-show="tab === 4" class="space-y-2">
-                    <label class="block font-medium">Referred By</label>
-                    <input type="text" name="referred_by" class="w-full border p-2" placeholder="Enter Referrer Name">
-
-                    <label class="block font-medium">Emergency Contact Name</label>
-                    <input type="text" name="emergency_full_name" class="w-full border p-2" placeholder="Enter Emergency Contact Name" required>
-
-                    <label class="block font-medium">Relationship</label>
-                    <input type="text" name="emergency_relationship" class="w-full border p-2" placeholder="Enter Relationship" required>
-
-                    <label class="block font-medium">Emergency Mobile</label>
-                    <input type="text" name="emergency_mobile" class="w-full border p-2" placeholder="Enter Emergency Mobile Number" required>
-
-                    <label class="block font-medium">Emergency Landline</label>
-                    <input type="text" name="emergency_landline" class="w-full border p-2" placeholder="Enter Emergency Landline Number">
+    <div x-show="eMobile.length > 0 && !isValidEMobile(eMobile)" 
+         x-transition 
+         class="text-xs text-red-600 mt-1 font-semibold flex items-center">
+        <i class="fas fa-exclamation-circle mr-1"></i> 
+        Must start with 09 and be 11 digits
+    </div>
+</div>
+                    </div>
                 </div>
 
             </div>
 
-            <!-- SUBMIT BUTTON -->
-            <div class="flex justify-end mt-4">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    Submit
-                </button>
-            </div>
+            <div class="p-6 bg-gray-50 border-t flex justify-between items-center">
+                <div class="w-1/4">
+                    <button type="button" 
+                            x-show="tab > 1" 
+                            @click="tab--" 
+                            class="flex items-center text-gray-600 hover:text-gray-900 font-bold transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </button>
+                </div>
 
+                <div class="text-sm font-bold text-gray-400">
+                    Step <span x-text="tab" class="text-blue-600"></span> of 4
+                </div>
+
+                <div class="w-1/4 flex justify-end">
+                    <button type="button" 
+                            x-show="tab < totalTabs" 
+                            @click="tab++" 
+                            class="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition shadow-md flex items-center">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+
+                    <button type="submit" 
+                            x-show="tab === totalTabs" 
+                            class="px-8 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold transition shadow-md flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i> Save Patient
+                    </button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
-
 </x-app-layout> 
