@@ -28,7 +28,7 @@ function closeModal(type, id) {
 }
 </script>
 
-@section('title', 'Patient Check-up Records')
+
 
 <x-app-layout>
 <x-slot name="header">

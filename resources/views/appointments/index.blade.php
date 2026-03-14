@@ -103,11 +103,11 @@ $(document).ready(function () {
         </h2>
     </x-slot>
 
-    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8" x-data="appointmentManager()" x-cloak>
+   <div class="pt-0 pb-8 max-w-7xl mx-auto sm:px-6 lg:px-8" x-data="appointmentManager()" x-cloak>
         
-        <div class="card shadow-sm mb-4">
+       <div class="card shadow-sm border-0 mt-0 mb-4">
             <div class="calendar-header d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-4">
                     <h4 class="mb-0 fw-bold" x-text="monthYear"></h4>
                     <div class="btn-group">
                         <button class="btn btn-outline-light btn-sm" @click="prevMonth()"><i class="fas fa-chevron-left"></i></button>

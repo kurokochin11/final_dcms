@@ -17,7 +17,6 @@
     });
 </script>
 
-@section('title', 'Radiograph Records')
 
 <x-app-layout>
     <div class="container-fluid py-4">

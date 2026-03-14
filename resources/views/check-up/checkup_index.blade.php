@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/dental-checkup.css') }}">
 <script src="{{ asset('assets/js/dental-checkup.js') }}" defer></script>
 
-@section('title', 'Dental Check-up Form')
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">

@@ -19,7 +19,7 @@ $(document).ready(function () {
 });
 </script>
 
-@section('title', 'Patient Management')
+
 
 <x-app-layout>
     <x-slot name="header">
@@ -224,6 +224,8 @@ $(document).ready(function () {
 
     </div>
 </div>
+
+<!-- EDIT MODAL -->
 
 <div x-show="openEditId === {{ $patient->id }}" x-cloak
      {{-- Initializing data here ensures "editTab" and "totalEditTabs" are defined for all child elements --}}

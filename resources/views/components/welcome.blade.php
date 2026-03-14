@@ -13,7 +13,26 @@
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
     .card-category { font-weight: 600; }
+
+    /* Moves the white container upward and reduces internal top padding */
+    .page-inner {
+        padding-top: 15px !important;
+        margin-top: -20px !important; /* Pulls the container upward */
+    }
+
+    /* Styles for the button when placed in the header area */
+    .header-action-row {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 25px 10px 25px;
+    }
 </style>
+
+<div class="header-action-row">
+    <a href="{{ route('register') }}" class="btn btn-primary btn-round">
+        <i class="fas fa-user-plus me-2"></i> Add Account
+    </a>
+</div>
 
 <div class="page-inner">
     <div class="row">

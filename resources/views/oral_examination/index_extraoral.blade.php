@@ -48,9 +48,6 @@ $(document).ready(function() {
 });
 </script>
 
-
-
-@section('title', 'Extraoral Examinations')
 <x-app-layout>
   
   <x-slot name="header">

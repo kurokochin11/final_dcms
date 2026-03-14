@@ -16,7 +16,6 @@ $(document).ready(function () {
 });
 </script>
 
-@section('title', 'Intraoral Examinations')
 <x-app-layout>
 <x-slot name="header">
     <div class="flex items-center justify-between">

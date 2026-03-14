@@ -58,8 +58,6 @@ $('#patientFilter').on('change', function () {
 });
 </script>
 
-
-@section('title', 'Treatment Plans')
 <x-app-layout>
     <x-slot name="header">
         <!-- {{-- header placeholder (wrapped by x-data root below) --}} -->

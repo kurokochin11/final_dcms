@@ -4,8 +4,15 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
- <link rel="icon" type="image/x-icon" href="{{ asset('tooth_logo.ico') }}"> 
-      <title>@yield('title', config('app.name'))</title>
+ 
+        <link rel="icon" type="image/x-icon" href="{{ asset('tooth_logo.ico') }}?v=1"> 
+
+    <title>
+        @hasSection('title') 
+            @yield('title') | 
+        @endif 
+        {{ config('app.name') }}
+    </title>
         
 <!-- Fonts and icons KaiAdmin Bootstrap -->
 <script src="{{ asset('assets/js/plugin/webfont/webfont.min.js') }}"></script>
