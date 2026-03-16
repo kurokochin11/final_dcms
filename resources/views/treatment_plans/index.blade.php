@@ -533,13 +533,14 @@ $('#patientFilter').on('change', function () {
         </div>
 
         <div class="p-4 border-t bg-gray-50 dark:bg-gray-900 flex items-center justify-end gap-3">
-            <template x-if="view.id">
-                <button type="button"
-                    @click="window.open('/treatment-plans/' + view.id + '/download-pdf', '_blank')"
-                    class="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition flex items-center gap-2 text-sm font-bold">
-                    <i class="fas fa-file-pdf"></i> Download PDF
-                </button>
-            </template>
+           <template x-if="view.id">
+    <button type="button"
+        @click="window.open('/treatment-plans/' + view.id + '/pdf', '_blank')"
+        class="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition flex items-center gap-2 text-sm font-bold">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </button>
+</template>
+
 
             <button @click="openViewModal=false" class="px-6 py-2 bg-slate-800 text-white rounded shadow hover:bg-slate-900 transition text-sm font-bold">
                 Close

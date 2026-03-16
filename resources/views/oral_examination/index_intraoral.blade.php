@@ -18,61 +18,115 @@ $(document).ready(function () {
 
 <x-app-layout>
 <x-slot name="header">
-    <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Intraoral Examinations
-        </h2>
-        <button onclick="openCreateModal()" class="btn btn-primary btn-md ">
-              <i class="fas fa-plus me-2"></i> New Examination
-        </button>
-    </div>
+<div class="flex items-center justify-between">
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        Intraoral Examinations
+    </h2>
+</div>
 </x-slot>
 
-<div class="py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+<div class="py-12">
+    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-10">
+
+        <h3 class="text-xl font-semibold text-gray-800 mb-6">Records</h3>
+
         @if(session('success'))
-            <div class="mb-4 px-4 py-2 bg-green-200 text-green-800 rounded">{{ session('success') }}</div>
+            <div class="mb-4 px-4 py-2 bg-green-100 border border-green-200 text-green-800 rounded-lg">
+                {{ session('success') }}
+            </div>
         @endif
 
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="table-responsive">
+        <div class="bg-white shadow-sm border rounded-xl overflow-hidden">
+            
+            <div class="p-4 border-b bg-white">
+                <div class="d-flex align-items-end justify-content-between flex-wrap gap-4">
+                    
+                    <div class="d-flex align-items-end gap-3">
+                       <div class="flex-column">
+    <label class="text-xs font-bold text-gray-400 uppercase mb-1 d-block tracking-wider">Patient Filter</label>
+    <select id="filterPatient" class="form-select form-select-sm border-gray-300" style="width:240px;">
+        <option value="">All Patients</option>
+        @foreach($patients as $patient)
+            <option value="{{ $patient->full_name }}">
+                {{ $patient->full_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+                        <div class="flex-column">
+                            <select id="filterDate" class="form-select form-select-sm border-gray-300" style="width:180px;">
+                                <option value="">All Dates</option>
+                                @foreach($examinations->pluck('date')->unique()->sortDesc() as $date)
+                                    <option value="{{ \Carbon\Carbon::parse($date)->format('M d, Y') }}">
+                                        {{ \Carbon\Carbon::parse($date)->format('M d, Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button id="resetFilters" class="btn btn-outline-secondary btn-sm border-gray-300" title="Reset">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+
+                    <div>
+                        <button onclick="openCreateModal()" class="btn btn-primary px-4 shadow-sm d-flex align-items-center gap-2">
+                            <i class="fas fa-plus"></i> NEW EXAMINATION
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+             <div class="table-responsive">
                     <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
-                    <thead>
-                        <tr class="bg-gray-100 dark:bg-gray-700">
-                             <th class="border px-4 py-2">Patient No</th>
-                            <th class="border px-4 py-2">Patient</th>
-                            <th class="border px-4 py-2">Date</th>
-                            <th class="border px-4 py-2">Actions</th>
+                    <thead class="bg-gray-50 border-b">
+                        <tr class="text-gray-700">
+                            <th class="ps-6 py-3 text-xs font-bold uppercase tracking-wider border-end" style="width: 120px;">Patient No <i class="fas fa-sort text-gray-300 ms-1"></i></th>
+                            <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider border-end">Patient <i class="fas fa-sort text-gray-300 ms-1"></i></th>
+                            <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider border-end">Date <i class="fas fa-sort text-gray-300 ms-1"></i></th>
+                            <th class="pe-6 py-3 text-xs font-bold uppercase tracking-wider text-start">Actions <i class="fas fa-sort text-gray-300 ms-1"></i></th>
                         </tr>
                     </thead>
-                 <tbody>
-@forelse($examinations as $exam)
-<tr class="text-gray-800 dark:text-gray-200">
-    <td class="border px-4 py-2">{{ $exam->patient->id ?? '-' }}</td>
-    <td class="border px-4 py-2">{{ $exam->patient->full_name ?? '-' }}
-    </td>
-
-<td class="border px-4 py-2">
-    {{ $exam->date ? \Carbon\Carbon::parse($exam->date)->format('M d, Y') : '-' }}
-</td>
-    
-    <!-- {{-- Actions --}} -->
-    <td class="border px-4 py-2 flex gap-2">
-         <button onclick="openViewModal({{ $exam->id }})" class="btn btn-primary btn-md"><i class="fas fa-eye"></i></button>
-        <button onclick="openEditModal(this)" data-url="{{ route('oral_examination.edit', $exam->id) }}" class="btn btn-warning btn-md text-white"><i class="fas fa-edit"></i></button>
-        <button type="button" class="btn btn-danger btn-md" onclick="openDeleteModal({{ $exam->id }}, '{{ $exam->patient->full_name }}')"> <i class="fas fa-trash"></i> </button>
-        <!--  class="m-0 d-flex"> -->
-          
-    </td>
-</tr>
-@empty
-<tr>
-    <td colspan="7" class="border px-4 py-2 text-center text-gray-500">No examinations found.</td>
-</tr>
-@endforelse
-</tbody>
-
+                    <tbody>
+                        @forelse($examinations as $exam)
+                            <tr class="border-bottom hover:bg-gray-50 transition-colors">
+                                <td class="ps-6 py-4 border-end bg-gray-50/30">{{ $exam->patient->id ?? '-' }}</td>
+                                <td class="px-4 py-4 font-medium border-end text-gray-900">{{ $exam->patient->full_name ?? '-' }}</td>
+                                <td class="px-4 py-4 border-end text-gray-600">
+                                    {{ $exam->date ? \Carbon\Carbon::parse($exam->date)->format('M d, Y') : '-' }}
+                                </td>
+                                <td class="pe-6 py-4">
+                                    <div class="d-flex gap-2">
+                                        <button onclick="openViewModal({{ $exam->id }})" class="btn btn-primary btn-md  ">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="openEditModal(this)" data-url="{{ route('oral_examination.edit',$exam->id) }}" class="btn btn-warning btn-md text-white  ">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="openDeleteModal({{ $exam->id }}, '{{ $exam->patient->full_name }}')" class="btn btn-danger btn-md  ">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-10 text-gray-400">
+                                    <i class="fas fa-folder-open d-block mb-2 style-2xl"></i>
+                                    No examinations found.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
                 </table>
+            </div>
+
+            <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
+                <p class="text-sm text-gray-500 mb-0">Showing {{ $examinations->count() }} entries</p>
+                </div>
+        </div>
+    </div>
+</div>
 
                 <!-- {{-- Pagination --}} -->
                 <div class="mt-4">

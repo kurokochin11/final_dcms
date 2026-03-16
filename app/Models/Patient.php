@@ -105,4 +105,7 @@ public function dentalCharts()
 {
     return $this->hasMany(DentalChart::class);
 }
+public function intraoralExaminations() {
+    return $this->hasMany(IntraoralExamination::class);
+}
 }

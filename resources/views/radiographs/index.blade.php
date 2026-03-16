@@ -36,47 +36,40 @@
             </div>
 
             <div class="mb-4">
-                <form method="GET" class="flex flex-wrap items-center gap-2 text-sm">
-                    <select name="patient_id"
-                        class="w-48 rounded-md border-gray-200 shadow-sm focus:border-indigo-400 focus:ring-indigo-400">
-                        <option value="">All Patients </option>
-                        @foreach($filterPatients as $patient)
-                        <option value="{{ $patient->id }}"
-                            {{ request('patient_id') == $patient->id ? 'selected' : '' }}>
-                            {{ $patient->first_name }} {{ $patient->last_name }}
-                        </option>
-                        @endforeach
-                    </select>
+    <form method="GET" class="flex flex-wrap items-center gap-3 text-sm">
+        <select name="patient_id" class="w-48 rounded-md border-gray-200 shadow-sm focus:ring-indigo-400">
+            <option value="">All Patients</option>
+            @foreach($filterPatients as $patient)
+                <option value="{{ $patient->id }}" {{ request('patient_id') == $patient->id ? 'selected' : '' }}>
+                    {{ $patient->first_name }} {{ $patient->last_name }}
+                </option>
+            @endforeach
+        </select>
 
-                    <select name="type"
-                        class="w-40 rounded-md border-gray-200 shadow-sm focus:border-indigo-400 focus:ring-indigo-400">
-                        <option value="">All Types</option>
-                        @foreach($types as $type)
-                        <option value="{{ $type }}" {{ request('type') === $type ? 'selected' : '' }}>
-                            {{ $type }}
-                        </option>
-                        @endforeach
-                    </select>
+        <select name="type" class="w-40 rounded-md border-gray-200 shadow-sm focus:ring-indigo-400">
+            <option value="">All Types</option>
+            @foreach($allTypes as $t)
+                <option value="{{ $t }}" {{ request('type') === $t ? 'selected' : '' }}>{{ $t }}</option>
+            @endforeach
+        </select>
 
-                    <select name="year_range"
-                        class="rounded-md border-gray-200 shadow-sm focus:border-indigo-400 focus:ring-indigo-400">
-                        <option value="">All Years</option>
-                        @for($y = now()->year - 5; $y <= now()->year + 5; $y++)
-                            @php $value = "{$y}-" . ($y + 1); @endphp
-                            <option value="{{ $value }}" {{ request('year_range') === $value ? 'selected' : '' }}>
-                                {{ $y }} to {{ $y + 1 }}
-                            </option>
-                        @endfor
-                    </select>
+        <select name="exact_date" class="w-52 rounded-md border-gray-200 shadow-sm focus:ring-indigo-400">
+            <option value="">All Dates</option>
+            @foreach($availableDates as $date)
+                <option value="{{ $date->date_val }}" {{ request('exact_date') == $date->date_val ? 'selected' : '' }}>
+                    {{ $date->date_label }}
+                </option>
+            @endforeach
+        </select>
 
-                    <button type="submit" class="btn btn-secondary btn-sm">Apply</button>
+        <button type="submit" class="btn btn-secondary btn-sm px-4">Apply</button>
 
-                    @if(request()->hasAny(['patient_id','type','year_range']))
-                    <a href="{{ route('radiographs.index') }}" class="btn btn-black btn-link">Reset</a>
-                    @endif
-                </form>
-            </div>
-
+        @if(request()->hasAny(['patient_id', 'type', 'exact_date']))
+            <a href="{{ route('radiographs.index') }}" class="btn btn-link text-gray-500">Reset</a>
+        @endif
+    </form>
+</div>
+         
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="myTable" class="table table-striped table-bordered table-hover align-middle">

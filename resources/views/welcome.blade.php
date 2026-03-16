@@ -18,20 +18,17 @@
             overflow-x: hidden;
         }
 
-        /* --- Animations --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
-        .animate-up { animation: fadeInUp 0.8s ease-out forwards; }
+        
+        .animate-up { animation: fadeIn 0.5s ease-out forwards; }
         .delay-1 { animation-delay: 0.2s; opacity: 0; }
         .delay-2 { animation-delay: 0.4s; opacity: 0; }
-        .delay-3 { animation-delay: 0.6s; opacity: 0; }
 
         /* Navbar Styling */
         .navbar {
@@ -40,38 +37,10 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* White Dropdown Styling */
-        .dropdown-menu {
-            background-color: white !important; /* Matches navbar */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .dropdown-item {
-            color: black !important;
-            font-weight: 500;
-        }
-        .dropdown-item:hover {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            transform: translateX(5px);
-            transition: all 0.3s ease;
-        }
-        .dropdown-header {
-            color: black !important;
-            letter-spacing: 1px;
-        }
-        .dropdown-divider {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .dropdown-menu p {
-            color: black !important; /* Forces the small text to be white */
-        }
-
-        /* Hero Area with Background Image */
+        /* Hero Area */
         .hero-container {
-            /* Overlay + Background Image */
             background: linear-gradient(135deg, rgba(21, 114, 232, 0.9) 0%, rgba(14, 89, 188, 0.8) 100%), 
-                        url("{{ asset('tooth_welcome.jfif') }}"); /* Changed to .jpg based on standard exports, adjust extension if needed */
+                        url("{{ asset('tooth_welcome.jfif') }}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -98,86 +67,82 @@
             display: inline-block;
         }
 
-        .glass-card {
+        /* Map Section Styling */
+        .map-wrapper {
             background: white;
-            border-radius: 24px;
-            padding: 40px;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            height: 100%;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-        }
-        .glass-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(21, 114, 232, 0.15);
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
-       .btn-admin {
+        .map-container {
+            overflow: hidden;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .btn-directions {
+            background: #1572e8;
+            color: white !important;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .btn-directions:hover {
+            background: #0e59bc;
+            transform: scale(1.05);
+        }
+
+        .btn-admin {
     background: white;
     color: #1572e8 !important;
     border-radius: 50px;
     padding: 15px 40px;
     font-weight: 700;
-    border: none;
-    /* Added transition for smooth return */
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid #e0e0e0; /* Subtle default border */
+    transition: all 0.2s ease-in-out;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
+/* Simple Highlight Hover */
 .btn-admin:hover {
-    /* Slight scale up */
-    transform: translateY(-2px) scale(1.03);
-    /* Deeper shadow for "lift" effect */
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    /* Slight blue tint to the background */
-    background-color: #f0f7ff !important;
-    /* Keeps the cursor as a pointer */
-    cursor: pointer;
+    background-color: #fafafa;    /* Very slight off-white highlight */
+    border-color: #1572e8;        /* Border changes to clinic blue */
+    color: #1572e8 !important;
+    transform: translateY(-2px);  /* Very small lift */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08) !important;
 }
+        .footer-info-section {
+            background: white;
+            border-top: 1px solid #eef0f7;
+            padding: 40px 0;
+        }
 
-.btn-admin:active {
-    /* "Press" effect when clicked */
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-}
+        .contact-link {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .contact-link:hover { color: #1572e8; }
     </style>
 </head>
 
 <body class="antialiased">
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
+        <div class="container-fluid px-4">
+            <div class="navbar-brand d-flex align-items-center mb-0">
                 <img src="{{ asset('tooth_logo.ico') }}" width="35" height="35" class="me-2" style="filter: brightness(0) invert(1);">
-                <span class="fw-bold fs-4">DR. PHUA <span class="text-white">MIS</span></span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown">
-                            About Us
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-3 animate-up">
-                            <li><h6 class="dropdown-header fw-bold">Mission</h6></li>
-                            <li><p class="px-3 small">Advancing dental care through technology.</p></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item rounded-2" href="#"><i class="fas fa-user-md me-2"></i> Dr. Phua</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold" href="#" id="contactDropdown" role="button" data-bs-toggle="dropdown">
-                            Contacts
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-3 animate-up">
-                            <li><a class="dropdown-item py-2" href="#"><i class="fas fa-phone me-2"></i> 345-8870</a></li>
-                            <li><a class="dropdown-item py-2" href="#"><i class="fas fa-map-marker-alt me-2"></i> Cebu City</a></li>
-                        </ul>
-                    </li>
-                </ul>
+                <span class="fw-bold fs-4">DR. PHUA'S <span class="text-white">DENTAL CLINIC</span></span>
             </div>
         </div>
     </nav>
@@ -197,7 +162,7 @@
             <p class="text-white opacity-75 mb-5 mx-auto lead animate-up delay-2" style="max-width: 650px;">
                 Securely manage patient records, digital imaging, and clinical schedules with our centralized administrative portal.
             </p>
-            <div class="d-flex justify-content-center animate-up delay-3">
+            <div class="d-flex justify-content-center animate-up delay-2">
                 @auth
                     <a href="{{ url('/dashboard') }}" class="btn btn-admin shadow-lg">
                         <i class="fas fa-columns me-2"></i> Open Dashboard
@@ -212,25 +177,52 @@
     </header>
 
     <main class="container py-5 mt-n5">
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-6 animate-up delay-1">
-                <div class="glass-card">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="feature-icon-box me-3" style="width:60px; height:60px; background:#eef4ff; color:#1572e8; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:24px;">
-                            <i class="fas fa-notes-medical"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-0">Clinic Excellence</h3>
+        <div class="row justify-content-center">
+            <div class="col-lg-11 animate-up delay-1">
+                <div class="map-wrapper text-center">
+                    <div class="map-container">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d981.189196568603!2d123.91771!3d10.37028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9989d3147c145%3A0x58cf898409db813e!2sCebu%20Mary%20Immaculate%20College!5e1!3m2!1sen!2sph!4v1710123456789!5m2!1sen!2sph" 
+                            width="100%" 
+                            height="550" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
                     </div>
-                    <p class="text-muted mb-4">This MIS serves as the digital backbone of Dr. Phua's Dental Clinic, designed to streamline clinical workflows and improve patient data accuracy.</p>
-                    <div class="bg-light p-3 rounded-4 border-start border-primary border-4">
-                        <p class="mb-0 small fw-bold text-primary">Precision in every record, care in every visit.</p>
-                    </div>
+                    <a href="https://maps.app.goo.gl/3f8HshZ7xZf8Jv8A9" target="_blank" class="btn-directions shadow-sm">
+                        <i class="fas fa-directions me-2"></i> Get Directions to Clinic
+                    </a>
                 </div>
             </div>
-            </div>
+        </div>
     </main>
 
-    <footer class="text-center py-5">
+    <section class="footer-info-section">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="fw-bold text-primary mb-3">About Us</h5>
+                    <p class="text-muted small"><strong>Mission:</strong> Advancing dental care through technology. Driven by excellence and patient-first innovation under the leadership of Dr. Phua.</p>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-primary mb-3">Contacts</h5>
+                    <ul class="list-unstyled text-muted small">
+                        <li class="mb-2">
+                            <i class="fas fa-phone text-primary me-2"></i> (032) 345 8870
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope text-primary me-2"></i> 
+                            <a href="mailto:admin@gmail.com" class="contact-link">admin@gmail.com</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center py-4 bg-light">
         <div class="container text-muted">
             <p class="small mb-0">© {{ date('Y') }} Dr. Phua's Dental Clinic. Administrative Interface.</p>
         </div>

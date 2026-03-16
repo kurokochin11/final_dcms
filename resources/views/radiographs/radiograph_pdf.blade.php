@@ -125,7 +125,7 @@
 
     <div class="signature-section">
         <div class="sig-box">
-            <div class="sig-line">Dr. {{ $physician ?? '____________________' }}</div>
+           <div class="sig-line">Dr. {{ $physician }}</div>
             <div>Consultant Radiologist</div>
             <small>(MD, Radiology)</small>
         </div>
@@ -133,7 +133,6 @@
 
     <div class="footer">
         *** End of Report ***<br>
-        <!-- This is a computer-generated report and does not require a physical signature if verified online. -->
     </div>
 
 </body>

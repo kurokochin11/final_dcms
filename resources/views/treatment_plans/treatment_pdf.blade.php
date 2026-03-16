@@ -94,8 +94,8 @@
     </tr>
 </table>
 
-<div class="section-header">Patient Concern</div>
-<div class="content-box">{{ $plan->patient_concern ?? 'None reported.' }}</div>
+<!-- <div class="section-header">Patient Concern</div>
+<div class="content-box">{{ $plan->patient_concern ?? 'None reported.' }}</div> -->
 
 <div class="section-header">Treatment Phases & Procedures</div>
 <table class="phases-table">
@@ -143,9 +143,12 @@
         <div class="sig-label">Patient Signature</div>
     </div>
     <div class="sig-box right">
-        <div class="sig-line">Dr. {{ $plan->dentist_name ?? '________________' }}</div>
-        <div class="sig-label">Clinician Signature / Designation</div>
+    <div class="sig-line">
+        Dr. {{ $plan->dentist_name ?? auth()->user()->name ?? 'Physician' }}
     </div>
+    <div class="sig-label">Clinician Signature / Designation</div>
+</div>
+
     <div class="clear"></div>
 </div>
 

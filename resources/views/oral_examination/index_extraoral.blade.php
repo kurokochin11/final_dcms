@@ -57,57 +57,69 @@ $(document).ready(function() {
   </x-slot>
 
   <div class="py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Records</h3>
-        <div x-data>
-          <button @click="$dispatch('open-extraoral-modal', { mode: 'create' })" type="button"
-                  class="inline-flex items-center px-4 py-2 bg-primary text-white border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-light gap-2">
-              <i class="fas fa-plus"></i>New Exam
-          </button>
-        </div>
-      </div>
+    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <h3 class="text-xl font-semibold text-gray-800 mb-6">Records</h3>
 
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            
+            <div class="p-4 border-b border-gray-200">
+                <div class="d-flex align-items-end justify-content-between flex-wrap gap-4">
+                    
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="flex-column">
+                            <label class="text-xs font-bold text-gray-400 uppercase mb-1 d-block tracking-wider">Patient Filter</label>
+                            <select id="patientFilter" class="form-select form-select-sm border-gray-300" style="width: 220px;">
+                                <option value="">All Patients</option>
+                                @foreach($examinations->map(fn($e) => optional($e->patient)->first_name.' '.optional($e->patient)->last_name)->filter()->unique()->sort() as $name)
+                                    <option value="{{ $name }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="flex-column">
+                            <label class="text-xs font-bold text-gray-400 uppercase mb-1 d-block tracking-wider">Date Filter</label>
+                            <select id="dateFilter" class="form-select form-select-sm border-gray-300" style="width: 180px;">
+                                <option value="">All Dates</option>
+                                @foreach($examinations->pluck('examination_date')->unique()->sortDesc() as $date)
+                                    @php $formatted = \Carbon\Carbon::parse($date)->format('M d, Y'); @endphp
+                                    <option value="{{ $formatted }}">{{ $formatted }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button id="resetFilters" class="btn btn-outline-light btn-sm border text-muted px-3" title="Reset Filters">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+
+                    <div>
+                        <button onclick="$dispatch('open-extraoral-modal', { mode: 'create' })" 
+                                type="button"
+                                class="btn btn-primary px-4 shadow-sm d-flex align-items-center gap-2 font-bold uppercase text-xs tracking-widest">
+                            <i class="fas fa-plus"></i> NEW EXAMINATION
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-4 py-3 d-flex justify-content-between align-items-center bg-white">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-sm text-gray-500">Show</span>
+                    <select class="form-select form-select-sm w-auto border-gray-300">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                    </select>
+                    <span class="text-sm text-gray-500">entries</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-sm text-gray-500">Search:</span>
+                    <input type="text" class="form-control form-control-sm border-gray-300" style="width: 180px;">
+                </div>
+            </div>
       <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
           <div class="table-responsive">
                     <table id="myTable" class="table table-striped table-bordered table-hover align-middle">
-
- <!-- FILTERS INLINE -->
-<div class="d-flex align-items-center mb-3 gap-2">
-  <!-- Patient Filter -->
-  <select id="patientFilter" class="form-select form-select-sm" style="width: 200px;">
-    <option value="">All Patients</option>
-    @foreach(
-      $examinations
-        ->map(fn($e) => optional($e->patient)->first_name.' '.optional($e->patient)->last_name)
-        ->filter()
-        ->unique()
-        ->sort()
-      as $name
-    )
-      <option value="{{ $name }}">{{ $name }}</option>
-    @endforeach
-  </select>
-
-  <!-- Date Filter -->
-  <select id="dateFilter" class="form-select form-select-sm" style="width: 150px;">
-    <option value="">All Dates</option>
-    @foreach(
-      $examinations
-        ->pluck('examination_date')
-        ->unique()
-        ->sortDesc()
-      as $date
-    )
-      @php $formatted = \Carbon\Carbon::parse($date)->format('M d, Y'); @endphp
-      <option value="{{ $formatted }}">{{ $formatted }}</option>
-    @endforeach
-  </select>
-
- 
-</div>
-
-
             <thead class="text-gray-600 dark:text-gray-300">
               <tr>
                 <th class="px-4 py-2">Patient No.</th>

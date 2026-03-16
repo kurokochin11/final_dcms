@@ -12,8 +12,8 @@ class IntraoralExaminationController extends Controller
     public function index()
     {
         $examinations = IntraoralExamination::with('patient')->latest()->paginate(10);
-        $patients = Patient::all();
-
+       $patients = Patient::whereHas('intraoralExaminations')->orderBy('last_name')->get();
+       
         return view('oral_examination.index_intraoral', compact('examinations', 'patients'));
     }
 

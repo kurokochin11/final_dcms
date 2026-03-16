@@ -46,13 +46,14 @@ $(document).ready(function () {
 });
 </script>
 
-@section('title', 'Diagnosis')
 <x-app-layout>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    {{-- Page header --}}
-    <header class="mb-6">
-      <h1 class="text-2xl font-semibold text-gray-900">Diagnosis</h1>
-    </header>
+  
+     <x-slot name="header">
+       
+            <h1 class="text-2xl font-semibold text-gray-900">Diagnosis</h1>
+        
+    </x-slot>
 
     {{-- Card --}}
     <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
@@ -178,7 +179,7 @@ $(document).ready(function () {
   </div>
 
   <!--ADD/EDIT MODAL-->
-  <div id="modalBackdrop" class="fixed inset-0  hidden items-center justify-center z-40">
+  <div id="modalBackdrop" class="fixed inset-0  hidden items-center justify-center z-40 backdrop-blur-sm">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
      <div class="p-5 flex items-center justify-between bg-blue-600 text-white rounded-t-lg">
   <h3 id="modalTitle" class="text-lg font-medium">Add Diagnosis</h3>

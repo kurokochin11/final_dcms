@@ -112,6 +112,8 @@ class TreatmentPlanController extends Controller
    public function downloadPdf(TreatmentPlan $treatmentPlan)
 {
     $treatmentPlan->load('patient');
+      $physician = auth()->user()->name ?? 'Physician';
+
 
     $pdf = Pdf::loadView('treatment_plans.treatment_pdf', [
         'plan' => $treatmentPlan
