@@ -15,6 +15,8 @@ use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DentalChartController;
+use App\Http\Controllers\RegisterController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -66,6 +68,19 @@ Route::get('/api/notifications/updates', function () {
                 ->get()
         );
     });
+
+
+
+
+
+
+// User Management routes
+
+Route::get('/users', [RegisterController::class, 'index'])->name('users.index');
+Route::post('/users', [RegisterController::class, 'store'])->name('users.store');
+Route::get('/users/{user}', [RegisterController::class, 'show'])->name('users.show'); // New route
+Route::put('/users/{user}', [RegisterController::class, 'update'])->name('users.update');
+Route::delete('/users/{user}', [RegisterController::class, 'destroy'])->name('users.destroy');
 
     //patient routes
      Route::resource('patients', PatientController::class);
