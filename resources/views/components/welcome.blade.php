@@ -28,11 +28,7 @@
     }
 </style>
 
-<div class="header-action-row">
-    <a href="{{ route('register') }}" class="btn btn-primary btn-round">
-        <i class="fas fa-user-plus me-2"></i> Add Account
-    </a>
-</div>
+
 
 <div class="page-inner">
     <div class="row">
