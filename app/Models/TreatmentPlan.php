@@ -31,4 +31,5 @@ class TreatmentPlan extends Model
     {
         return $this->belongsTo(\App\Models\Patient::class);
     }
+    
 }

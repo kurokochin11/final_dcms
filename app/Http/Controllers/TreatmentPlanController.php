@@ -111,15 +111,18 @@ class TreatmentPlanController extends Controller
 
    public function downloadPdf(TreatmentPlan $treatmentPlan)
 {
+    // Load the patient relationship
     $treatmentPlan->load('patient');
-      $physician = auth()->user()->name ?? 'Physician';
 
+    $physician = auth()->user()->name ?? 'Physician';
 
-    $pdf = Pdf::loadView('treatment_plans.treatment_pdf', [
-        'plan' => $treatmentPlan
-    ]);
-
-    return $pdf->stream('treatment-plan-'.$treatmentPlan->id.'.pdf');
+    // Pass the specific variables the Blade file is looking for
+    return Pdf::loadView('treatment_plans.treatment_pdf', [
+        'plan'      => $treatmentPlan,
+        'patient'   => $treatmentPlan->patient, // Fixes the undefined variable error
+        'physician' => $physician,
+        'session'   => $treatmentPlan, // Adds this if your loops use $session
+    ])->stream('treatment-plan-'.$treatmentPlan->id.'.pdf');
 }
 
 }

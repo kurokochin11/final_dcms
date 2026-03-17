@@ -13,39 +13,85 @@ class AppointmentController extends Controller
      */
     public function index()
     {
+        // For the main table
         $appointments = Appointment::with('patient')
             ->orderBy('appointment_date')
             ->orderBy('appointment_time')
             ->get();
 
         $patients = Patient::orderBy('last_name')->get();
-      //  dd($appointments);
- //return response()->json($appointments);
-        return view('appointments.index', compact('appointments', 'patients'));
+
+        // For the notification bell: 
+        // We fetch ALL today's appointments so that the dropdown can show 
+        // both "read" (faded) and "unread" (bold) items.
+        $todayScheduledAppointments = Appointment::with('patient')
+            ->whereDate('appointment_date', today())
+            ->get();
+
+        return view('appointments.index', compact('appointments', 'patients', 'todayScheduledAppointments'));
     }
-    public function sampleCalendar(){
-         $appointments = Appointment::with('patient')
-        ->orderBy('appointment_date')
-        ->orderBy('appointment_time')
-        ->get();
 
-    $events = $appointments->map(function ($a) {
-        // Determine color based on status
-        $color = match($a->status) {
-            'Completed' => '#16a34a',  // green
-            'Cancelled' => '#dc2626',  // red
-            default => '#2563eb',      // blue for Scheduled
-        };
+    /**
+     * API: Get updates for the real-time heartbeat
+     */
+    public function getUpdates()
+    {
+        $updates = Appointment::with('patient')
+            ->whereDate('appointment_date', today())
+            ->get();
 
-        return [
-            'title' => $a->patient->first_name . ' (' . $a->status . ')',
-            'start' => $a->appointment_date->format('Y-m-d') . 'T' . $a->appointment_time,
-            'end' => $a->appointment_date->format('Y-m-d') . 'T' . $a->appointment_time, // optional if no duration
-            'color' => $color,
-        ];
-    });
+        return response()->json($updates);
+    }
 
-    return view('appointments.sampleCalendar', compact('events'));
+    /**
+     * API: Mark a specific notification as read
+     */
+    public function markAsRead($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->update(['read_at' => now()]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * API: Mark all today's notifications as read
+     */
+    public function markAllAsRead()
+    {
+        Appointment::whereDate('appointment_date', today())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Display the calendar view.
+     */
+    public function sampleCalendar()
+    {
+        $appointments = Appointment::with('patient')
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
+
+        $events = $appointments->map(function ($a) {
+            $color = match($a->status) {
+                'Completed' => '#16a34a',
+                'Cancelled' => '#dc2626',
+                default     => '#2563eb',
+            };
+
+            return [
+                'title' => $a->patient->first_name . ' (' . $a->status . ')',
+                'start' => $a->appointment_date->format('Y-m-d') . 'T' . $a->appointment_time,
+                'end'   => $a->appointment_date->format('Y-m-d') . 'T' . $a->appointment_time,
+                'color' => $color,
+            ];
+        });
+
+        return view('appointments.sampleCalendar', compact('events'));
     }
 
     /**

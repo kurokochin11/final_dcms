@@ -60,10 +60,32 @@
     
     .clear { clear: both; }
 
-    .signature-section { margin-top: 50px; width: 100%; }
-    .sig-box { width: 45%; float: left; text-align: center; }
-    .sig-box.right { float: right; }
-    .sig-line { border-top: 1px solid #000; margin-top: 35px; padding-top: 3px; font-weight: bold; }
+   /* Footer/Signatures */
+    .signature-section { 
+        margin-top: 60px; 
+        width: 100%; 
+    }
+    .sig-box { 
+        width: 45%; 
+        float: left; 
+        text-align: center; 
+    }
+    .sig-box.right { 
+        float: right; 
+    }
+    .sig-line { 
+        border-bottom: 1px solid #000; /* Changed from border-top to border-bottom */
+        margin-bottom: 5px; 
+        padding-bottom: 2px;
+        font-weight: bold; 
+        text-transform: uppercase; /* This forces ALL CAPS */
+        min-height: 15px; /* Ensures the line shows even if the name is empty */
+    }
+    .sig-label {
+        font-size: 9px;
+        display: block;
+    }
+    
 </style>
 </head>
 <body>
@@ -164,13 +186,22 @@
 
 <div class="signature-section">
     <div class="sig-box">
-        <div class="sig-line">{{ $exam->patient->full_name ?? 'Patient Name' }}</div>
-        <small>Patient Signature Over Printed Name</small>
+        <div class="sig-line">
+            {{ $patient->first_name }} {{ $patient->last_name }}
+        </div>
+        <span class="sig-label">Patient Signature Over Printed Name</span>
     </div>
+
     <div class="sig-box right">
-        <div class="sig-line">Dr. {{ $physician }}</div>
-        <small>Examining Dentist Signature</small>
+        <div class="sig-line">
+            @if(isset($physician))
+                Dr. {{ $physician }}
+            @else
+                &nbsp; @endif
+        </div>
+        <span class="sig-label">Physician Signature Over Printed Name</span>
     </div>
+    
     <div class="clear"></div>
 </div>
 

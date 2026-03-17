@@ -5,231 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dr. Phua's Dental Clinic | Management System</title>
 
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/fonts.min.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         body { 
-            font-family: 'Public Sans', sans-serif; 
-            background-color: #f8f9fc;
-            color: #2a2f5b;
+            font-family: 'Inter', sans-serif; 
             scroll-behavior: smooth;
             overflow-x: hidden;
+            background-color: #000;
         }
 
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        .animate-up { animation: fadeIn 0.5s ease-out forwards; }
-        .delay-1 { animation-delay: 0.2s; opacity: 0; }
-        .delay-2 { animation-delay: 0.4s; opacity: 0; }
-
-        /* Navbar Styling */
-        .navbar {
-            background-color: #1572e8 !important;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
         }
 
-        /* Hero Area */
-        .hero-container {
-            background: linear-gradient(135deg, rgba(21, 114, 232, 0.9) 0%, rgba(14, 89, 188, 0.8) 100%), 
-                        url("{{ asset('tooth_welcome.jfif') }}");
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ asset("clinic.jfif") }}');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
-            color: white;
-            padding: 100px 20px 140px 20px;
-            border-bottom-left-radius: 80px;
-            border-bottom-right-radius: 80px;
-            text-align: center;
+            animation: slowZoom 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1) translateX(-10px); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo-ring {
             position: relative;
-        }
-
-        .hero-logo { animation: float 4s ease-in-out infinite; }
-
-        .authorized-badge {
-            background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px);
-            color: white;
-            padding: 8px 24px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            display: inline-block;
-        }
-
-        /* Map Section Styling */
-        .map-wrapper {
-            background: white;
-            padding: 20px;
-            border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .map-container {
-            overflow: hidden;
-            border-radius: 20px;
-            position: relative;
-        }
-
-        .btn-directions {
-            background: #1572e8;
-            color: white !important;
-            border-radius: 50px;
-            padding: 12px 30px;
-            font-weight: 600;
-            margin-top: 20px;
-            transition: 0.3s;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            text-decoration: none;
+            justify-content: center;
+            width: 100px; 
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #fbbf24 100%);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
         }
-        .btn-directions:hover {
-            background: #0e59bc;
-            transform: scale(1.05);
-        }
-
-        .btn-admin {
-    background: white;
-    color: #1572e8 !important;
-    border-radius: 50px;
-    padding: 15px 40px;
-    font-weight: 700;
-    border: 1px solid #e0e0e0; /* Subtle default border */
-    transition: all 0.2s ease-in-out;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
-/* Simple Highlight Hover */
-.btn-admin:hover {
-    background-color: #fafafa;    /* Very slight off-white highlight */
-    border-color: #1572e8;        /* Border changes to clinic blue */
-    color: #1572e8 !important;
-    transform: translateY(-2px);  /* Very small lift */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08) !important;
-}
-        .footer-info-section {
+        
+        .logo-ring::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
             background: white;
-            border-top: 1px solid #eef0f7;
-            padding: 40px 0;
+            border-radius: 50%;
+            z-index: 0;
         }
 
-        .contact-link {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.2s;
+        .logo-img {
+            z-index: 10;
+            width: 70%; 
+            height: 70%;
+            object-fit: contain;
         }
-        .contact-link:hover { color: #1572e8; }
+
+        /* Map styling to blend with blue theme */
+        .map-container iframe {
+            filter: grayscale(0.2) contrast(1.1) brightness(1.1);
+            border-radius: 1.5rem;
+        }
     </style>
 </head>
 
-<body class="antialiased">
+<body class="min-h-screen text-slate-900 antialiased">
 
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container-fluid px-4">
-            <div class="navbar-brand d-flex align-items-center mb-0">
-                <img src="{{ asset('tooth_logo.ico') }}" width="35" height="35" class="me-2" style="filter: brightness(0) invert(1);">
-                <span class="fw-bold fs-4">DR. PHUA'S <span class="text-white">DENTAL CLINIC</span></span>
-            </div>
+    <div class="bg-animated">
+        <div class="bg-image"></div>
+    </div>
+
+    <header class="flex flex-col items-center justify-center pt-12 pb-4">
+        <div class="logo-ring mb-4">
+            <img src="{{ asset('tooth_logo.ico') }}" alt="Dr. Phua's Logo" class="logo-img">
         </div>
-    </nav>
-
-    <header class="hero-container">
-        <div class="container">
-            <div class="mb-4 hero-logo">
-                <img src="{{ asset('tooth_logo.ico') }}" alt="Logo" style="width: 90px; filter: brightness(0) invert(1);">
-            </div>
-            <div class="mb-4 animate-up">
-                <span class="authorized-badge">System Access Point</span>
-            </div>
-            <h1 class="display-3 fw-bold mb-3 animate-up delay-1">
-                Dental Clinic Management<br>
-                <span class="text-white">Information System</span>
-            </h1>
-            <p class="text-white opacity-75 mb-5 mx-auto lead animate-up delay-2" style="max-width: 650px;">
-                Securely manage patient records, digital imaging, and clinical schedules with our centralized administrative portal.
-            </p>
-            <div class="d-flex justify-content-center animate-up delay-2">
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="btn btn-admin shadow-lg">
-                        <i class="fas fa-columns me-2"></i> Open Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-admin shadow-lg">
-                        <i class="fas fa-lock me-2"></i> Admin Login
-                    </a>
-                @endauth
-            </div>
+        <div class="text-center">
+            <h2 class="text-2xl font-extrabold tracking-tight text-slate-900 drop-shadow-md">
+                Dr. Phua's <span class="text-blue-700">Dental Clinic</span>
+            </h2>
         </div>
     </header>
 
-    <main class="container py-5 mt-n5">
-        <div class="row justify-content-center">
-            <div class="col-lg-11 animate-up delay-1">
-                <div class="map-wrapper text-center">
-                    <div class="map-container">
-                        <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d981.189196568603!2d123.91771!3d10.37028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9989d3147c145%3A0x58cf898409db813e!2sCebu%20Mary%20Immaculate%20College!5e1!3m2!1sen!2sph!4v1710123456789!5m2!1sen!2sph" 
-                            width="100%" 
-                            height="550" 
-                            style="border:0;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
-                            referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
-                    <a href="https://maps.app.goo.gl/3f8HshZ7xZf8Jv8A9" target="_blank" class="btn-directions shadow-sm">
-                        <i class="fas fa-directions me-2"></i> Get Directions to Clinic
-                    </a>
-                </div>
-            </div>
-        </div>
-    </main>
+    <section class="text-center px-6 mt-16">
+        <span class="px-4 py-1.5 bg-blue-600 text-white text-sm font-bold rounded-full tracking-wide uppercase shadow-lg">
+            Authorized Personnel Only
+        </span>
 
-    <section class="footer-info-section">
-        <div class="container">
-            <div class="row text-center text-md-start">
-                <div class="col-md-6 mb-4 mb-md-0">
-                    <h5 class="fw-bold text-primary mb-3">About Us</h5>
-                    <p class="text-muted small"><strong>Mission:</strong> Advancing dental care through technology. Driven by excellence and patient-first innovation under the leadership of Dr. Phua.</p>
+        <h1 class="mt-8 text-5xl md:text-7xl font-extrabold text-slate-900 leading-[1.1] tracking-tight drop-shadow-xl">
+            <span class="text-blue-700 underline decoration-white/30 decoration-8 underline-offset-8">Dental Clinic Management Information System</span>
+        </h1>
+
+        <p class="mt-8 text-lg md:text-xl text-slate-800 max-w-2xl mx-auto leading-relaxed font-semibold">
+            A specialized administrative tool for Dr. Phua's Dental Clinic to manage patient records, clinical examinations, and radiology data.
+        </p>
+
+        <div class="mt-12 flex flex-wrap gap-6 justify-center">
+            @auth
+                <a href="{{ url('/dashboard') }}"
+                   class="px-10 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-2xl hover:bg-blue-700 transition transform hover:scale-105">
+                    Go to Dashboard
+                </a>
+            @else
+                <a href="{{ route('login') }}"
+                   class="px-10 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-2xl hover:bg-blue-700 transition transform hover:scale-105">
+                    Admin Access
+                </a>
+            @endauth
+        </div>
+    </section>
+
+    <section id="about-us" class="mt-32 px-6">
+        <div class="max-w-6xl mx-auto glass-card rounded-[3rem] p-10 md:p-20">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-4xl font-extrabold text-slate-900 mb-6">About Us</h2>
+                    <p class="text-slate-800 text-lg leading-relaxed mb-6 font-medium">
+                        Dr. Phua's Dental Clinic is committed to providing top-tier oral healthcare through innovation. This Management Information System (MIS) serves as the digital foundation of our practice.
+                    </p>
+                    <p class="text-slate-800 text-lg leading-relaxed font-medium">
+                        By centralizing patient records and treatment history, we ensure our clinical team can focus on delivering precise, patient-centered care.
+                    </p>
                 </div>
-                <div class="col-md-6">
-                    <h5 class="fw-bold text-primary mb-3">Contacts</h5>
-                    <ul class="list-unstyled text-muted small">
-                        <li class="mb-2">
-                            <i class="fas fa-phone text-primary me-2"></i> (032) 345 8870
-                        </li>
-                        <li>
-                            <i class="fas fa-envelope text-primary me-2"></i> 
-                            <a href="mailto:admin@gmail.com" class="contact-link">admin@gmail.com</a>
-                        </li>
-                    </ul>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4 p-6 bg-white/20 rounded-2xl border border-white/30 shadow-sm backdrop-blur-md">
+                        <div>
+                            <h4 class="font-bold text-slate-900">Data Security</h4>
+                            <p class="text-sm text-slate-800 font-medium">Encrypted storage for sensitive medical records.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-6 bg-white/20 rounded-2xl border border-white/30 shadow-sm backdrop-blur-md">
+                        <div>
+                            <h4 class="font-bold text-slate-900">Operational Speed</h4>
+                            <p class="text-sm text-slate-800 font-medium">Instant retrieval of patient radiology and history.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="text-center py-4 bg-light">
-        <div class="container text-muted">
-            <p class="small mb-0">© {{ date('Y') }} Dr. Phua's Dental Clinic. Administrative Interface.</p>
+    <section id="contact-us" class="mt-24 px-6 mb-32">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-card rounded-[3rem] p-8 md:p-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    
+                   <div class="map-container h-48 w-full overflow-hidden rounded-lg">
+    <img 
+        src="{{ asset('location.png') }}" 
+        alt="Location Map" 
+        class="w-full h-full object-cover transition-hover duration-300 hover:scale-105"
+        loading="lazy"
+    >
+</div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-blue-600/10 rounded-2xl">
+                            <i data-lucide="map-pin" class="w-6 h-6 text-blue-700"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-1">Clinic Location</h4>
+                            <p class="text-lg font-bold text-slate-900 leading-tight">
+                                A. Borbajo St. Talamban,<br>
+                                Cebu City, Philippines
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-4 border-t md:border-t-0 md:border-l border-white/30 pt-6 md:pt-0 md:pl-10">
+                        <h4 class="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-1">Contact Details</h4>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-blue-700"></i>
+                            <p class="text-lg font-bold text-slate-900">345-8870</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="smartphone" class="w-5 h-5 text-blue-700"></i>
+                            <p class="text-sm font-bold text-slate-700">+63 917 123 4567</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
+    </section>
+
+    <footer class="text-center py-12 bg-white/10 backdrop-blur-xl border-t border-white/20 text-slate-900 font-bold">
+        <p>© {{ date('Y') }} Dr. Phua's Dental Clinic. Administrative Interface.</p>
     </footer>
 
-    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

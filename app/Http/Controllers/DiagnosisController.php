@@ -106,17 +106,18 @@ class DiagnosisController extends Controller
      * Generate and stream the PDF report.
      */
     public function downloadPdf(Diagnosis $diagnosis)
-    {
-        $diagnosis->load('patient');
+{
+    $diagnosis->load('patient');
 
-        $pdf = Pdf::loadView('diagnoses.diagnosis_pdf', [
-            'diagnosis' => $diagnosis,
-            'physician' => auth()->user()->name ?? '____________________',
-            'formattedDate' => $diagnosis->diagnosis_date 
-                               ? Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') 
-                               : '—'
-        ])->setPaper('a4', 'portrait');
+    $pdf = Pdf::loadView('diagnoses.diagnosis_pdf', [
+        'diagnosis'     => $diagnosis,
+        'patient'       => $diagnosis->patient, // Add this line to fix the error
+        'physician'     => auth()->user()->name ?? '____________________',
+        'formattedDate' => $diagnosis->diagnosis_date 
+                            ? Carbon::parse($diagnosis->diagnosis_date)->format('F d, Y') 
+                            : '—'
+    ])->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Diagnosis_Report_' . $diagnosis->id . '.pdf');
-    }
+    return $pdf->stream('Diagnosis_Report_' . $diagnosis->id . '.pdf');
+}
 }

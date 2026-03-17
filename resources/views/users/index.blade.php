@@ -48,8 +48,12 @@
         </div>
 
         @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
-        @endif
+    <div class="alert alert-success bg-success text-white border-0 shadow-sm d-flex align-items-center py-3" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <div>
+            {{ session('success') }}
+        </div>
+    </div>
+@endif
 
         <div class="card card-round">
             <div class="card-header border-0 pb-0">
@@ -75,11 +79,19 @@
                                 <td class="text-primary">{{ $user->email }}</td>
                                 <td>{{ $user->created_at->format('M d, Y') }}</td>
                                 <td class="text-center">
-                                    <div class="form-button-action">
-                                        <button class="btn btn-link btn-info" title="View" data-bs-toggle="modal" data-bs-target="#viewModal{{ $user->id }}"><i class="fa fa-eye"></i></button>
-                                        <button class="btn btn-link btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#editModal{{ $user->id }}"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-link btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $user->id }}"><i class="fa fa-times"></i></button>
-                                    </div>
+                                   <div class="form-button-action d-flex gap-1">
+    <button class="btn btn-primary btn-sm text-white" title="View" data-bs-toggle="modal" data-bs-target="#viewModal{{ $user->id }}">
+        <i class="fa fa-eye"></i>
+    </button>
+
+    <button class="btn btn-warning btn-sm text-white" title="Edit" data-bs-toggle="modal" data-bs-target="#editModal{{ $user->id }}">
+        <i class="fa fa-edit"></i>
+    </button>
+
+    <button class="btn btn-danger btn-sm text-white" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $user->id }}">
+        <i class="fa fa-trash"></i>
+    </button>
+</div>
                                 </td>
                             </tr>
 
@@ -170,32 +182,32 @@
                 @csrf
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">FULL NAME</label>
+                        <label class="small fw-bold mb-1">Full Name</label>
                         <input type="text" name="name" class="form-control form-control-custom" placeholder="Enter name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">EMAIL ADDRESS</label>
+                        <label class="small fw-bold mb-1">Email Address</label>
                         <input type="email" name="email" class="form-control form-control-custom" placeholder="Enter email" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="small fw-bold mb-1">PASSWORD</label>
+                            <label class="small fw-bold mb-1">Password</label>
                             <div class="password-wrapper">
-                                <input type="password" name="password" class="form-control form-control-custom pwd-input" placeholder="••••••••" required>
+                                <input type="password" name="password" class="form-control form-control-custom pwd-input" placeholder="Password" required>
                                 <i class="fas fa-eye toggle-password"></i>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="small fw-bold mb-1">CONFIRM</label>
+                            <label class="small fw-bold mb-1">Confirm Password</label>
                             <div class="password-wrapper">
-                                <input type="password" name="password_confirmation" class="form-control form-control-custom pwd-input" placeholder="••••••••" required>
+                                <input type="password" name="password_confirmation" class="form-control form-control-custom pwd-input" placeholder="Confirm Password" required>
                                 <i class="fas fa-eye toggle-password"></i>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="submit" class="btn btn-save w-100 mb-2 py-2 fw-bold">Add Account</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-2 py-2 fw-bold">Register</button>
                     <button type="button" class="btn btn-link text-danger w-100 text-decoration-none p-0" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>

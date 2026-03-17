@@ -121,401 +121,459 @@ $(document).ready(function () {
                 </table>
             </div>
 
-            <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
-                <p class="text-sm text-gray-500 mb-0">Showing {{ $examinations->count() }} entries</p>
-                </div>
+            
         </div>
     </div>
 </div>
 
-                <!-- {{-- Pagination --}} -->
-                <div class="mt-4">
-                    {{ $examinations->links('pagination::tailwind') }}
-                </div>
+               <!-- {{-- Pagination --}} -->
+<div class="mt-4">
+    {{ $examinations->links() }}
+</div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- {{-- ADD Modal --}} -->
-<div id="createIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl relative overflow-y-auto max-h-[90vh] flex flex-col">
+<div id="createIntraoralModal"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
+
+    <!-- MODAL CONTAINER -->
+    <div
+        class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-7xl mx-4 shadow-xl flex flex-col">
 
         <!-- HEADER -->
-        <div class="bg-primary text-white px-6 py-4 rounded-t-lg " >
-            <h2 class="text-2xl font-semibold">
-                New Examination
-            </h2>
+        <div class="bg-primary text-white px-8 py-5 rounded-t-xl relative">
+            <h2 class="text-2xl font-semibold">New Examination</h2>
 
-            <button
-                onclick="closeCreateModal()"
-                 class="absolute top-4 right-4 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-primary/90 transition">
+            <button onclick="closeCreateModal()"
+                class="absolute top-4 right-4 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-white/20 transition">
                 ✕
             </button>
         </div>
-        <form id="createIntraoralForm" action="{{ route('oral_examination.store') }}" method="POST" enctype="multipart/form-data">
+
+        <!-- FORM -->
+        <form id="createIntraoralForm"
+            action="{{ route('oral_examination.store') }}"
+            method="POST"
+            enctype="multipart/form-data"
+            class="flex flex-col h-full">
             @csrf
 
-            <!-- {{-- Tabs --}} -->
-            <div class="mb-4">
-                <ul class="flex border-b border-gray-200 dark:border-gray-700" id="create-tabs">
-                    <li class="-mb-px mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-soft">Soft Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-gingiva">Gingiva</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-periodontium">Periodontium</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-teeth">Hard Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-occlusion">Occlusion</button></li>
-                    <li class="mr-1"><button type="button" class="create-tab-link px-4 py-2 font-semibold" data-tab="create-tab-hygiene">Oral Hygiene</button></li>
+            <!-- TABS -->
+            <div class="px-6 pt-4">
+                <ul class="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 pb-2">
+                    <li><button type="button" class="create-tab-link px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700"
+                            data-tab="create-tab-soft">Soft Tissues</button></li>
+                    <li><button type="button" class="create-tab-link px-4 py-2 rounded-md"
+                            data-tab="create-tab-gingiva">Gingiva</button></li>
+                    <li><button type="button" class="create-tab-link px-4 py-2 rounded-md"
+                            data-tab="create-tab-periodontium">Periodontium</button></li>
+                    <li><button type="button" class="create-tab-link px-4 py-2 rounded-md"
+                            data-tab="create-tab-teeth">Hard Tissues</button></li>
+                    <li><button type="button" class="create-tab-link px-4 py-2 rounded-md"
+                            data-tab="create-tab-occlusion">Occlusion</button></li>
+                    <li><button type="button" class="create-tab-link px-4 py-2 rounded-md"
+                            data-tab="create-tab-hygiene">Oral Hygiene</button></li>
                 </ul>
             </div>
 
-            <!-- {{-- Tab Contents --}} -->
-            <div>
+            <!-- CONTENT -->
+            <div class="px-8 py-6 overflow-y-auto max-h-[65vh] space-y-6">
 
-                <!-- {{-- Soft Tissues --}} -->
-                <div id="create-tab-soft" class="create-tab-content mb-4">
-                    <label class="block mb-1">Patient</label>
-                    <select name="patient_id" class="w-full border rounded px-2 py-1 mb-2" required>
-                        <option value="">Select Patient</option>
-                        @foreach($patients as $patient)
-                            <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
-                        @endforeach
-                    </select>
+                <!-- SOFT TISSUES -->
+                <div id="create-tab-soft" class="create-tab-content">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block mb-1">Patient</label>
+                            <select name="patient_id"
+                                class="w-full border rounded px-3 py-2" required>
+                                <option value="">Select Patient</option>
+                                @foreach($patients as $patient)
+                                <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-  <!-- {{-- Examination Date --}} -->
-    <label class="block mb-1 mt-2">Examination Date</label>
-    <input
-        type="date"
-        name="date"
-        class="w-full border rounded px-2 py-1 mb-2"
-        value="{{ now()->toDateString() }}"
-        required
-    >
-                    <label class="block mb-1">Soft Tissues (Lips, Cheeks, Tongue, Floor of Mouth, Palate, Oropharynx)</label>
-                    <select name="soft_tissues_status" class="w-full border rounded px-2 py-1 mb-2">
-                        <option value="Normal">Normal</option>
-                        <option value="Abnormal">Abnormal</option>
-                    </select>
-                    <textarea name="soft_tissues" rows="3" class="w-full border rounded px-2 py-1" placeholder="Specify any lesions, swelling, discoloration, etc."></textarea>
+                        <div>
+                            <label class="block mb-1">Examination Date</label>
+                            <input type="date" name="date"
+                                class="w-full border rounded px-3 py-2"
+                                value="{{ now()->toDateString() }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block mb-1">Soft Tissues</label>
+                        <select name="soft_tissues_status"
+                            class="w-full border rounded px-3 py-2 mb-2">
+                            <option value="Normal">Normal</option>
+                            <option value="Abnormal">Abnormal</option>
+                        </select>
+
+                        <textarea name="soft_tissues" rows="3"
+                            class="w-full border rounded px-3 py-2"
+                            placeholder="Specify lesions, swelling, etc."></textarea>
+                    </div>
                 </div>
 
-                <!-- {{-- Gingiva --}} -->
-                <div id="create-tab-gingiva" class="create-tab-content mb-4 hidden">
-                    <div class="grid grid-cols-2 gap-4">
+                <!-- GINGIVA -->
+                <div id="create-tab-gingiva" class="create-tab-content hidden">
+                    <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label>Color</label>
-                            <select name="gingiva_color" class="w-full border rounded px-2 py-1">
+                            <select name="gingiva_color" class="w-full border rounded px-3 py-2">
                                 <option value="">Select</option>
-                                <option value="Pink">Pink</option>
-                                <option value="Red">Red</option>
-                                <option value="Cyanotic">Cyanotic</option>
+                                <option>Pink</option>
+                                <option>Red</option>
+                                <option>Cyanotic</option>
                             </select>
                         </div>
+
                         <div>
                             <label>Texture</label>
-                            <select name="gingiva_texture" class="w-full border rounded px-2 py-1">
+                            <select name="gingiva_texture" class="w-full border rounded px-3 py-2">
                                 <option value="">Select</option>
-                                <option value="Stippled">Stippled</option>
-                                <option value="Edematous">Edematous</option>
+                                <option>Stippled</option>
+                                <option>Edematous</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <label>Bleeding on Probing</label>
-                        <div class="flex gap-4 mt-1">
-                            <label><input type="radio" name="bleeding" value="Yes"> Yes</label>
-                            <label><input type="radio" name="bleeding" value="No" checked> No</label>
-                        </div>
-                        <input type="text" name="bleeding_area" class="w-full border rounded px-2 py-1 mt-1" placeholder="Specify areas if localized">
 
-                        <label class="mt-2">Recession</label>
-                        <div class="flex gap-4 mt-1">
-                            <label><input type="radio" name="recession" value="Yes"> Yes</label>
-                            <label><input type="radio" name="recession" value="No" checked> No</label>
+                    <div class="mt-4 space-y-3">
+                        <div>
+                            <label>Bleeding</label>
+                            <div class="flex gap-4 mt-1">
+                                <label><input type="radio" name="bleeding" value="Yes"> Yes</label>
+                                <label><input type="radio" name="bleeding" value="No" checked> No</label>
+                            </div>
+                            <input type="text" name="bleeding_area"
+                                class="w-full border rounded px-3 py-2 mt-1"
+                                placeholder="Specify area">
                         </div>
-                        <input type="text" name="recession_area" class="w-full border rounded px-2 py-1 mt-1" placeholder="Specify teeth/areas">
+
+                        <div>
+                            <label>Recession</label>
+                            <div class="flex gap-4 mt-1">
+                                <label><input type="radio" name="recession" value="Yes"> Yes</label>
+                                <label><input type="radio" name="recession" value="No" checked> No</label>
+                            </div>
+                            <input type="text" name="recession_area"
+                                class="w-full border rounded px-3 py-2 mt-1"
+                                placeholder="Specify area">
+                        </div>
                     </div>
                 </div>
 
-                <!-- {{-- Periodontium --}} -->
-                <div id="create-tab-periodontium" class="create-tab-content mb-4 hidden">
-                     <!-- Probing Depths -->
-    <div id="preview-probing_depths" class="mb-2"></div>
-    <label>Probing Depths</label>
-    <input type="file" name="probing_depths" accept="image/*" class="w-full mt-1">
+                <!-- PERIODONTIUM -->
+                <div id="create-tab-periodontium" class="create-tab-content hidden space-y-4">
+                    <div>
+                        <label>Probing Depths</label>
+                        <input type="file" name="probing_depths" class="w-full mt-1">
+                    </div>
 
-    <!-- Mobility -->
-    <div id="preview-mobility" class="mb-2"></div>
-    <label>Mobility</label>
-    <input type="file" name="mobility" accept="image/*" class="w-full mt-1">
+                    <div>
+                        <label>Mobility</label>
+                        <input type="file" name="mobility" class="w-full mt-1">
+                    </div>
 
-    <!-- Furcation Involvement -->
-    <div id="preview-furcation" class="mb-2"></div>
-    <label>Furcation Involvement</label>
-    <input type="file" name="furcation" accept="image/*" class="w-full mt-1">
-</div>
-                <!-- {{-- Hard Tissues --}} -->
-                <div id="create-tab-teeth" class="create-tab-content mb-4 hidden">
+                    <div>
+                        <label>Furcation</label>
+                        <input type="file" name="furcation" class="w-full mt-1">
+                    </div>
+                </div>
+
+                <!-- TEETH -->
+                <div id="create-tab-teeth" class="create-tab-content hidden">
                     <label>Teeth Condition</label>
-                    <select name="teeth_condition" class="w-full border rounded px-2 py-1 mb-2">
+                    <select name="teeth_condition"
+                        class="w-full border rounded px-3 py-2 mb-3">
                         <option value="">Select</option>
-                        <option value="Missing">Missing (X)</option>
-                        <option value="Caries">Caries (C)</option>
-                        <option value="Fillings">Fillings (F)</option>
-                        <option value="Crowns">Crowns (Cr)</option>
-                        <option value="Bridges">Bridges (B)</option>
-                        <option value="Implants">Implants (I)</option>
-                        <option value="RCT">Root Canal (RCT)</option>
-                        <option value="Sealants">Sealants (S)</option>
-                        <option value="Fractures">Fractures</option>
-                        <option value="Attrition">Attrition</option>
-                        <option value="Abrasion">Abrasion</option>
-                        <option value="Erosion">Erosion</option>
-                        <option value="Developmental Anomalies">Developmental Anomalies</option>
+                        <option>Missing</option>
+                        <option>Caries</option>
+                        <option>Fillings</option>
+                        <option>Crowns</option>
+                        <option>Bridges</option>
+                        <option>Implants</option>
+                        <option>RCT</option>
                     </select>
 
-                    <label>Dental Chart (Odontogram)</label>
-                    <input type="file" name="odontogram" accept="image/*" class="w-full mt-1">
+                    <label>Odontogram</label>
+                    <input type="file" name="odontogram" class="w-full mt-1">
                 </div>
 
-                <!-- {{-- Occlusion --}} -->
-                <div id="create-tab-occlusion" class="create-tab-content mb-4 hidden">
-                    <label>Occlusion Class</label> <select name="occlusion_class"class="w-full border rounded px-2 py-1 mb-2"> <option value="">Select Occlusion Class</option>
-     <option value="Class I">Class I</option>
-    <option value="Class II">Class II</option>
-    <option value="Class III">Class III</option>
-</select>
-
-                    <select name="occlusion_other" class="w-full border rounded px-2 py-1 mb-2"> 
-            <option value="">Select Occlusion Type</option>
-    <option value="Open Bite">Open Bite</option>
-    <option value="Deep Bite">Deep Bite</option>
-    <option value="Overjet">Overjet</option>
-    <option value="Overbite">Overbite</option>
-</select>
-
-                    <input type="text" name="premature_contacts" class="w-full border rounded px-2 py-1" placeholder="Premature Contacts / Interferences">
-                </div>
-
-                <!-- {{-- Oral Hygiene --}} -->
-                <div id="create-tab-hygiene" class="create-tab-content mb-4 hidden">
-                    <label>Oral Hygiene Status</label>
-                    <select name="hygiene_status" class="w-full border rounded px-2 py-1 mb-2">
-                        <option value="">Select</option>
-                        <option value="Good">Good</option>
-                        <option value="Fair">Fair</option>
-                        <option value="Poor">Poor</option>
+                <!-- OCCLUSION -->
+                <div id="create-tab-occlusion" class="create-tab-content hidden">
+                    <select name="occlusion_class"
+                        class="w-full border rounded px-3 py-2 mb-2">
+                        <option value="">Class</option>
+                        <option>Class I</option>
+                        <option>Class II</option>
+                        <option>Class III</option>
                     </select>
 
-                    <label>Plaque Index</label>
-                    <input type="text" name="plaque_index" class="w-full border rounded px-2 py-1 mb-2">
+                    <select name="occlusion_other"
+                        class="w-full border rounded px-3 py-2 mb-2">
+                        <option value="">Type</option>
+                        <option>Open Bite</option>
+                        <option>Deep Bite</option>
+                    </select>
 
-                    <label>Calculus</label>
-                    <select name="calculus" class="w-full border rounded px-2 py-1">
-                        <option value="">Select</option>
-                        <option value="Light">Light</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="Heavy">Heavy</option>
+                    <input type="text" name="premature_contacts"
+                        class="w-full border rounded px-3 py-2"
+                        placeholder="Contacts">
+                </div>
+
+                <!-- HYGIENE -->
+                <div id="create-tab-hygiene" class="create-tab-content hidden">
+                    <select name="hygiene_status"
+                        class="w-full border rounded px-3 py-2 mb-2">
+                        <option value="">Status</option>
+                        <option>Good</option>
+                        <option>Fair</option>
+                        <option>Poor</option>
+                    </select>
+
+                    <input type="text" name="plaque_index"
+                        class="w-full border rounded px-3 py-2 mb-2"
+                        placeholder="Plaque Index">
+
+                    <select name="calculus"
+                        class="w-full border rounded px-3 py-2">
+                        <option value="">Calculus</option>
+                        <option>Light</option>
+                        <option>Moderate</option>
+                        <option>Heavy</option>
                     </select>
                 </div>
+
             </div>
 
-            <div class="flex justify-end gap-3 mt-4">
+            <!-- FOOTER -->
+            <div class="px-6 py-4 border-t flex justify-end gap-3 bg-gray-50 dark:bg-gray-700 rounded-b-xl">
                 <button type="button" onclick="closeCreateModal()" class="btn btn-black btn-sm">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">Submit</button>
             </div>
+
         </form>
     </div>
 </div>
 
 <!-- {{-- EDIT MODAL --}} -->
-<div id="editIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl relative overflow-y-auto max-h-[90vh] p-6">
+<div id="editIntraoralModal"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
+
+    <!-- MODAL CONTAINER -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-7xl mx-4 shadow-xl flex flex-col">
 
         <!-- HEADER -->
-        <div class="bg-primary text-white px-6 py-4 rounded-t-lg relative">
-            <h2 class="text-2xl font-semibold">
-                Edit Examination
-            </h2>
+        <div class="bg-primary text-white px-8 py-5 rounded-t-xl relative">
+            <h2 class="text-2xl font-semibold">Edit Examination</h2>
 
-            <button
-                onclick="closeEditModal()"
-                 class="absolute top-4 right-4 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-primary/90 transition">
+            <button onclick="closeEditModal()"
+                class="absolute top-4 right-4 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-white/20 transition">
                 ✕
             </button>
         </div>
-       
-        <form id="editIntraoralForm" method="POST" enctype="multipart/form-data">
+
+        <!-- FORM -->
+        <form id="editIntraoralForm" method="POST" enctype="multipart/form-data" class="flex flex-col h-full">
             @csrf
             @method('PUT')
 
-            <!-- {{-- Tabs --}} -->
-            <div class="mb-4">
-                <ul class="flex border-b border-gray-200 dark:border-gray-700" id="edit-tabs">
-                    <li class="-mb-px mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-soft">Soft Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-gingiva">Gingiva</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-periodontium">Periodontium</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-teeth">Hard Tissues</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-occlusion">Occlusion</button></li>
-                    <li class="mr-1"><button type="button" class="edit-tab-link px-4 py-2 font-semibold" data-tab="edit-tab-hygiene">Oral Hygiene</button></li>
+            <!-- TABS -->
+            <div class="px-6 pt-4">
+                <ul class="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 pb-2">
+                    <li><button type="button" class="edit-tab-link px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700"
+                            data-tab="edit-tab-soft">Soft Tissues</button></li>
+                    <li><button type="button" class="edit-tab-link px-4 py-2 rounded-md"
+                            data-tab="edit-tab-gingiva">Gingiva</button></li>
+                    <li><button type="button" class="edit-tab-link px-4 py-2 rounded-md"
+                            data-tab="edit-tab-periodontium">Periodontium</button></li>
+                    <li><button type="button" class="edit-tab-link px-4 py-2 rounded-md"
+                            data-tab="edit-tab-teeth">Hard Tissues</button></li>
+                    <li><button type="button" class="edit-tab-link px-4 py-2 rounded-md"
+                            data-tab="edit-tab-occlusion">Occlusion</button></li>
+                    <li><button type="button" class="edit-tab-link px-4 py-2 rounded-md"
+                            data-tab="edit-tab-hygiene">Oral Hygiene</button></li>
                 </ul>
             </div>
 
-            <!-- {{-- Tab Contents --}} -->
-            <div>
-                <!-- {{-- Soft Tissues --}} -->
-                <div id="edit-tab-soft" class="edit-tab-content mb-4">
-                    <label class="block mb-1">Patient</label>
-                    <select name="patient_id" class="w-full border rounded px-2 py-1 mb-2" required>
-                        <option value="">Select Patient</option>
-                        @foreach($patients as $patient)
-                            <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
-                        @endforeach
-                    </select>
-  <!-- {{-- Examination Date --}} -->
-    <label class="block mb-1 mt-2">Examination Date</label>
-    <input
-    type="date"
-    name="date"
-    class="w-full border rounded px-2 py-1 mb-2"
-    value=""
-    required
->
-                    <label class="block mb-1">Soft Tissues</label>
-                    <select name="soft_tissues_status" class="w-full border rounded px-2 py-1 mb-2">
-                        <option value="Normal">Normal</option>
-                        <option value="Abnormal">Abnormal</option>
-                    </select>
-                    <textarea name="soft_tissues" rows="3" class="w-full border rounded px-2 py-1"></textarea>
+            <!-- CONTENT -->
+            <div class="px-8 py-6 overflow-y-auto max-h-[65vh] space-y-6">
+
+                <!-- SOFT TISSUES -->
+                <div id="edit-tab-soft" class="edit-tab-content">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block mb-1">Patient</label>
+                            <select name="patient_id" class="w-full border rounded px-3 py-2" required>
+                                <option value="">Select Patient</option>
+                                @foreach($patients as $patient)
+                                <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block mb-1">Examination Date</label>
+                            <input type="date" name="date"
+                                class="w-full border rounded px-3 py-2" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block mb-1">Soft Tissues</label>
+                        <select name="soft_tissues_status"
+                            class="w-full border rounded px-3 py-2 mb-2">
+                            <option value="Normal">Normal</option>
+                            <option value="Abnormal">Abnormal</option>
+                        </select>
+
+                        <textarea name="soft_tissues" rows="3"
+                            class="w-full border rounded px-3 py-2"></textarea>
+                    </div>
                 </div>
 
-                <!-- {{-- Gingiva --}} -->
-                <div id="edit-tab-gingiva" class="edit-tab-content mb-4 hidden">
-                    <div class="grid grid-cols-2 gap-4">
+                <!-- GINGIVA -->
+                <div id="edit-tab-gingiva" class="edit-tab-content hidden">
+                    <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label>Color</label>
-                            <select name="gingiva_color" class="w-full border rounded px-2 py-1">
+                            <select name="gingiva_color" class="w-full border rounded px-3 py-2">
                                 <option value="">Select</option>
-                                <option value="Pink">Pink</option>
-                                <option value="Red">Red</option>
-                                <option value="Cyanotic">Cyanotic</option>
+                                <option>Pink</option>
+                                <option>Red</option>
+                                <option>Cyanotic</option>
                             </select>
                         </div>
+
                         <div>
                             <label>Texture</label>
-                            <select name="gingiva_texture" class="w-full border rounded px-2 py-1">
+                            <select name="gingiva_texture" class="w-full border rounded px-3 py-2">
                                 <option value="">Select</option>
-                                <option value="Stippled">Stippled</option>
-                                <option value="Edematous">Edematous</option>
+                                <option>Stippled</option>
+                                <option>Edematous</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <label>Bleeding on Probing</label>
-                        <div class="flex gap-4 mt-1">
-                            <label><input type="radio" name="bleeding" value="Yes"> Yes</label>
-                            <label><input type="radio" name="bleeding" value="No"> No</label>
-                        </div>
-                        <input type="text" name="bleeding_area" class="w-full border rounded px-2 py-1 mt-1" placeholder="Specify areas if localized">
 
-                        <label class="mt-2">Recession</label>
-                        <div class="flex gap-4 mt-1">
-                            <label><input type="radio" name="recession" value="Yes"> Yes</label>
-                            <label><input type="radio" name="recession" value="No"> No</label>
+                    <div class="mt-4 space-y-3">
+                        <div>
+                            <label>Bleeding</label>
+                            <div class="flex gap-4 mt-1">
+                                <label><input type="radio" name="bleeding" value="Yes"> Yes</label>
+                                <label><input type="radio" name="bleeding" value="No"> No</label>
+                            </div>
+                            <input type="text" name="bleeding_area"
+                                class="w-full border rounded px-3 py-2 mt-1">
                         </div>
-                        <input type="text" name="recession_area" class="w-full border rounded px-2 py-1 mt-1" placeholder="Specify teeth/areas">
+
+                        <div>
+                            <label>Recession</label>
+                            <div class="flex gap-4 mt-1">
+                                <label><input type="radio" name="recession" value="Yes"> Yes</label>
+                                <label><input type="radio" name="recession" value="No"> No</label>
+                            </div>
+                            <input type="text" name="recession_area"
+                                class="w-full border rounded px-3 py-2 mt-1">
+                        </div>
                     </div>
                 </div>
 
-                <!-- {{-- Periodontium --}} -->
-                <div id="edit-tab-periodontium" class="edit-tab-content mb-4 hidden">
-                    <label>Probing Depths</label>
-                    <input type="file" name="probing_depths" accept="image/*" class="w-full mt-1">
+                <!-- PERIODONTIUM -->
+                <div id="edit-tab-periodontium" class="edit-tab-content hidden space-y-4">
+                    <div>
+                        <label>Probing Depths</label>
+                        <input type="file" name="probing_depths" class="w-full mt-1">
+                    </div>
 
-                    <label class="mt-2">Mobility</label>
-                    <input type="file" name="mobility" accept="image/*" class="w-full mt-1">
+                    <div>
+                        <label>Mobility</label>
+                        <input type="file" name="mobility" class="w-full mt-1">
+                    </div>
 
-                    <label class="mt-2">Furcation Involvement</label>
-                    <input type="file" name="furcation" accept="image/*" class="w-full mt-1">
+                    <div>
+                        <label>Furcation</label>
+                        <input type="file" name="furcation" class="w-full mt-1">
+                    </div>
                 </div>
 
-                <!-- {{-- Hard Tissues --}} -->
-                <div id="edit-tab-teeth" class="edit-tab-content mb-4 hidden">
+                <!-- TEETH -->
+                <div id="edit-tab-teeth" class="edit-tab-content hidden">
                     <label>Teeth Condition</label>
-                    <select name="teeth_condition" class="w-full border rounded px-2 py-1 mb-2">
+                    <select name="teeth_condition"
+                        class="w-full border rounded px-3 py-2 mb-3">
                         <option value="">Select</option>
-                        <option value="Missing">Missing (X)</option>
-                        <option value="Caries">Caries (C)</option>
-                        <option value="Fillings">Fillings (F)</option>
-                        <option value="Crowns">Crowns (Cr)</option>
-                        <option value="Bridges">Bridges (B)</option>
-                        <option value="Implants">Implants (I)</option>
-                        <option value="RCT">Root Canal (RCT)</option>
-                        <option value="Sealants">Sealants (S)</option>
-                        <option value="Fractures">Fractures</option>
-                        <option value="Attrition">Attrition</option>
-                        <option value="Abrasion">Abrasion</option>
-                        <option value="Erosion">Erosion</option>
-                        <option value="Developmental Anomalies">Developmental Anomalies</option>
+                        <option>Missing</option>
+                        <option>Caries</option>
+                        <option>Fillings</option>
+                        <option>Crowns</option>
+                        <option>Bridges</option>
+                        <option>Implants</option>
+                        <option>RCT</option>
                     </select>
 
-                    <label>Dental Chart</label>
-                    <input type="file" name="odontogram" accept="image/*" class="w-full mt-1">
+                    <label>Odontogram</label>
+                    <input type="file" name="odontogram" class="w-full mt-1">
                 </div>
 
-                <!-- {{-- Occlusion --}} -->
-                <div id="edit-tab-occlusion" class="edit-tab-content mb-4 hidden">
-                    <label>Occlusion Class</label>
-                   <select name="occlusion_class"
-    class="w-full border rounded px-2 py-1 mb-2">
-    <option value="">Select Occlusion Class</option>
-   <option value="Class I">Class I</option>
-<option value="Class II">Class II</option>
-<option value="Class III">Class III</option>
-
-</select>
-
-                   <select name="occlusion_other"
-    class="w-full border rounded px-2 py-1 mb-2">
-    <option value="">Select Occlusion Type</option>
-<option value="Open Bite">Open Bite</option>
-<option value="Deep Bite">Deep Bite</option>
-<option value="Overjet">Overjet</option>
-<option value="Overbite">Overbite</option>
-</select>
-
-                    <input type="text" name="premature_contacts" class="w-full border rounded px-2 py-1">
-                </div>
-
-                <!-- {{-- Oral Hygiene --}} -->
-                <div id="edit-tab-hygiene" class="edit-tab-content mb-4 hidden">
-                    <label>Oral Hygiene Status</label>
-                    <select name="hygiene_status" class="w-full border rounded px-2 py-1 mb-2">
-                        <option value="">Select</option>
-                        <option value="Good">Good</option>
-                        <option value="Fair">Fair</option>
-                        <option value="Poor">Poor</option>
+                <!-- OCCLUSION -->
+                <div id="edit-tab-occlusion" class="edit-tab-content hidden">
+                    <select name="occlusion_class"
+                        class="w-full border rounded px-3 py-2 mb-2">
+                        <option value="">Class</option>
+                        <option>Class I</option>
+                        <option>Class II</option>
+                        <option>Class III</option>
                     </select>
 
-                    <label>Plaque Index</label>
-                    <input type="text" name="plaque_index" class="w-full border rounded px-2 py-1 mb-2">
+                    <select name="occlusion_other"
+                        class="w-full border rounded px-3 py-2 mb-2">
+                        <option value="">Type</option>
+                        <option>Open Bite</option>
+                        <option>Deep Bite</option>
+                    </select>
 
-                    <label>Calculus</label>
-                    <select name="calculus" class="w-full border rounded px-2 py-1">
-                        <option value="">Select</option>
-                        <option value="Light">Light</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="Heavy">Heavy</option>
+                    <input type="text" name="premature_contacts"
+                        class="w-full border rounded px-3 py-2">
+                </div>
+
+                <!-- HYGIENE -->
+                <div id="edit-tab-hygiene" class="edit-tab-content hidden">
+                    <select name="hygiene_status"
+                        class="w-full border rounded px-3 py-2 mb-2">
+                        <option value="">Status</option>
+                        <option>Good</option>
+                        <option>Fair</option>
+                        <option>Poor</option>
+                    </select>
+
+                    <input type="text" name="plaque_index"
+                        class="w-full border rounded px-3 py-2 mb-2">
+
+                    <select name="calculus"
+                        class="w-full border rounded px-3 py-2">
+                        <option value="">Calculus</option>
+                        <option>Light</option>
+                        <option>Moderate</option>
+                        <option>Heavy</option>
                     </select>
                 </div>
+
             </div>
 
-            <div class="flex justify-end gap-3 mt-4">
+            <!-- FOOTER -->
+            <div class="px-6 py-4 border-t flex justify-end gap-3 bg-gray-50 dark:bg-gray-700 rounded-b-xl">
                 <button type="button" onclick="closeEditModal()" class="btn btn-black btn-sm">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">Update</button>
             </div>
+
         </form>
     </div>
 </div>
+
 
 <!-- {{-- VIEW MODAL --}} -->
 <div id="viewIntraoralModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">

@@ -112,15 +112,20 @@ class RadiographController extends Controller
     }
 
     public function downloadPdf(Radiograph $radiograph)
-    {
-        $physician = auth()->user()->name ?? 'Physician';
+{
+    // 1. Get the physician name
+    $physician = auth()->user()->name ?? 'Physician';
 
-        $radiograph->load('patient');
-      'physician' => $physician;
-      
-        $pdf = Pdf::loadView('radiographs.radiograph_pdf', compact('radiograph'))
-                 ->setPaper('a4', 'portrait');
-                 
-        return $pdf->stream('radiograph-'.$radiograph->id.'.pdf');
-    }
+    // 2. Eager load the patient relationship to avoid N+1 issues
+    $radiograph->load('patient');
+
+    // 3. Pass both the radiograph and the physician to the view
+    $pdf = Pdf::loadView('radiographs.radiograph_pdf', [
+        'radiograph' => $radiograph,
+        'physician'  => $physician
+    ])->setPaper('a4', 'portrait');
+
+    // 4. Stream the PDF to the browser
+    return $pdf->stream('radiograph-' . $radiograph->id . '.pdf');
+}
 }

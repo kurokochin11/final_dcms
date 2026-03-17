@@ -80,13 +80,18 @@ public function show(ExtraoralExamination $extraoral_examination)
     }
     public function downloadPdf(ExtraoralExamination $extraoral_examination)
 {
+    // Load the patient relationship
     $extraoral_examination->load('patient');
 
+    // Get the authenticated user's name
+    $physician = auth()->user()->name ?? '____________________';
+
     $pdf = Pdf::loadView('oral_examination.extraoral_pdf', [
-        'exam' => $extraoral_examination
+        'exam'      => $extraoral_examination,
+        'patient'   => $extraoral_examination->patient, // Fixes the undefined variable error
+        'physician' => $physician
     ])->setPaper('a4', 'portrait');
 
-    return $pdf->stream('extraoral-examination.pdf');
+    return $pdf->stream('Extraoral_Report_' . $extraoral_examination->id . '.pdf');
 }
-
 }

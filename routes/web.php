@@ -174,11 +174,16 @@ Route::get('/treatment-plans/{treatmentPlan}/pdf',[TreatmentPlanController::clas
     Route::put('/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
     Route::get('/sampleCalendar', [AppointmentController::class, 'sampleCalendar'])->name('appointments.sampleCalendar');
+  
+// Notification Routes
+Route::get('/api/notifications/updates', [AppointmentController::class, 'getUpdates']);
+Route::post('/api/notifications/mark-read/{id}', [AppointmentController::class, 'markAsRead']);
+Route::post('/api/notifications/mark-all-read', [AppointmentController::class, 'markAllAsRead']);
 });
 
 // Diagnosis routes
-    Route::get('/diagnoses', [DiagnosisController::class, 'index'])->name('diagnoses.index');
-    Route::post('/diagnoses', [DiagnosisController::class, 'store'])->name('diagnoses.store');
+    Route::get('/diagnosis', [DiagnosisController::class, 'index'])->name('diagnoses.index');
+    Route::post('/diagnosis', [DiagnosisController::class, 'store'])->name('diagnoses.store');
     Route::get('/diagnoses/{diagnosis}', [DiagnosisController::class, 'show'])->name('diagnoses.show'); // Optional, for AJAX
     Route::put('/diagnoses/{diagnosis}', [DiagnosisController::class, 'update'])->name('diagnoses.update');
     Route::delete('/diagnoses/{diagnosis}', [DiagnosisController::class, 'destroy'])->name('diagnoses.destroy');

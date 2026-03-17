@@ -14,9 +14,9 @@
                 <i class="fa fa-bell text-xl"></i>
 
                 <!-- Dynamic Badge -->
-                <span x-show="notifications.length > 0"
+                <span x-show="notifications.filter(n => !n.read_at).length > 0"
                       class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full border-2 border-[#4169e1]">
-                    <span x-text="notifications.length"></span>
+                    <span x-text="notifications.filter(n => !n.read_at).length"></span>
                 </span>
             </button>
         </x-slot>
@@ -38,13 +38,19 @@
 
             <!-- List notifications -->
           <template x-for="notif in notifications" :key="notif.id">
-    <x-dropdown-link href="{{ route('appointments.index') }}" @click="markAsRead(notif.id)">
+    <x-dropdown-link 
+        href="{{ route('appointments.index') }}" 
+        @click="markAsRead(notif.id)"
+        :class="notif.read_at ? 'opacity-50 bg-gray-50' : 'bg-white'"
+        class="transition-all duration-200"
+    >
         <div class="flex items-center space-x-3">
-            <div class="bg-blue-500 p-2 rounded-full text-white">
+            <div :class="notif.read_at ? 'bg-gray-400' : 'bg-blue-500'" class="p-2 rounded-full text-white">
                 <i class="fa fa-calendar text-xs"></i>
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-900" 
+                   :class="notif.read_at ? 'font-normal' : 'font-bold'"
                    x-text="notif.patient.first_name + ' ' + notif.patient.last_name"></p>
                 <p class="text-xs text-gray-500" x-text="'Scheduled for ' + notif.appointment_time"></p>
             </div>
@@ -132,14 +138,15 @@
             // 3. The function that talks to your web.php route
             async fetchUpdates() {
                 try {
-                    let response = await fetch('/api/notifications/updates');
+                    // Added /appointments prefix to match your routes
+                    let response = await fetch('/appointments/api/notifications/updates');
                     if (response.ok) {
                         let newData = await response.json();
                         
-                        // Only update the UI if the data has actually changed
+                        // Compare data to avoid unnecessary re-renders
                         if (JSON.stringify(newData) !== JSON.stringify(this.notifications)) {
                             this.notifications = newData;
-                            console.log('Real-time update: New appointments found!');
+                            console.log('Real-time update: Syncing notifications...');
                         }
                     }
                 } catch (error) {
@@ -149,11 +156,15 @@
 
             // 4. Mark a single notification as read
             markAsRead(id) {
-                // Remove from the local UI list immediately for a snappy feel
-                this.notifications = this.notifications.filter(notif => notif.id !== id);
+                this.notifications = this.notifications.map(notif => {
+                    if (notif.id === id) {
+                        return { ...notif, read_at: new Date().toISOString() };
+                    }
+                    return notif;
+                });
 
-                // Send request to server so it stays read after refresh
-                fetch(`/api/notifications/mark-read/${id}`, { 
+                // Added /appointments prefix
+                fetch(`/appointments/api/notifications/mark-read/${id}`, { 
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -161,17 +172,18 @@
                         'Accept': 'application/json'
                     }
                 }).catch(err => console.error('Failed to update server:', err));
-
-                console.log('Notification ' + id + ' removed from view.');
             },
 
             // 5. Mark everything as read
             markAllAsRead() {
-                // Clear the local UI
-                this.notifications = [];
+                const now = new Date().toISOString();
+                this.notifications = this.notifications.map(notif => ({
+                    ...notif, 
+                    read_at: notif.read_at || now 
+                }));
 
-                // Send request to server
-                fetch('/api/notifications/mark-all-read', { 
+                // Added /appointments prefix
+                fetch('/appointments/api/notifications/mark-all-read', { 
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -185,8 +197,9 @@
                 if (window.appointmentManager) {
                     window.appointmentManager.openModal(mode, data);
                     
-                    // Mark as read automatically when the modal opens
-                    this.markAsRead(data.id);
+                    if (!data.read_at) {
+                        this.markAsRead(data.id);
+                    }
                 } else {
                     console.error('appointmentManager is not defined on this page.');
                 }

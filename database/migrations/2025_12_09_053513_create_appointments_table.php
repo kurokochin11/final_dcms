@@ -13,6 +13,8 @@ return new class extends Migration {
             $table->time('appointment_time');
             $table->string('purpose')->nullable();
             $table->string('status')->default('Scheduled');
+            // Notification System Logic
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }

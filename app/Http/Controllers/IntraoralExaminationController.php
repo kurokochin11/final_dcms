@@ -12,8 +12,8 @@ class IntraoralExaminationController extends Controller
     public function index()
     {
         $examinations = IntraoralExamination::with('patient')->latest()->paginate(10);
-       $patients = Patient::whereHas('intraoralExaminations')->orderBy('last_name')->get();
-       
+        $patients = Patient::all();
+
         return view('oral_examination.index_intraoral', compact('examinations', 'patients'));
     }
 
@@ -200,10 +200,11 @@ class IntraoralExaminationController extends Controller
     $authName = auth()->user()->name ?? '____________________';
 
     $pdf = Pdf::loadView('oral_examination.intraoral_pdf', [
-        'exam' => $intraoral,
-        'physician' => $authName // Pass the auth name here
+        'exam'      => $intraoral,
+        'patient'   => $intraoral->patient, // Added this to fix "Undefined variable $patient"
+        'physician' => $authName
     ])->setPaper('a4', 'portrait');
 
-    return $pdf->stream('Intraoral_Report.pdf');
+    return $pdf->stream('Intraoral_Report_' . $intraoral->id . '.pdf');
 }
 }
