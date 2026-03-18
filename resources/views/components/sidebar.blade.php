@@ -18,17 +18,7 @@
             <span class="ms-2">Dashboard</span>
         </a>
 
-        <!-- User Management -->
-<div class="mt-4 mb-2 text-white font-bold uppercase tracking-wide text-xs px-2">User Management</div>
-
-<a href="{{ route('users.index') }}"
-   class="flex items-center p-2 mb-2 rounded transition-colors duration-200
-   {{ request()->routeIs('users.*') 
-        ? 'bg-white/30 font-bold text-white' 
-        : 'font-semibold text-white hover:bg-white/20' }}">
-    <i class="fas fa-users-cog w-5"></i>
-    <span class="ms-2">Users</span>
-</a>
+      
 
         <!-- Patient Management Header -->
         <div class="mt-4 mb-2 text-white font-bold uppercase tracking-wide text-xs px-2">Patient Management</div>
@@ -138,6 +128,17 @@
             <i class="fas fa-file-medical-alt w-5"></i>
             <span class="ms-2">Diagnosis</span>
         </a>
+         <!-- User Management -->
+<div class="mt-4 mb-2 text-white font-bold uppercase tracking-wide text-xs px-2">User Management</div>
+
+<a href="{{ route('users.index') }}"
+   class="flex items-center p-2 mb-2 rounded transition-colors duration-200
+   {{ request()->routeIs('users.*') 
+        ? 'bg-white/30 font-bold text-white' 
+        : 'font-semibold text-white hover:bg-white/20' }}">
+    <i class="fas fa-users-cog w-5"></i>
+    <span class="ms-2">Users</span>
+</a>
 
     </nav>
 </aside>

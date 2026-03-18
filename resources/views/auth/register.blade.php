@@ -1,4 +1,4 @@
-   @section('title', 'Dental Register')
+  
 <x-guest-layout>
 <!-- CSS for register authentication  -->
     <link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}">
