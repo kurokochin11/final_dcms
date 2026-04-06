@@ -1,8 +1,8 @@
 @section('title', 'Admin Login | Dr. Phua\'s Dental Clinic')
+
 <x-guest-layout>
     <link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
         .custom-error-box {
             background-color: #ffeaea;
@@ -22,9 +22,8 @@
 
         .custom-error-list-item {
             margin-bottom: 2px;
-            font-weight: normal;
         }
-        
+
         .custom-error-header {
             font-size: 0.9rem;
             color: #d11222;
@@ -34,10 +33,9 @@
 
         .auth-card-white {
             width: 380px !important;
-            min-height: auto;
             border-radius: 12px;
             padding: 2.5rem;
-            z-index: 10; /* Ensures card stays above the background overlay */
+            z-index: 10;
         }
 
         .auth-wrapper {
@@ -46,12 +44,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Updated background logic */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), 
-                              url('{{ asset('auth_logo.jfif') }}'); 
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+                url('{{ asset('auth_logo.jfif') }}');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             background-attachment: fixed;
         }
 
@@ -61,34 +58,42 @@
             background-color: #f9fafb;
             font-size: 0.9rem;
             padding-left: 10px;
+            padding-right: 35px;
         }
-        
+
         .input-icon-wrapper {
             position: relative;
         }
-        
+
         .input-icon {
             position: absolute;
             right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            color: #d1d5db;
-            font-size: 0.9rem;
             cursor: pointer;
+        }
+
+        .input-icon svg {
+            transition: all 0.2s ease;
+        }
+
+        .input-icon:hover svg {
+            stroke: #2563eb;
         }
     </style>
 
     <div class="auth-wrapper">
         <div class="auth-card-white shadow-xl bg-white">
 
+            <!-- Logo -->
             <div class="text-center mb-6">
                 <div class="flex justify-center mb-3">
                     <a href="/">
-                        <img src="{{ asset('tooth_logo.ico') }}" alt="Dr. Phua's Dental Clinic" class="h-14 w-auto">
+                        <img src="{{ asset('tooth_logo.ico') }}" class="h-14">
                     </a>
                 </div>
 
-                <h2 class="text-xl font-bold text-slate-900 uppercase tracking-wide">
+                <h2 class="text-xl font-bold text-slate-900 uppercase">
                     Admin Portal
                 </h2>
 
@@ -97,6 +102,7 @@
                 </p>
             </div>
 
+            <!-- Errors -->
             @if ($errors->any())
                 <div class="mb-5 custom-error-box">
                     <div class="custom-error-header">Whoops! Something went wrong.</div>
@@ -108,26 +114,26 @@
                 </div>
             @endif
 
+            <!-- Form -->
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 
+                <!-- Email -->
                 <div class="mb-4">
-                    <x-label for="email" value="{{ __('Super Admin Email') }}" class="text-xs text-slate-700"/>
+                    <x-label for="email" value="Super Admin Email" class="text-xs"/>
 
-                    <div class="mt-1">
-                        <x-input id="email"
-                                 class="block w-full login-input"
-                                 type="email"
-                                 name="email"
-                                 :value="old('email')"
-                                 required
-                                 autofocus
-                                 placeholder="Email"/>
-                    </div>
+                    <x-input id="email"
+                             class="block w-full login-input mt-1"
+                             type="email"
+                             name="email"
+                             :value="old('email')"
+                             required autofocus
+                             placeholder="Email"/>
                 </div>
 
+                <!-- Password -->
                 <div class="mb-5">
-                    <x-label for="password" value="{{ __('Password') }}" class="text-xs text-slate-700"/>
+                    <x-label for="password" value="Password" class="text-xs"/>
 
                     <div class="input-icon-wrapper mt-1">
                         <x-input id="password"
@@ -135,34 +141,51 @@
                                  type="password"
                                  name="password"
                                  required
-                                 autocomplete="current-password"
                                  placeholder="Password"/>
-                        <i id="toggleIcon" data-lucide="eye" class="input-icon" onclick="togglePassword()"></i>
+
+                        <!-- ICON TOGGLE -->
+                        <span id="toggleIcon" class="input-icon" onclick="togglePassword()">
+                            
+                            <!-- Eye Open (SHOW password) -->
+                            <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg"
+                                width="18" height="18" fill="none" stroke="#6b7280"
+                                stroke-width="2" viewBox="0 0 24 24" style="display:none;">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+
+                            <!-- Eye Slash (HIDE password - DEFAULT) -->
+                            <svg id="eyeSlash" xmlns="http://www.w3.org/2000/svg"
+                                width="18" height="18" fill="none" stroke="#6b7280"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8"/>
+                                <path d="M1 1l22 22"/>
+                            </svg>
+
+                        </span>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-start mb-6">
-                    <label for="remember_me" class="flex items-center cursor-pointer">
-                        <x-checkbox id="remember_me"
-                                    name="remember"
-                                    class="rounded-sm border-slate-300 text-blue-600 focus:ring-blue-500 h-3 w-3"/>
-                        <span class="ms-2 text-xs text-slate-600">
-                            {{ __('Keep me logged in') }}
-                        </span>
+                <!-- Remember -->
+                <div class="flex items-center mb-6">
+                    <label class="flex items-center cursor-pointer">
+                        <x-checkbox name="remember" class="h-3 w-3"/>
+                        <span class="ms-2 text-xs">Keep me logged in</span>
                     </label>
                 </div>
 
+                <!-- Button -->
                 <button type="submit"
-                        class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-md transition duration-200 flex items-center justify-center gap-1.5 shadow">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i>
-                    {{ __('Secure Login') }}
+                        class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md flex items-center justify-center gap-1.5 shadow">
+                    Secure Login
                 </button>
 
+                <!-- Forgot -->
                 @if (Route::has('password.request'))
                     <div class="text-center mt-5">
-                        <a class="underline text-xs text-slate-500 hover:text-blue-600 transition font-medium"
+                        <a class="underline text-xs text-slate-500 hover:text-blue-600"
                            href="{{ route('password.request') }}">
-                            {{ __('Forgot your admin password?') }}
+                            Forgot your admin password?
                         </a>
                     </div>
                 @endif
@@ -170,21 +193,25 @@
         </div>
     </div>
 
+    <!-- JS -->
     <script>
-        lucide.createIcons();
-
         function togglePassword(){
             const password = document.getElementById("password");
-            const icon = document.getElementById("toggleIcon");
+            const eyeOpen = document.getElementById("eyeOpen");
+            const eyeSlash = document.getElementById("eyeSlash");
 
             if(password.type === "password"){
+                // SHOW PASSWORD
                 password.type = "text";
-                icon.setAttribute("data-lucide","eye-off");
+                eyeOpen.style.display = "block";
+                eyeSlash.style.display = "none";
             } else {
+                // HIDE PASSWORD
                 password.type = "password";
-                icon.setAttribute("data-lucide","eye");
+                eyeOpen.style.display = "none";
+                eyeSlash.style.display = "block";
             }
-            lucide.createIcons();
         }
     </script>
+
 </x-guest-layout>

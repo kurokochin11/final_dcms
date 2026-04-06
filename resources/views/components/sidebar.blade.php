@@ -139,6 +139,18 @@
     <i class="fas fa-users-cog w-5"></i>
     <span class="ms-2">Users</span>
 </a>
+<!-- Billing -->
+<a href="{{ route('billings.index') }}"
+   class="flex items-center p-2 mb-2 rounded transition-colors duration-200
+   {{ request()->routeIs('billings.*') 
+        ? 'bg-white/30 font-bold text-white' 
+        : 'font-semibold text-white hover:bg-white/20' }}">
+
+    <!-- Icon -->
+    <i class="fas fa-file-invoice-dollar w-5"></i>
+
+    <span class="ms-2">Billing</span>
+</a>
 
     </nav>
 </aside>
