@@ -191,6 +191,8 @@ Route::post('/api/notifications/mark-all-read', [AppointmentController::class, '
 
 
     // Billing routes
+    Route::get('/billings/{billing}', [BillingController::class, 'show'])->name('billings.show');
+    Route::get('/billings/{id}/pdf', [BillingController::class, 'streamSinglePDF'])->name('billings.single.pdf');
 Route::get('/billings', [BillingController::class, 'index'])->name('billings.index');
 Route::post('/billings', [BillingController::class, 'store'])->name('billings.store');
 Route::put('/billings/{billing}', [BillingController::class, 'update'])->name('billings.update');
