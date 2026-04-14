@@ -21,6 +21,12 @@ class DentalChart extends Model
         'allergies',
         'blood_pressure',
         'drugs_taken',
+        'tooth_notes',
+        'denture_upper_since', 
+        'denture_lower_since', 
+        'physician',         
+        'chronic_ailments',    
+        'spo2',            
     ];
 
     /**
@@ -29,7 +35,9 @@ class DentalChart extends Model
      */
     protected $casts = [
         'tooth_data' => 'array',
+        'tooth_notes' => 'array',
         'created_at' => 'datetime',
+        'spo2' => 'integer',
     ];
 
     /**
