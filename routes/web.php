@@ -16,6 +16,8 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DentalChartController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TreatmentController;
+
 
 
 Route::get('/', function () {
@@ -216,6 +218,23 @@ Route::get('/patients/{patient}/dental-history', [DentalChartController::class, 
 
     Route::delete('/dental-chart/{dentalChart}', [DentalChartController::class, 'destroy'])
         ->name('dental-chart.destroy');
+
+        Route::get('/treatments', [TreatmentController::class, 'index'])
+        ->name('treatments.index');
+
+    Route::post('/treatments', [TreatmentController::class, 'store'])
+        ->name('treatments.store');
+
+    Route::put('/treatments/{id}', [TreatmentController::class, 'update'])
+        ->name('treatments.update');
+
+    Route::delete('/treatments/{id}', [TreatmentController::class, 'destroy'])
+        ->name('treatments.destroy');
+
+    // 📄 PDF
+    Route::get('/treatments/{id}/pdf', [TreatmentController::class, 'pdf'])
+        ->name('treatments.pdf');
+
 });
 
 
