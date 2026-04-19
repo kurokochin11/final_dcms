@@ -128,5 +128,46 @@
                 </div>
             </a>
         </div>
+        <div class="row mt-3">
+    <div class="col-sm-6 col-md-6">
+        <a href="{{ route('treatments.index') }}" class="card card-stats card-round card-clickable">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center bubble-shadow-small" style="background: #6f42c1; color: white; border-radius: 5px;">
+                            <i class="fas fa-hand-holding-medical"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                            <p class="card-category">Treatment Records</p>
+                            <h4 class="card-title">{{ number_format($treatments ?? 0) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-md-6">
+        <a href="{{ route('billings.index') }}" class="card card-stats card-round card-clickable">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-success bubble-shadow-small">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                            <p class="card-category">Billing & Payments</p>
+                            <h4 class="card-title">{{ number_format($billings ?? 0) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
     </div>
 </div>

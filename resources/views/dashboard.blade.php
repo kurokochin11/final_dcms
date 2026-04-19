@@ -26,6 +26,8 @@
                     :intraoralExaminations="$intraoralExaminations"
                     :medicalhistory="$medicalhistory"
                     :checkup="$checkup"
+                    :billings="$billings"
+                    :treatments="$treatments"
                 />
             </div>
         </div>

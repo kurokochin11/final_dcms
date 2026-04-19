@@ -43,6 +43,16 @@
             <span class="ms-2">Appointments</span>
         </a>
 
+ <a href="{{ route('treatments.index') }}"
+   class="flex items-center p-2 mb-2 rounded transition-colors duration-200
+   {{ request()->routeIs('treatments.index') 
+        ? 'bg-white/30 font-bold text-white' 
+        : 'font-semibold text-white hover:bg-white/20' }}">
+    <i class="fas fa-clipboard-list w-5"></i>
+    <span class="ms-2">Treatment 
+    </span>
+</a>
+        
         <!-- Treatment Plans -->
         <a href="{{ route('treatment-plans.index') }}"
    class="flex items-center p-2 mb-2 rounded transition-colors duration-200

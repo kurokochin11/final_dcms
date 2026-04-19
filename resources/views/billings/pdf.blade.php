@@ -107,7 +107,7 @@
     <table class="header-table">
         <tr>
             <td>
-                <h1 class="brand-name">MEDICAL CLINIC</h1>
+                <h1 class="brand-name">Dr.Phua's Dental Clinic</h1>
                 
             </td>
             <td class="report-title">
@@ -173,19 +173,10 @@
         </tfoot>
     </table>
 
-    <div style="margin-top: 50px;">
-        <div class="info-label">Payment Notes</div>
-        <p style="font-size: 10pt; color: #555;">
-            Please ensure all outstanding balances are settled within 30 days. 
-            Payments can be made via Cash, Credit Card, or Bank Transfer. 
-            Thank you for choosing our services.
-        </p>
-    </div>
+   
+        
 
-    <div class="footer">
-        This is a computer-generated document. No signature is required. <br>
-        Page 1 of 1
-    </div>
+   
 
 </body>
 </html>

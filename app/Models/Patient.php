@@ -112,5 +112,8 @@ public function treatments()
 {
     return $this->hasMany(Treatment::class);
 }
-
+public function treatmentRecords() 
+{
+    return $this->hasMany(TreatmentRecord::class);
+}
 }

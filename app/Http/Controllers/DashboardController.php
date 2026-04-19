@@ -26,6 +26,8 @@ Route::get('/dashboard', function () {
     $intraoralExaminations = IntraoralExamination::count();
     $medicalhistory = MedicalSession::count();
     $checkup = CheckupSession::count();
+    $billings = Billing::count();
+    $treatments = TreatmentRecord::count();
 
 
 
@@ -39,7 +41,9 @@ Route::get('/dashboard', function () {
         'extraoralExaminations',
         'intraoralExaminations',
         'medicalhistory',
-        'checkup'
+        'checkup',
+        'billings',
+        'treatments'
     ));
 
 })->middleware(['auth'])->name('dashboard');
